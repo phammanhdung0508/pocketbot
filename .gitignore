@@ -25,13 +25,6 @@ npm-debug.log*
 
 # Typescript
 *.tsbuildinfo
-src/application/interfaces/IEmailService.ts
-src/application/use-cases/CreateUserUseCase.ts
-src/domain/entities/User.ts
-src/domain/enums/UserRole.ts
-src/domain/exceptions/UserNotFoundException.ts
-src/domain/repositories/UserRepository.ts
-src/infrastructure/services/EmailService.ts
 
 # Mezon cache
 /mezon-cache
