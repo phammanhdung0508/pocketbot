@@ -14,10 +14,10 @@
           "attack": 24,
           "defense": 20,
           "speed": 24,
-          "hunger": 100,
+          "hunger": 80,
           "energy": 100,
           "createdAt": "2025-08-27T07:32:41.063Z",
-          "lastUpdate": "2025-08-27T12:07:22.956Z"
+          "lastUpdate": "2025-08-27T13:25:58.521Z"
         }
       ]
     },
@@ -30,15 +30,15 @@
           "element": "fire",
           "level": 1,
           "exp": 0,
-          "hp": 66,
+          "hp": 100,
           "maxHp": 100,
           "attack": 10,
           "defense": 10,
           "speed": 10,
-          "hunger": 100,
+          "hunger": 80,
           "energy": 100,
           "createdAt": "2025-08-27T11:52:44.060Z",
-          "lastUpdate": "2025-08-27T12:07:22.956Z"
+          "lastUpdate": "2025-08-27T13:25:58.521Z"
         }
       ]
     }

@@ -75,10 +75,9 @@ export class PetService {
     return updatedPet;
   }
 
-  async battle(attackerMezonId: string, defenderMezonId: string): Promise<{ 
+  async battleTurnBased(attackerMezonId: string, defenderMezonId: string, sendMessage: (message: string) => Promise<void>): Promise<{ 
     attacker: Pet, 
     defender: Pet, 
-    damage: number, 
     winner: string 
   }> {
     // For simplicity, we'll battle the first pet of each user
@@ -97,29 +96,70 @@ export class PetService {
     let attacker = PetStatsManager.updatePetStatsOverTime(attackerPets[0]);
     let defender = PetStatsManager.updatePetStatsOverTime(defenderPets[0]);
     
-    // Calculate damage
-    const damage = this.battleService.calculateDamage(attacker, defender);
+    // Send initial battle info
+    await sendMessage(`**Battle Start!**`);
+    await sendMessage(`${attacker.name} (Level ${attacker.level}, HP: ${attacker.hp}/${attacker.maxHp}) vs ${defender.name} (Level ${defender.level}, HP: ${defender.hp}/${defender.maxHp})`);
     
-    // Apply damage
-    defender.hp = Math.max(0, defender.hp - damage);
+    // Element effectiveness info
+    const elementModifier = this.battleService.getElementModifier(attacker.element, defender.element);
+    if (elementModifier > 1.0) {
+      await sendMessage(`${attacker.name}'s ${attacker.element} type is **effective** against ${defender.name}'s ${defender.element} type!`);
+    } else if (elementModifier < 1.0) {
+      await sendMessage(`${attacker.name}'s ${attacker.element} type is **resistant** against ${defender.name}'s ${defender.element} type!`);
+    }
+    
+    let turn = 1;
+    let winner = "draw";
+    
+    // Battle loop
+    while (attacker.hp > 0 && defender.hp > 0) {
+      await sendMessage(`\n**Turn ${turn}**`);
+      
+      // Attacker's turn
+      const attackerDamage = this.battleService.calculateDamage(attacker, defender);
+      defender.hp = Math.max(0, defender.hp - attackerDamage);
+      await sendMessage(`${attacker.name} attacks ${defender.name} for **${attackerDamage}** damage! ${defender.name}'s HP: ${defender.hp}/${defender.maxHp}`);
+      
+      // Check if defender is defeated
+      if (defender.hp <= 0) {
+        winner = attackerMezonId;
+        await sendMessage(`${defender.name} has been defeated! **${attacker.name} wins!**`);
+        // Winner gets EXP
+        attacker.exp += 50;
+        break;
+      }
+      
+      // Defender's turn
+      const defenderDamage = this.battleService.calculateDamage(defender, attacker);
+      attacker.hp = Math.max(0, attacker.hp - defenderDamage);
+      await sendMessage(`${defender.name} attacks ${attacker.name} for **${defenderDamage}** damage! ${attacker.name}'s HP: ${attacker.hp}/${attacker.maxHp}`);
+      
+      // Check if attacker is defeated
+      if (attacker.hp <= 0) {
+        winner = defenderMezonId;
+        await sendMessage(`${attacker.name} has been defeated! **${defender.name} wins!**`);
+        // Winner gets EXP
+        defender.exp += 50;
+        break;
+      }
+      
+      turn++;
+      
+      // Safety break to prevent infinite loops
+      if (turn > 100) {
+        await sendMessage("**Battle timed out! It's a draw!**");
+        winner = "draw";
+        break;
+      }
+    }
     
     // Update pets in database
     await this.petRepository.updatePet(attackerMezonId, attacker);
     await this.petRepository.updatePet(defenderMezonId, defender);
     
-    // Determine winner
-    let winner = "draw";
-    if (defender.hp === 0) {
-      winner = attackerMezonId;
-      // Winner gets EXP
-      attacker.exp += 50;
-      await this.petRepository.updatePet(attackerMezonId, attacker);
-    }
-    
     return {
       attacker,
       defender,
-      damage,
       winner
     };
   }

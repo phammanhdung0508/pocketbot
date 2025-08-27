@@ -23,20 +23,27 @@ export class BattleCommandHandler implements CommandHandler {
         return;
       }
       
-      const result = await this.petService.battle(message.sender_id, opponentId);
+      // Create a function to send messages to the channel
+      const sendMessage = async (content: string) => {
+        await channel.send(parseMarkdown(content));
+      };
       
+      const result = await this.petService.battleTurnBased(message.sender_id, opponentId, sendMessage);
+      
+      // Send final result summary
       let battleResult = `
-**Battle Result:**
-${result.attacker.name} (Level ${result.attacker.level}) vs ${result.defender.name} (Level ${result.defender.level})
-Damage dealt: ${result.damage}
-      `.trim();
+**Battle Summary:**
+${result.attacker.name} (Level ${result.attacker.level}) vs ${result.defender.name} (Level ${result.defender.level})`;
       
       if (result.winner === message.sender_id) {
-        battleResult += `\n**You win!** ${result.attacker.name} gained 50 EXP!`;
+        battleResult += `
+**You win!** ${result.attacker.name} gained 50 EXP!`;
       } else if (result.winner === opponentId) {
-        battleResult += `\n**You lose!** Better luck next time!`;
+        battleResult += `
+**You lose!** Better luck next time!`;
       } else {
-        battleResult += `\n**It's a draw!**`;
+        battleResult += `
+**It's a draw!**`;
       }
       
       await message.reply(parseMarkdown(battleResult));
