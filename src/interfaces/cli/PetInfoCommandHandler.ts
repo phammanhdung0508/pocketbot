@@ -4,6 +4,7 @@ import { PetService } from "@application/services/PetService";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "../../shared/utils/parseMarkdown";
+import { PetErrors } from "@domain/exceptions/PetErrors";
 
 export class PetInfoCommandHandler implements CommandHandler {
   constructor(private petService: PetService) {}
@@ -13,7 +14,7 @@ export class PetInfoCommandHandler implements CommandHandler {
       const pets = await this.petService.getPetsByUserId(message.sender_id);
       
       if (pets.length === 0) {
-        await message.reply(parseMarkdown("You don't have any pets yet. Create one with `*pet create <name> <species> <element>`"));
+        await message.reply(parseMarkdown(PetErrors.NO_PETS));
         return;
       }
       

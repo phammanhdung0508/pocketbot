@@ -3,7 +3,7 @@ import { PetFactory } from "./PetFactory";
 import { PetStatsManager } from "./PetStatsManager";
 
 export class PetCareService {
-  static careForPet(pet: Pet, action: 'feed' | 'play' | 'rest' | 'train'): Pet {
+  static careForPet(pet: Pet, action: 'feed' | 'play' | 'train'): Pet {
     // First, update pet stats based on time passed
     let updatedPet = PetStatsManager.updatePetStatsOverTime(pet);
     
@@ -14,9 +14,6 @@ export class PetCareService {
         break;
       case 'play':
         updatedPet = PetStatsManager.playPet(updatedPet);
-        break;
-      case 'rest':
-        updatedPet = PetStatsManager.restPet(updatedPet);
         break;
       case 'train':
         updatedPet = PetStatsManager.trainPet(updatedPet);

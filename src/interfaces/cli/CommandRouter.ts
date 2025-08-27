@@ -4,7 +4,6 @@ import { CreatePetCommandHandler } from "./CreatePetCommandHandler";
 import { PetInfoCommandHandler } from "./PetInfoCommandHandler";
 import { FeedPetCommandHandler } from "./FeedPetCommandHandler";
 import { PlayPetCommandHandler } from "./PlayPetCommandHandler";
-import { RestPetCommandHandler } from "./RestPetCommandHandler";
 import { TrainPetCommandHandler } from "./TrainPetCommandHandler";
 import { BattleCommandHandler } from "./BattleCommandHandler";
 import { PetListCommandHandler } from "./PetListCommandHandler";
@@ -22,7 +21,6 @@ export class CommandRouter {
     this.registerHandler("pet info", new PetInfoCommandHandler(petService));
     this.registerHandler("pet feed", new FeedPetCommandHandler(petService));
     this.registerHandler("pet play", new PlayPetCommandHandler(petService));
-    this.registerHandler("pet rest", new RestPetCommandHandler(petService));
     this.registerHandler("pet train", new TrainPetCommandHandler(petService));
     this.registerHandler("battle", new BattleCommandHandler(petService));
     this.registerHandler("pet list", new PetListCommandHandler());

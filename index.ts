@@ -8,7 +8,6 @@ import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase";
 import { GetPetsUseCase } from "./src/application/use-cases/GetPetsUseCase";
 import { FeedPetUseCase } from "./src/application/use-cases/FeedPetUseCase";
 import { PlayPetUseCase } from "./src/application/use-cases/PlayPetUseCase";
-import { RestPetUseCase } from "./src/application/use-cases/RestPetUseCase";
 import { TrainPetUseCase } from "./src/application/use-cases/TrainPetUseCase";
 import { BattleUseCase } from "./src/application/use-cases/BattleUseCase";
 import { PetService } from "./src/application/services/PetService";
@@ -26,7 +25,6 @@ async function main() {
     const getPetsUseCase = new GetPetsUseCase(petRepository);
     const feedPetUseCase = new FeedPetUseCase(petRepository);
     const playPetUseCase = new PlayPetUseCase(petRepository);
-    const restPetUseCase = new RestPetUseCase(petRepository);
     const trainPetUseCase = new TrainPetUseCase(petRepository);
     const battleUseCase = new BattleUseCase(petRepository, battleService);
 

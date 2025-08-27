@@ -4,26 +4,28 @@ export class PetStatsManager {
   static updatePetStatsOverTime(pet: Pet): Pet {
     const now = new Date();
     const lastUpdate = pet.lastUpdate;
-    const hoursPassed = (now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60);
+    const minutesPassed = (now.getTime() - lastUpdate.getTime()) / (1000 * 60);
     
-    // Every 30 minutes, decrease hunger by 10 and energy by 5
-    const intervalsPassed = Math.floor(hoursPassed * 2); // 2 intervals per hour
+    // Regenerate energy at 1% every 7 minutes
+    const energyRegen = Math.floor(minutesPassed / 7);
+    if (energyRegen > 0) {
+      pet.energy = Math.min(100, pet.energy + energyRegen);
+    }
     
-    if (intervalsPassed > 0) {
-      const hungerDecrease = Math.min(intervalsPassed * 10, pet.hunger);
-      const energyDecrease = Math.min(intervalsPassed * 5, pet.energy);
-      
+    // Every 30 minutes, decrease hunger by 10
+    const hungerDecreaseIntervals = Math.floor(minutesPassed / 30);
+    if (hungerDecreaseIntervals > 0) {
+      const hungerDecrease = Math.min(hungerDecreaseIntervals * 10, pet.hunger);
       pet.hunger = Math.max(0, pet.hunger - hungerDecrease);
-      pet.energy = Math.max(0, pet.energy - energyDecrease);
       
-      // If hunger is 0, decrease HP by 5 per hour
+      // If hunger is 0, decrease HP by 5 per hour (2.5 per 30 mins)
       if (pet.hunger === 0) {
-        const hpDecrease = Math.min(intervalsPassed * 2.5, pet.hp); // 5 per hour = 2.5 per 30 mins
+        const hpDecrease = Math.min(hungerDecreaseIntervals * 2.5, pet.hp);
         pet.hp = Math.max(0, pet.hp - hpDecrease);
       }
-      
-      pet.lastUpdate = now;
     }
+    
+    pet.lastUpdate = now;
     
     return pet;
   }
@@ -40,6 +42,11 @@ export class PetStatsManager {
   }
   
   static playPet(pet: Pet): Pet {
+    // Check if pet has enough energy to play
+    if (pet.energy <= 20) {
+      throw new Error("Your pet is too tired to play! Energy must be above 20%");
+    }
+    
     // Increase a random stat and EXP
     const stats = ['attack', 'defense', 'speed'];
     const randomStat = stats[Math.floor(Math.random() * stats.length)];
@@ -59,30 +66,37 @@ export class PetStatsManager {
     pet.exp += 15;
     pet.hunger = Math.max(0, pet.hunger - 10); // Decrease hunger
     pet.energy = Math.max(0, pet.energy - 10); // Decrease energy
-    pet.lastUpdate = new Date();
     
-    return pet;
-  }
-  
-  static restPet(pet: Pet): Pet {
-    // Restore energy fully
-    pet.energy = 100;
+    // If hunger is 0, decrease HP by 30
+    if (pet.hunger === 0) {
+      pet.hp = Math.max(0, pet.hp - 30);
+    }
+    
     pet.lastUpdate = new Date();
     
     return pet;
   }
   
   static trainPet(pet: Pet): Pet {
-    // Increase all stats slightly but consume energy
-    if (pet.energy >= 20) {
-      pet.attack += 1;
-      pet.defense += 1;
-      pet.speed += 1;
-      pet.exp += 20;
-      pet.energy -= 20;
-      pet.hunger = Math.max(0, pet.hunger - 5); // Decrease hunger
-      pet.lastUpdate = new Date();
+    // Check if pet has enough energy to train
+    if (pet.energy <= 20) {
+      throw new Error("Your pet is too tired to train! Energy must be above 20%");
     }
+    
+    // Increase all stats slightly but consume energy
+    pet.attack += 1;
+    pet.defense += 1;
+    pet.speed += 1;
+    pet.exp += 20;
+    pet.energy -= 20;
+    pet.hunger = Math.max(0, pet.hunger - 5); // Decrease hunger
+    
+    // If hunger is 0, decrease HP by 30
+    if (pet.hunger === 0) {
+      pet.hp = Math.max(0, pet.hp - 30);
+    }
+    
+    pet.lastUpdate = new Date();
     
     return pet;
   }

@@ -3,6 +3,8 @@ import { BattleService } from "@domain/services/BattleService";
 import { Pet } from "@domain/entities/Pet";
 import { PetCareService } from "@infrastructure/utils/PetCareService";
 import { PetFactory } from "@infrastructure/utils/PetFactory";
+import { PetStatsManager } from "@infrastructure/utils/PetStatsManager";
+import { PetErrors } from "@domain/exceptions/PetErrors";
 
 export class PetService {
   constructor(
@@ -36,14 +38,17 @@ export class PetService {
     const pets = await this.petRepository.getPetsByUserId(mezonId);
     
     // Update pet stats based on time passed
-    return pets.map(pet => PetCareService.careForPet(pet, 'rest'));
+    return pets.map(pet => {
+      // Just update the stats without performing any action
+      return PetStatsManager.updatePetStatsOverTime(pet);
+    });
   }
 
   async feedPet(mezonId: string, petId: string): Promise<Pet> {
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
     if (!pet) {
-      throw new Error("Pet not found");
+      throw new Error(PetErrors.NOT_FOUND);
     }
     
     const updatedPet = PetCareService.careForPet(pet, 'feed');
@@ -56,23 +61,15 @@ export class PetService {
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
     if (!pet) {
-      throw new Error("Pet not found");
+      throw new Error(PetErrors.NOT_FOUND);
+    }
+    
+    // Check if pet has enough energy
+    if (pet.energy <= 20) {
+      throw new Error(PetErrors.LOW_ENERGY(pet.energy));
     }
     
     const updatedPet = PetCareService.careForPet(pet, 'play');
-    await this.petRepository.updatePet(mezonId, updatedPet);
-    
-    return updatedPet;
-  }
-
-  async restPet(mezonId: string, petId: string): Promise<Pet> {
-    const pet = await this.petRepository.getPetById(mezonId, petId);
-    
-    if (!pet) {
-      throw new Error("Pet not found");
-    }
-    
-    const updatedPet = PetCareService.careForPet(pet, 'rest');
     await this.petRepository.updatePet(mezonId, updatedPet);
     
     return updatedPet;
@@ -82,7 +79,12 @@ export class PetService {
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
     if (!pet) {
-      throw new Error("Pet not found");
+      throw new Error(PetErrors.NOT_FOUND);
+    }
+    
+    // Check if pet has enough energy
+    if (pet.energy <= 20) {
+      throw new Error(PetErrors.LOW_ENERGY(pet.energy));
     }
     
     const updatedPet = PetCareService.careForPet(pet, 'train');
@@ -110,8 +112,8 @@ export class PetService {
     }
     
     // Update pet stats based on time passed
-    let attacker = PetCareService.careForPet(attackerPets[0], 'rest'); // Rest to ensure max energy
-    let defender = PetCareService.careForPet(defenderPets[0], 'rest'); // Rest to ensure max energy
+    let attacker = PetStatsManager.updatePetStatsOverTime(attackerPets[0]);
+    let defender = PetStatsManager.updatePetStatsOverTime(defenderPets[0]);
     
     // Calculate damage
     const damage = this.battleService.calculateDamage(attacker, defender);

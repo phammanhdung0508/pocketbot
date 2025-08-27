@@ -2,6 +2,7 @@ import { Pet } from "@domain/entities/Pet";
 import { PetRepository } from "@domain/repositories/PetRepository";
 import { BattleService } from "@domain/services/BattleService";
 import { PetCareService } from "@infrastructure/utils/PetCareService";
+import { PetStatsManager } from "@infrastructure/utils/PetStatsManager";
 
 export class BattleUseCase {
   constructor(
@@ -28,8 +29,8 @@ export class BattleUseCase {
     }
     
     // Update pet stats based on time passed
-    let attacker = PetCareService.careForPet(attackerPets[0], 'rest'); // Rest to ensure max energy
-    let defender = PetCareService.careForPet(defenderPets[0], 'rest'); // Rest to ensure max energy
+    let attacker = PetStatsManager.updatePetStatsOverTime(attackerPets[0]);
+    let defender = PetStatsManager.updatePetStatsOverTime(defenderPets[0]);
     
     // Calculate damage
     const damage = this.battleService.calculateDamage(attacker, defender);
