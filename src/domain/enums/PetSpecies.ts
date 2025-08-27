@@ -1,7 +1,7 @@
 export enum PetSpecies {
-  DRAGON = 'dragon', // Fire
-  FISH = 'fish',     // Water
-  GOLEM = 'golem',   // Earth
-  BIRD = 'bird',     // Air
-  EEL = 'eel'        // Lightning
+  DRAGON = 'dragon', 
+  FISH = 'fish',     
+  GOLEM = 'golem',   
+  BIRD = 'bird',     
+  EEL = 'eel'        
 }

@@ -8,24 +8,19 @@ export class BackgroundTaskManager {
   constructor(private petRepository: PetRepository) {}
 
   startBackgroundTasks(): void {
-    // Auto-save JSON mỗi 5 phút
     this.saveInterval = setInterval(async () => {
       try {
-        // In a real implementation, you might want to implement a more sophisticated
-        // save mechanism, but for now we'll just log that saving is happening
         console.log("Auto-saving pet data...");
       } catch (error) {
         console.error("Error during auto-save:", error);
       }
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 1 * 60 * 1000); // minutes
 
-    // Cập nhật stats mỗi 30 phút
     this.updateInterval = setInterval(async () => {
       try {
         console.log("Updating pet stats...");
         const users = await this.petRepository.getAllUsersWithPets();
         
-        // Update all pets' stats based on time passed
         for (const mezonId in users) {
           const user = users[mezonId];
           for (let i = 0; i < user.pets.length; i++) {
@@ -35,13 +30,12 @@ export class BackgroundTaskManager {
           }
         }
         
-        // Save updated data back to repository
         await this.petRepository.saveAllUsers(users);
         console.log("Pet stats updated successfully.");
       } catch (error) {
         console.error("Error updating pet stats:", error);
       }
-    }, 30 * 60 * 1000); // 30 minutes
+    }, 0.5 * 60 * 1000); // minutes
   }
 
   stopBackgroundTasks(): void {

@@ -37,3 +37,4 @@ src/infrastructure/services/EmailService.ts
 /mezon-cache
 QWEN.md
 BOT_REQ.md
+db.json
