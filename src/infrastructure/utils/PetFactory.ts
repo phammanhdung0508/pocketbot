@@ -22,6 +22,12 @@ export class PetFactory {
   }
 
   static createPet(name: string, species: string, element: string): Pet {    
+    // Validate that the element matches the species
+    const expectedElement = this.createElementForSpecies(species);
+    if (element !== expectedElement) {
+      throw new Error(`Element ${element} does not match species ${species}. Expected element: ${expectedElement}`);
+    }
+    
     return {
       id: uuidv4(),
       name,

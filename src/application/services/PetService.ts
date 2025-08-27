@@ -13,21 +13,18 @@ export class PetService {
     private battleService: BattleService
   ) {}
 
-  async createPet(mezonId: string, name: string, species: string, element: string): Promise<Pet> {
+  async createPet(mezonId: string, name: string, species: string): Promise<Pet> {
     // Validate species (optional, but good practice)
     const validSpecies = ['dragon', 'fish', 'golem', 'bird', 'eel'];
     if (!validSpecies.includes(species.toLowerCase())) {
       throw new Error(`Invalid species: ${species}. Valid species are: ${validSpecies.join(', ')}`);
     }
 
-    // Validate element (optional, but good practice)
-    const validElements = ['fire', 'water', 'earth', 'air', 'lightning'];
-    if (!validElements.includes(element.toLowerCase())) {
-      throw new Error(`Invalid element: ${element}. Valid elements are: ${validElements.join(', ')}`);
-    }
+    // Automatically assign element based on species
+    const element = PetFactory.createElementForSpecies(species.toLowerCase());
 
     // Create pet using factory
-    const newPet = PetFactory.createPet(name, species.toLowerCase(), element.toLowerCase());
+    const newPet = PetFactory.createPet(name, species.toLowerCase(), element);
     
     // Save pet to repository
     await this.petRepository.createPet(mezonId, newPet);
