@@ -36,7 +36,10 @@ export class JsonPetRepository implements PetRepository {
     const petToSave = {
       ...pet,
       createdAt: pet.createdAt.toISOString(),
-      lastUpdate: pet.lastUpdate.toISOString()
+      lastUpdate: pet.lastUpdate.toISOString(),
+      // Remove functions and complex objects for JSON serialization
+      skills: pet.skills,
+      statusEffects: pet.statusEffects
     };
     
     db.users[mezonId].pets.push(petToSave);
@@ -54,7 +57,9 @@ export class JsonPetRepository implements PetRepository {
     return db.users[mezonId].pets.map(pet => ({
       ...pet,
       createdAt: new Date(pet.createdAt),
-      lastUpdate: new Date(pet.lastUpdate)
+      lastUpdate: new Date(pet.lastUpdate),
+      skills: pet.skills || [],
+      statusEffects: pet.statusEffects || []
     }));
   }
 
@@ -75,7 +80,10 @@ export class JsonPetRepository implements PetRepository {
     const petToSave = {
       ...pet,
       createdAt: pet.createdAt.toISOString(),
-      lastUpdate: pet.lastUpdate.toISOString()
+      lastUpdate: pet.lastUpdate.toISOString(),
+      // Remove functions and complex objects for JSON serialization
+      skills: pet.skills,
+      statusEffects: pet.statusEffects
     };
     
     const petIndex = db.users[mezonId].pets.findIndex(p => p.id === pet.id);
@@ -111,7 +119,9 @@ export class JsonPetRepository implements PetRepository {
         pets: db.users[mezonId].pets.map(pet => ({
           ...pet,
           createdAt: new Date(pet.createdAt),
-          lastUpdate: new Date(pet.lastUpdate)
+          lastUpdate: new Date(pet.lastUpdate),
+          skills: pet.skills || [],
+          statusEffects: pet.statusEffects || []
         }))
       };
     }
@@ -128,7 +138,9 @@ export class JsonPetRepository implements PetRepository {
         pets: users[mezonId].pets.map(pet => ({
           ...pet,
           createdAt: pet.createdAt.toISOString(),
-          lastUpdate: pet.lastUpdate.toISOString()
+          lastUpdate: pet.lastUpdate.toISOString(),
+          skills: pet.skills,
+          statusEffects: pet.statusEffects
         }))
       };
     }

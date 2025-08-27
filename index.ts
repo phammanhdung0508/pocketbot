@@ -1,24 +1,24 @@
 import dotenv from "dotenv"
 import { MezonClient } from "mezon-sdk"
 
-import { JsonPetRepository } from "./src/infrastructure/repositories/JsonPetRepository";
-import { PetBattleService } from "./src/infrastructure/services/PetBattleService";
-import { CommandRouter } from "./src/interfaces/cli/CommandRouter";
-import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase";
-import { GetPetsUseCase } from "./src/application/use-cases/GetPetsUseCase";
-import { FeedPetUseCase } from "./src/application/use-cases/FeedPetUseCase";
-import { PlayPetUseCase } from "./src/application/use-cases/PlayPetUseCase";
-import { TrainPetUseCase } from "./src/application/use-cases/TrainPetUseCase";
-import { BattleUseCase } from "./src/application/use-cases/BattleUseCase";
-import { PetService } from "./src/application/services/PetService";
-import { BackgroundTaskManager } from "./src/infrastructure/utils/BackgroundTaskManager";
+import { JsonPetRepository } from "./src/infrastructure/repositories/JsonPetRepository"
+import { AdvancedBattleService } from "./src/infrastructure/services/AdvancedBattleService"
+import { CommandRouter } from "./src/interfaces/cli/CommandRouter"
+import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase"
+import { GetPetsUseCase } from "./src/application/use-cases/GetPetsUseCase"
+import { FeedPetUseCase } from "./src/application/use-cases/FeedPetUseCase"
+import { PlayPetUseCase } from "./src/application/use-cases/PlayPetUseCase"
+import { TrainPetUseCase } from "./src/application/use-cases/TrainPetUseCase"
+import { BattleUseCase } from "./src/application/use-cases/BattleUseCase"
+import { PetService } from "./src/application/services/PetService"
+import { BackgroundTaskManager } from "./src/infrastructure/utils/BackgroundTaskManager"
 
 dotenv.config()
 
 async function main() {
     // Initialize dependencies
     const petRepository = new JsonPetRepository();
-    const battleService = new PetBattleService();
+    const battleService = new AdvancedBattleService();
 
     // Initialize use cases
     const createPetUseCase = new CreatePetUseCase(petRepository);

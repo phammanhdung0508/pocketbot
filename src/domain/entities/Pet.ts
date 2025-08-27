@@ -1,3 +1,6 @@
+import { BattleStatus } from "./BattleStatus";
+import { Skill } from "./Skill";
+
 export interface Pet {
   id: string;
   name: string;
@@ -14,4 +17,6 @@ export interface Pet {
   energy: number;
   createdAt: Date;
   lastUpdate: Date;
+  skills: Skill[];
+  statusEffects: BattleStatus[];
 }
