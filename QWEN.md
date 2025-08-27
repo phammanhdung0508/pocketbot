@@ -202,3 +202,46 @@ Different types of messages can be sent:
 - `registerStreamingChannel()`: Register streaming channels
 
 This SDK provides a comprehensive set of tools for building feature-rich bots that can interact with users, manage channels, and respond to various events in the Mezon platform.
+
+### MezonClient methods:
+[
+  'constructor',
+  'initManager',
+  'login',
+  'createDMchannel',       
+  'sendToken',
+  'onChannelMessage',      
+  'onChannelCreated',      
+  'onChannelUpdated',      
+  'onChannelDeleted',      
+  'onTokenSend',
+  'onMessageReaction',
+  'onUserChannelRemoved',
+  'onUserClanRemoved',
+  'onUserChannelAdded',
+  'onGiveCoffee',
+  'onRoleEvent',
+  'onRoleAssign',
+  'onNotification',
+  'onAddClanUser',
+  'onClanEventCreated',
+  'onMessageButtonClicked',
+  'onStreamingJoinedEvent',
+  'onStreamingLeavedEvent',
+  'onDropdownBoxSelected',
+  'onWebrtcSignalingFwd',
+  'onVoiceStartedEvent',
+  'onVoiceEndedEvent',
+  'onVoiceJoinedEvent',
+  'onVoiceLeavedEvent',
+  'onQuickMenuEvent',
+  'closeSocket',
+  'getListFriends',
+  'acceptFriend',
+  'addFriend',
+  '_fetchClanFromAPI',
+  '_fetchChannelFromAPI',
+  '_initChannelMessageCache',
+  '_initUserClanCache',
+  '_updateCacheChannel'
+]
