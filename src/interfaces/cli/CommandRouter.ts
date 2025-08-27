@@ -33,10 +33,9 @@ export class CommandRouter {
   }
 
   async routeCommand(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
-    /*if (text.startsWith("*loto")) return createRoom(channel, message)*/
     if (!message.content.t?.toLowerCase().startsWith('*')) return;
 
-    const args = message.content.contentThread!.slice(1).trim().split(/ +/);
+    const args = message.content.t?.slice(1).trim().split(/ +/);
     const command = args.shift()?.toLowerCase();
 
     if (!command) return;

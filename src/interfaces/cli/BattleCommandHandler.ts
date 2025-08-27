@@ -1,5 +1,5 @@
 import { CommandHandler } from "./CommandHandler";
-import { MezonClient, ChannelMessage } from "mezon-sdk";
+import { ChannelMessage } from "mezon-sdk";
 import { PetService } from "@application/services/PetService";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
@@ -14,7 +14,7 @@ export class BattleCommandHandler implements CommandHandler {
       const opponentId = message.mentions?.[0]?.user_id;
       
       if (!opponentId) {
-        await message.reply(parseMarkdown("Usage: !battle @opponent"));
+        await message.reply(parseMarkdown("Usage: *battle @opponent"));
         return;
       }
       

@@ -1,7 +1,6 @@
 import { PetRepository } from "@domain/repositories/PetRepository";
 import { Pet } from "@domain/entities/Pet";
 import * as fs from "fs";
-import * as path from "path";
 
 export class JsonPetRepository implements PetRepository {
   private dbPath: string;

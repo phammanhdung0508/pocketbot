@@ -4,7 +4,7 @@ import { PetSpecies } from "@domain/enums/PetSpecies";
 import { ElementType } from "@domain/enums/ElementType";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
-import { parseMarkdown } from "@/shared/utils/parseMarkdown";
+import { parseMarkdown } from "../../shared/utils/parseMarkdown";
 
 export class PetListCommandHandler implements CommandHandler {
   async handle(
@@ -40,7 +40,13 @@ export class PetListCommandHandler implements CommandHandler {
       speciesList.forEach(s => {
         listMessage += `- ${s}\n`;
       });
-      listMessage += "\nCreate a pet with: !pet create <name> <species>";
+      
+      listMessage += "\n**Available Elements:**\n";
+      Object.values(ElementType).forEach(element => {
+        listMessage += `- ${element}\n`;
+      });
+      
+      listMessage += "\nCreate a pet with: *pet create <name> <species> <element>";
       
       await message.reply(parseMarkdown(listMessage.trim()));
     } catch (error: any) {

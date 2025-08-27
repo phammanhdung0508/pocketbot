@@ -21,9 +21,7 @@ export class PetFactory {
     }
   }
 
-  static createPet(name: string, species: string): Pet {
-    const element = this.createElementForSpecies(species);
-    
+  static createPet(name: string, species: string, element: string): Pet {    
     return {
       id: uuidv4(),
       name,

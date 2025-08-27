@@ -2,6 +2,7 @@ import { PetRepository } from "@domain/repositories/PetRepository";
 import { BattleService } from "@domain/services/BattleService";
 import { Pet } from "@domain/entities/Pet";
 import { PetCareService } from "@infrastructure/utils/PetCareService";
+import { PetFactory } from "@infrastructure/utils/PetFactory";
 
 export class PetService {
   constructor(
@@ -9,9 +10,26 @@ export class PetService {
     private battleService: BattleService
   ) {}
 
-  async createPet(mezonId: string, name: string, species: string): Promise<Pet> {
-    // Implementation will be added later
-    throw new Error("Not implemented");
+  async createPet(mezonId: string, name: string, species: string, element: string): Promise<Pet> {
+    // Validate species (optional, but good practice)
+    const validSpecies = ['dragon', 'fish', 'golem', 'bird', 'eel'];
+    if (!validSpecies.includes(species.toLowerCase())) {
+      throw new Error(`Invalid species: ${species}. Valid species are: ${validSpecies.join(', ')}`);
+    }
+
+    // Validate element (optional, but good practice)
+    const validElements = ['fire', 'water', 'earth', 'air', 'lightning'];
+    if (!validElements.includes(element.toLowerCase())) {
+      throw new Error(`Invalid element: ${element}. Valid elements are: ${validElements.join(', ')}`);
+    }
+
+    // Create pet using factory
+    const newPet = PetFactory.createPet(name, species.toLowerCase(), element.toLowerCase());
+    
+    // Save pet to repository
+    await this.petRepository.createPet(mezonId, newPet);
+    
+    return newPet;
   }
 
   async getPetsByUserId(mezonId: string): Promise<Pet[]> {

@@ -41,7 +41,7 @@ async function main() {
     const commandRouter = new CommandRouter(petService);
 
     // Initialize Mezon client
-    const client = new MezonClient(process.env.MEZON_CLIENT_TOKEN);
+    const client = new MezonClient(process.env.MEZON_BOT_TOKEN);
     await client.login();
 
     // Handle connection errors

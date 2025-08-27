@@ -5,8 +5,8 @@ import { PetFactory } from "@infrastructure/utils/PetFactory";
 export class CreatePetUseCase {
   constructor(private petRepository: PetRepository) {}
 
-  async execute(mezonId: string, name: string, species: string): Promise<Pet> {
-    const pet = PetFactory.createPet(name, species);
+  async execute(mezonId: string, name: string, species: string, element: string): Promise<Pet> {
+    const pet = PetFactory.createPet(name, species, element);
     await this.petRepository.createPet(mezonId, pet);
     return pet;
   }
