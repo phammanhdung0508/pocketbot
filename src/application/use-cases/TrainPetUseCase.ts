@@ -1,7 +1,7 @@
 import { Pet } from "@domain/entities/Pet";
 import { PetRepository } from "@domain/repositories/PetRepository";
 import { PetCareService } from "@infrastructure/utils/PetCareService";
-import { PetErrors } from "@domain/exceptions/PetErrors";
+import { PetValidator } from "@/application/services/validator/PetValidator";
 
 export class TrainPetUseCase {
   constructor(private petRepository: PetRepository) {}
@@ -9,14 +9,7 @@ export class TrainPetUseCase {
   async execute(mezonId: string, petId: string): Promise<Pet> {
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
-    if (!pet) {
-      throw new Error(PetErrors.NOT_FOUND);
-    }
-    
-    // Check if pet has enough energy
-    if (pet.energy <= 20) {
-      throw new Error(PetErrors.LOW_ENERGY(pet.energy));
-    }
+    PetValidator.validateCanPerformAction(pet);
     
     const updatedPet = PetCareService.careForPet(pet, 'train');
     await this.petRepository.updatePet(mezonId, updatedPet);

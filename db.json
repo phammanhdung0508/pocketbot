@@ -1,0 +1,46 @@
+{
+  "users": {
+    "1840686084447539200": {
+      "pets": [
+        {
+          "id": "01b903bc-3478-4f61-9ad1-d13f127d4e5e",
+          "name": "drag",
+          "species": "dragon",
+          "element": "water",
+          "level": 2,
+          "exp": 70,
+          "hp": 100,
+          "maxHp": 105,
+          "attack": 24,
+          "defense": 20,
+          "speed": 24,
+          "hunger": 100,
+          "energy": 100,
+          "createdAt": "2025-08-27T07:32:41.063Z",
+          "lastUpdate": "2025-08-27T12:07:22.956Z"
+        }
+      ]
+    },
+    "1948318166522269696": {
+      "pets": [
+        {
+          "id": "595bcc29-682b-40f2-85f6-4f072907eb01",
+          "name": "gra",
+          "species": "fish",
+          "element": "fire",
+          "level": 1,
+          "exp": 0,
+          "hp": 66,
+          "maxHp": 100,
+          "attack": 10,
+          "defense": 10,
+          "speed": 10,
+          "hunger": 100,
+          "energy": 100,
+          "createdAt": "2025-08-27T11:52:44.060Z",
+          "lastUpdate": "2025-08-27T12:07:22.956Z"
+        }
+      ]
+    }
+  }
+}

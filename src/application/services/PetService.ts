@@ -5,6 +5,7 @@ import { PetCareService } from "@infrastructure/utils/PetCareService";
 import { PetFactory } from "@infrastructure/utils/PetFactory";
 import { PetStatsManager } from "@infrastructure/utils/PetStatsManager";
 import { PetErrors } from "@domain/exceptions/PetErrors";
+import { PetValidator } from "@/application/services/validator/PetValidator";
 
 export class PetService {
   constructor(
@@ -47,9 +48,7 @@ export class PetService {
   async feedPet(mezonId: string, petId: string): Promise<Pet> {
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
-    if (!pet) {
-      throw new Error(PetErrors.NOT_FOUND);
-    }
+    PetValidator.validatePetExists(pet);
     
     const updatedPet = PetCareService.careForPet(pet, 'feed');
     await this.petRepository.updatePet(mezonId, updatedPet);
@@ -60,14 +59,7 @@ export class PetService {
   async playPet(mezonId: string, petId: string): Promise<Pet> {
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
-    if (!pet) {
-      throw new Error(PetErrors.NOT_FOUND);
-    }
-    
-    // Check if pet has enough energy
-    if (pet.energy <= 20) {
-      throw new Error(PetErrors.LOW_ENERGY(pet.energy));
-    }
+    PetValidator.validateCanPerformAction(pet);
     
     const updatedPet = PetCareService.careForPet(pet, 'play');
     await this.petRepository.updatePet(mezonId, updatedPet);
@@ -78,14 +70,7 @@ export class PetService {
   async trainPet(mezonId: string, petId: string): Promise<Pet> {
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
-    if (!pet) {
-      throw new Error(PetErrors.NOT_FOUND);
-    }
-    
-    // Check if pet has enough energy
-    if (pet.energy <= 20) {
-      throw new Error(PetErrors.LOW_ENERGY(pet.energy));
-    }
+    PetValidator.validateCanPerformAction(pet);
     
     const updatedPet = PetCareService.careForPet(pet, 'train');
     await this.petRepository.updatePet(mezonId, updatedPet);

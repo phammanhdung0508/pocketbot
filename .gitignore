@@ -30,4 +30,4 @@ npm-debug.log*
 /mezon-cache
 QWEN.md
 BOT_REQ.md
-db.json
+# db.json
