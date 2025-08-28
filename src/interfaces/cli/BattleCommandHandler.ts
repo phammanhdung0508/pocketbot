@@ -1,12 +1,12 @@
 import { CommandHandler } from "./CommandHandler";
 import { ChannelMessage } from "mezon-sdk";
-import { PetService } from "@application/services/PetService";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "@/shared/utils/parseMarkdown";
+import { BattleUseCase } from "@/application/use-cases/BattleUseCase";
 
 export class BattleCommandHandler implements CommandHandler {
-  constructor(private petService: PetService) {}
+  constructor(private battleUseCase: BattleUseCase) {}
 
   async handle(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
     try {
@@ -28,7 +28,8 @@ export class BattleCommandHandler implements CommandHandler {
         await channel.send(parseMarkdown(content));
       };
       
-      const result = await this.petService.battleTurnBased(message.sender_id, opponentId, sendMessage);
+      // const result = await this.petService.battleTurnBased(message.sender_id, opponentId, sendMessage);
+      const result = await this.battleUseCase.execute(message.sender_id, opponentId, sendMessage);
       
       // Send final result summary
       let battleResult = `

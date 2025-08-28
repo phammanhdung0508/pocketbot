@@ -1,17 +1,20 @@
 import { CommandHandler } from "./CommandHandler";
 import { ChannelMessage } from "mezon-sdk";
-import { PetService } from "@application/services/PetService";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "../../shared/utils/parseMarkdown";
 import { PetErrors } from "@domain/exceptions/PetErrors";
+import { TrainPetUseCase } from "@/application/use-cases/TrainPetUseCase";
+import { GetPetsUseCase } from "@/application/use-cases/GetPetsUseCase";
 
 export class TrainPetCommandHandler implements CommandHandler {
-  constructor(private petService: PetService) {}
+  constructor(
+    private trainPetUseCase: TrainPetUseCase,
+    private getPetsUseCase: GetPetsUseCase) {}
 
   async handle(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
     try {
-      const pets = await this.petService.getPetsByUserId(message.sender_id);
+      const pets = await this.getPetsUseCase.execute(message.sender_id);
       
       if (pets.length === 0) {
         await message.reply(parseMarkdown(PetErrors.NO_PETS));
@@ -26,7 +29,7 @@ export class TrainPetCommandHandler implements CommandHandler {
         return;
       }
       
-      const updatedPet = await this.petService.trainPet(message.sender_id, pet.id);
+      const updatedPet = await this.trainPetUseCase.execute(message.sender_id, pet.id);
       
       // Check if pet's HP was reduced due to hunger
       let additionalMessage = "";

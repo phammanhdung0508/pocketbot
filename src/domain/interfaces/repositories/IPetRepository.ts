@@ -1,6 +1,6 @@
-import { Pet } from "../entities/Pet";
+import { Pet } from "../../entities/Pet";
 
-export interface PetRepository {
+export interface IPetRepository {
   createPet(mezonId: string, pet: Pet): Promise<void>;
   getPetsByUserId(mezonId: string): Promise<Pet[]>;
   getPetById(mezonId: string, petId: string): Promise<Pet | null>;

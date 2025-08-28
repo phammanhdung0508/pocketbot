@@ -1,10 +1,10 @@
 import { Pet } from "@domain/entities/Pet";
-import { PetRepository } from "@domain/repositories/PetRepository";
-import { PetCareService } from "@infrastructure/utils/PetCareService";
-import { PetValidator } from "@/application/services/validator/PetValidator";
+import { IPetRepository } from "@/domain/interfaces/repositories/IPetRepository";
+import { PetCareService } from "@infrastructure/services/PetCareService";
+import { PetValidator } from "@/application/validates/PetValidator";
 
 export class TrainPetUseCase {
-  constructor(private petRepository: PetRepository) {}
+  constructor(private petRepository: IPetRepository) {}
 
   async execute(mezonId: string, petId: string): Promise<Pet> {
     const pet = await this.petRepository.getPetById(mezonId, petId);

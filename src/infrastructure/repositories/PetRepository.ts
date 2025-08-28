@@ -1,8 +1,8 @@
-import { PetRepository } from "@domain/repositories/PetRepository";
+import { IPetRepository } from "@/domain/interfaces/repositories/IPetRepository";
 import { Pet } from "@domain/entities/Pet";
 import * as fs from "fs";
 
-export class JsonPetRepository implements PetRepository {
+export class PetRepository implements IPetRepository {
   private dbPath: string;
 
   constructor(dbPath: string = "./db.json") {

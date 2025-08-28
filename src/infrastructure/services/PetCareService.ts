@@ -1,22 +1,22 @@
 import { Pet } from "@domain/entities/Pet";
-import { PetFactory } from "./PetFactory";
-import { PetStatsManager } from "./PetStatsManager";
+import { PetStats } from "../utils/PetStats";
+import { PetFactory } from "../factories/PetFactory";
 
 export class PetCareService {
   static careForPet(pet: Pet, action: 'feed' | 'play' | 'train'): Pet {
     // First, update pet stats based on time passed
-    let updatedPet = PetStatsManager.updatePetStatsOverTime(pet);
+    let updatedPet = PetStats.updatePetStatsOverTime(pet);
     
     // Then apply the specific action
     switch (action) {
       case 'feed':
-        updatedPet = PetStatsManager.feedPet(updatedPet);
+        updatedPet = PetStats.feedPet(updatedPet);
         break;
       case 'play':
-        updatedPet = PetStatsManager.playPet(updatedPet);
+        updatedPet = PetStats.playPet(updatedPet);
         break;
       case 'train':
-        updatedPet = PetStatsManager.trainPet(updatedPet);
+        updatedPet = PetStats.trainPet(updatedPet);
         break;
     }
     

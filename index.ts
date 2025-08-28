@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 import { MezonClient } from "mezon-sdk"
 
-import { JsonPetRepository } from "./src/infrastructure/repositories/JsonPetRepository"
+import { PetRepository } from "./src/infrastructure/repositories/PetRepository"
 import { BattleService } from "./src/infrastructure/services/BattleService"
 import { CommandRouter } from "./src/interfaces/cli/CommandRouter"
 import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase"
@@ -10,14 +10,13 @@ import { FeedPetUseCase } from "./src/application/use-cases/FeedPetUseCase"
 import { PlayPetUseCase } from "./src/application/use-cases/PlayPetUseCase"
 import { TrainPetUseCase } from "./src/application/use-cases/TrainPetUseCase"
 import { BattleUseCase } from "./src/application/use-cases/BattleUseCase"
-import { PetService } from "./src/application/services/PetService"
-import { BackgroundTaskManager } from "./src/infrastructure/utils/BackgroundTaskManager"
+import { BackgroundTask } from "./src/infrastructure/utils/BackgroundTask"
 
 dotenv.config()
 
 async function main() {
     // Initialize dependencies
-    const petRepository = new JsonPetRepository();
+    const petRepository = new PetRepository();
     const battleService = new BattleService();
 
     // Initialize use cases
@@ -28,15 +27,19 @@ async function main() {
     const trainPetUseCase = new TrainPetUseCase(petRepository);
     const battleUseCase = new BattleUseCase(petRepository, battleService);
 
-    // Initialize services
-    const petService = new PetService(petRepository, battleService);
-
     // Initialize background task manager
-    const backgroundTaskManager = new BackgroundTaskManager(petRepository);
-    backgroundTaskManager.startBackgroundTasks();
+    const backgroundTask = new BackgroundTask(petRepository);
+    backgroundTask.startBackgroundTasks();
 
     // Initialize command router
-    const commandRouter = new CommandRouter(petService);
+    const commandRouter = new CommandRouter(
+        createPetUseCase,
+        getPetsUseCase,
+        feedPetUseCase,
+        playPetUseCase,
+        trainPetUseCase,
+        battleUseCase,
+    );
 
     // Initialize Mezon client
     const client = new MezonClient(process.env.MEZON_BOT_TOKEN);

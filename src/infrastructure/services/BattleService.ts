@@ -1,7 +1,7 @@
-import { IBattleService } from "@/domain/services/IBattleService";
+import { IBattleService } from "@/domain/interfaces/services/IBattleService";
 import { Pet } from "@domain/entities/Pet";
 import { ElementType } from "@domain/enums/ElementType";
-import { BattleSystem } from "@infrastructure/battle/BattleSystem";
+import { BattleSystem } from "@/infrastructure/utils/BattleSystem";
 import { Skill } from "@domain/entities/Skill";
 
 export class BattleService implements IBattleService {

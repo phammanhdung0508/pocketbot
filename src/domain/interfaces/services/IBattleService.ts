@@ -1,5 +1,5 @@
-import { Pet } from "../entities/Pet";
-import { Skill } from "../entities/Skill";
+import { Pet } from "../../entities/Pet";
+import { Skill } from "../../entities/Skill";
 
 export interface IBattleService {
   calculateDamage(attacker: Pet, defender: Pet): number;

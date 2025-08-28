@@ -1,5 +1,5 @@
 import { Pet } from "@domain/entities/Pet";
-import { IBattleService } from "@/domain/services/IBattleService";
+import { IBattleService } from "@/domain/interfaces/services/IBattleService";
 import { ElementType } from "@domain/enums/ElementType";
 import { Skill } from "@domain/entities/Skill";
 import { BattleStatus } from "@domain/entities/BattleStatus";

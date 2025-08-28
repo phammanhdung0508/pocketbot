@@ -1,6 +1,6 @@
 import { Pet } from "@domain/entities/Pet";
 
-export class PetStatsManager {
+export class PetStats {
   static updatePetStatsOverTime(pet: Pet): Pet {
     const now = new Date();
     const lastUpdate = pet.lastUpdate;

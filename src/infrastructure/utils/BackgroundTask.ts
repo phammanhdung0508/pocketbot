@@ -1,11 +1,11 @@
-import { PetRepository } from "@domain/repositories/PetRepository";
-import { PetStatsManager } from "@infrastructure/utils/PetStatsManager";
+import { IPetRepository } from "@/domain/interfaces/repositories/IPetRepository";
+import { PetStats } from "@/infrastructure/utils/PetStats";
 
-export class BackgroundTaskManager {
+export class BackgroundTask {
   private saveInterval: NodeJS.Timeout | null = null;
   private updateInterval: NodeJS.Timeout | null = null;
 
-  constructor(private petRepository: PetRepository) {}
+  constructor(private petRepository: IPetRepository) {}
 
   startBackgroundTasks(): void {
     this.saveInterval = setInterval(async () => {
@@ -25,7 +25,7 @@ export class BackgroundTaskManager {
           const user = users[mezonId];
           for (let i = 0; i < user.pets.length; i++) {
             const pet = user.pets[i];
-            const updatedPet = PetStatsManager.updatePetStatsOverTime(pet);
+            const updatedPet = PetStats.updatePetStatsOverTime(pet);
             user.pets[i] = updatedPet;
           }
         }
