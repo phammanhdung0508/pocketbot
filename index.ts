@@ -2,7 +2,7 @@ import dotenv from "dotenv"
 import { MezonClient } from "mezon-sdk"
 
 import { JsonPetRepository } from "./src/infrastructure/repositories/JsonPetRepository"
-import { AdvancedBattleService } from "./src/infrastructure/services/AdvancedBattleService"
+import { BattleService } from "./src/infrastructure/services/BattleService"
 import { CommandRouter } from "./src/interfaces/cli/CommandRouter"
 import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase"
 import { GetPetsUseCase } from "./src/application/use-cases/GetPetsUseCase"
@@ -18,7 +18,7 @@ dotenv.config()
 async function main() {
     // Initialize dependencies
     const petRepository = new JsonPetRepository();
-    const battleService = new AdvancedBattleService();
+    const battleService = new BattleService();
 
     // Initialize use cases
     const createPetUseCase = new CreatePetUseCase(petRepository);

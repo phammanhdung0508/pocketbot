@@ -1,6 +1,6 @@
 import { Pet } from "@domain/entities/Pet";
 import { PetRepository } from "@domain/repositories/PetRepository";
-import { BattleService } from "@domain/services/BattleService";
+import { IBattleService } from "@/domain/services/IBattleService";
 import { TurnBasedBattleService } from "../services/TurnBasedBattleService";
 
 export class BattleUseCase {
@@ -8,7 +8,7 @@ export class BattleUseCase {
 
   constructor(
     private petRepository: PetRepository,
-    private battleService: BattleService
+    private battleService: IBattleService
   ) {
     this.turnBasedBattleService = new TurnBasedBattleService(petRepository, battleService);
   }

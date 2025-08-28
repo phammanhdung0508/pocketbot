@@ -1,11 +1,11 @@
 import { Pet } from "@domain/entities/Pet";
-import { BattleService } from "@domain/services/BattleService";
+import { IBattleService } from "@/domain/services/IBattleService";
 import { ElementType } from "@domain/enums/ElementType";
 import { Skill } from "@domain/entities/Skill";
 import { BattleStatus } from "@domain/entities/BattleStatus";
 
 export class BattleSystem {
-  constructor(private battleService: BattleService) {}
+  // constructor(private battleService: IBattleService) {}
 
   getElementEffectiveness(attackerElement: string, defenderElement: string): number {
     // Fire > Earth > Air > Water > Lightning > Fire

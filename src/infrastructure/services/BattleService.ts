@@ -1,14 +1,14 @@
-import { BattleService } from "@domain/services/BattleService";
+import { IBattleService } from "@/domain/services/IBattleService";
 import { Pet } from "@domain/entities/Pet";
 import { ElementType } from "@domain/enums/ElementType";
 import { BattleSystem } from "@infrastructure/battle/BattleSystem";
 import { Skill } from "@domain/entities/Skill";
 
-export class AdvancedBattleService implements BattleService {
+export class BattleService implements IBattleService {
   private battleSystem: BattleSystem;
 
   constructor() {
-    this.battleSystem = new BattleSystem(this);
+    this.battleSystem = new BattleSystem(/*this*/);
   }
 
   getElementModifier(attackerElement: string, defenderElement: string): number {

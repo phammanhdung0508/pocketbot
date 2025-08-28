@@ -1,14 +1,19 @@
 import { Pet } from "@domain/entities/Pet";
-import { BattleService } from "@domain/services/BattleService";
+import { IBattleService } from "@/domain/services/IBattleService";
 import { PetRepository } from "@domain/repositories/PetRepository";
-import { PetStatsManager } from "@infrastructure/utils/PetStatsManager";
 import { Skill } from "@domain/entities/Skill";
 import { BattleStatus } from "@domain/entities/BattleStatus";
+
+interface TurnResult {
+  isDefeated: boolean;
+  winner?: string;
+  expGain: number;
+}
 
 export class TurnBasedBattleService {
   constructor(
     private petRepository: PetRepository,
-    private battleService: BattleService
+    private battleService: IBattleService
   ) {}
 
   async battleTurnBased(
@@ -100,98 +105,18 @@ export class TurnBasedBattleService {
       }
       
       // Attacker's turn
-      const attackerSkill = this.selectSkill(attacker);
-      const attackerDamageResult = this.battleService.calculateSkillDamage ? 
-        this.battleService.calculateSkillDamage(attacker, defender, attackerSkill) :
-        { damage: this.battleService.calculateDamage(attacker, defender), effectiveness: "normal", statusApplied: false };
-      
-      defender.hp = Math.max(0, defender.hp - attackerDamageResult.damage);
-      
-      // Format effectiveness message
-      let effectivenessMessage = "";
-      switch (attackerDamageResult.effectiveness) {
-        case "super effective":
-          effectivenessMessage = " It's super effective!";
-          break;
-        case "not very effective":
-          effectivenessMessage = " It's not very effective...";
-          break;
-      }
-      
-      await sendMessage(`${attacker.name} uses **${attackerSkill.name}** use ${attackerSkill.energyCost} (${attacker.energy})!${effectivenessMessage} It deals **${attackerDamageResult.damage}** damage! ${defender.name}'s HP: ${defender.hp}/${defender.maxHp}`);
-      
-      // Apply status effect if applicable
-      if (attackerDamageResult.statusApplied && attackerSkill.statusEffect) {
-        const statusEffect = attackerSkill.statusEffect;
-        const newStatus: BattleStatus = {
-          type: statusEffect.type,
-          turnsRemaining: statusEffect.turns,
-          ...(statusEffect.damage ? { damage: statusEffect.damage } : {}),
-          ...(statusEffect.accuracyReduction ? { accuracyReduction: statusEffect.accuracyReduction } : {}),
-          ...(statusEffect.speedReduction ? { speedReduction: statusEffect.speedReduction } : {})
-        };
-        
-        defender.statusEffects.push(newStatus);
-        await sendMessage(`${defender.name} is affected by ${statusEffect.type}!`);
-      }
-      
-      // Reduce attacker's energy
-      attacker.energy = Math.max(0, attacker.energy - attackerSkill.energyCost);
-      
-      // Check if defender is defeated
-      if (defender.hp <= 0) {
-        winner = attackerMezonId;
-        await sendMessage(`${defender.name} has been defeated! **${attacker.name} wins!**`);
-        // Winner gets EXP
-        attacker.exp += 50;
+      const attackerTurnResult = await this.executePetTurn(attacker, defender, sendMessage);
+      if (attackerTurnResult.isDefeated) {
+        winner = attackerMezonId; // Use the mezonId as winner identifier
+        attacker.exp += attackerTurnResult.expGain;
         break;
       }
       
       // Defender's turn
-      const defenderSkill = this.selectSkill(defender);
-      const defenderDamageResult = this.battleService.calculateSkillDamage ? 
-        this.battleService.calculateSkillDamage(defender, attacker, defenderSkill) :
-        { damage: this.battleService.calculateDamage(defender, attacker), effectiveness: "normal", statusApplied: false };
-      
-      attacker.hp = Math.max(0, attacker.hp - defenderDamageResult.damage);
-      
-      // Format effectiveness message
-      effectivenessMessage = "";
-      switch (defenderDamageResult.effectiveness) {
-        case "super effective":
-          effectivenessMessage = " It's super effective!";
-          break;
-        case "not very effective":
-          effectivenessMessage = " It's not very effective...";
-          break;
-      }
-      
-      await sendMessage(`${defender.name} uses **${defenderSkill.name}** use ${defenderSkill.energyCost} (${defender.energy})!${effectivenessMessage} It deals **${defenderDamageResult.damage}** damage! ${attacker.name}'s HP: ${attacker.hp}/${attacker.maxHp}`);
-      
-      // Apply status effect if applicable
-      if (defenderDamageResult.statusApplied && defenderSkill.statusEffect) {
-        const statusEffect = defenderSkill.statusEffect;
-        const newStatus: BattleStatus = {
-          type: statusEffect.type,
-          turnsRemaining: statusEffect.turns,
-          ...(statusEffect.damage ? { damage: statusEffect.damage } : {}),
-          ...(statusEffect.accuracyReduction ? { accuracyReduction: statusEffect.accuracyReduction } : {}),
-          ...(statusEffect.speedReduction ? { speedReduction: statusEffect.speedReduction } : {})
-        };
-        
-        attacker.statusEffects.push(newStatus);
-        await sendMessage(`${attacker.name} is affected by ${statusEffect.type}!`);
-      }
-      
-      // Reduce defender's energy
-      defender.energy = Math.max(0, defender.energy - defenderSkill.energyCost);
-      
-      // Check if attacker is defeated
-      if (attacker.hp <= 0) {
-        winner = defenderMezonId;
-        await sendMessage(`${attacker.name} has been defeated! **${defender.name} wins!**`);
-        // Winner gets EXP
-        defender.exp += 50;
+      const defenderTurnResult = await this.executePetTurn(defender, attacker, sendMessage);
+      if (defenderTurnResult.isDefeated) {
+        winner = defenderMezonId; // Use the mezonId as winner identifier
+        defender.exp += defenderTurnResult.expGain;
         break;
       }
       
@@ -270,5 +195,64 @@ export class TurnBasedBattleService {
     // Select a random skill from available skills
     const randomIndex = Math.floor(Math.random() * availableSkills.length);
     return availableSkills[randomIndex];
+  }
+
+  private async executePetTurn(
+    attackingPet: Pet, 
+    defendingPet: Pet, 
+    sendMessage: (message: string) => Promise<void>
+  ): Promise<TurnResult> {
+    const skill = this.selectSkill(attackingPet);
+    const damageResult = this.battleService.calculateSkillDamage ? 
+      this.battleService.calculateSkillDamage(attackingPet, defendingPet, skill) :
+      { damage: this.battleService.calculateDamage(attackingPet, defendingPet), effectiveness: "normal", statusApplied: false };
+    
+    defendingPet.hp = Math.max(0, defendingPet.hp - damageResult.damage);
+    
+    // Format effectiveness message
+    let effectivenessMessage = "";
+    switch (damageResult.effectiveness) {
+      case "super effective":
+        effectivenessMessage = " It's super effective!";
+        break;
+      case "not very effective":
+        effectivenessMessage = " It's not very effective...";
+        break;
+    }
+    
+    await sendMessage(`${attackingPet.name} uses **${skill.name}** use ${skill.energyCost} (${attackingPet.energy})!${effectivenessMessage} It deals **${damageResult.damage}** damage! ${defendingPet.name}'s HP: ${defendingPet.hp}/${defendingPet.maxHp}`);
+    
+    // Apply status effect if applicable
+    if (damageResult.statusApplied && skill.statusEffect) {
+      const statusEffect = skill.statusEffect;
+      const newStatus: BattleStatus = {
+        type: statusEffect.type,
+        turnsRemaining: statusEffect.turns,
+        ...(statusEffect.damage ? { damage: statusEffect.damage } : {}),
+        ...(statusEffect.accuracyReduction ? { accuracyReduction: statusEffect.accuracyReduction } : {}),
+        ...(statusEffect.speedReduction ? { speedReduction: statusEffect.speedReduction } : {})
+      };
+      
+      defendingPet.statusEffects.push(newStatus);
+      await sendMessage(`${defendingPet.name} is affected by ${statusEffect.type}!`);
+    }
+    
+    // Reduce attacker's energy
+    attackingPet.energy = Math.max(0, attackingPet.energy - skill.energyCost);
+    
+    // Check if defender is defeated
+    if (defendingPet.hp <= 0) {
+      await sendMessage(`${defendingPet.name} has been defeated! **${attackingPet.name} wins!**`);
+      return {
+        isDefeated: true,
+        winner: attackingPet.id, // Using pet ID as winner identifier
+        expGain: 50
+      };
+    }
+    
+    return {
+      isDefeated: false,
+      expGain: 0
+    };
   }
 }
