@@ -52,18 +52,18 @@ async function main() {
         // Implement custom reconnection logic or UI updates if needed
     });
 
-    client.on("ready", async () => {
-        console.log(`Connected to ${client.clans.size} clans.`);
+    // client.on("ready", async () => {
+    //     console.log(`Connected to ${client.clans.size} clans.`);
 
-        // Client is ready, you can now perform actions
-        // Example: Fetch message in channel
-        try {
-            const channel = await client.channels.fetch("channel_id");
-            console.log(`Fetched ${channel.messages.size} channel messages.`);
-        } catch (error) {
-            console.error("Error fetching channel messages:", error);
-        }
-    });
+    //     // Client is ready, you can now perform actions
+    //     // Example: Fetch message in channel
+    //     try {
+    //         const channel = await client.channels.fetch("channel_id");
+    //         console.log(`Fetched ${channel.messages.size} channel messages.`);
+    //     } catch (error) {
+    //         console.error("Error fetching channel messages:", error);
+    //     }
+    // });
 
     client.onChannelMessage(async (event) => {
         const text = event?.content?.t?.toLowerCase();
@@ -72,7 +72,7 @@ async function main() {
         const channel = await client.channels.fetch(event.channel_id);
         const message = await channel.messages.fetch(String(event.message_id));
         console.log(
-            `New message in channel ${message.channel}: ${message.content}`,
+            `New message in channel ${message.channel.name}: ${message.content.t}`,
         );
 
         commandRouter.routeCommand(channel, message)
