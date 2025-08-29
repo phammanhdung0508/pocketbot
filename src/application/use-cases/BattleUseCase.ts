@@ -180,11 +180,11 @@ export class BattleUseCase {
     // If no skills are available, use a basic tackle
     if (availableSkills.length === 0) {
       return {
-        name: "Struggle",
+        name: "Basic Attack",
         damage: 50,
         element: pet.element,
         energyCost: 0,
-        description: "A desperate attack when no skills are available."
+        description: "A basic attack."
       };
     }
 
@@ -199,9 +199,7 @@ export class BattleUseCase {
     sendMessage: (message: string) => Promise<void>
   ): Promise<TurnResult> {
     const skill = this.selectSkill(attackingPet);
-    const damageResult = this.battleService.calculateSkillDamage ?
-      this.battleService.calculateSkillDamage(attackingPet, defendingPet, skill) :
-      { damage: this.battleService.calculateDamage(attackingPet, defendingPet), effectiveness: "normal", statusApplied: false };
+    const damageResult = this.battleService.calculateSkillDamage!(attackingPet, defendingPet, skill);
 
     defendingPet.hp = Math.max(0, defendingPet.hp - damageResult.damage);
 

@@ -23,20 +23,6 @@ export class BattleService implements IBattleService {
     return this.getElementModifier(attackerElement, defenderElement) < 1.0;
   }
 
-  calculateDamage(attacker: Pet, defender: Pet): number {
-    // This is the old method, we'll use a default skill for backward compatibility
-    const defaultSkill: Skill = {
-      name: "Basic Attack",
-      damage: 100,
-      element: attacker.element,
-      energyCost: 10,
-      description: "A basic attack"
-    };
-    
-    const result = this.battleSystem.calculateDamage(attacker, defender, defaultSkill);
-    return result.damage;
-  }
-
   // New method for advanced battle calculations
   calculateSkillDamage(attacker: Pet, defender: Pet, skill: Skill): { 
     damage: number; 
