@@ -5,12 +5,8 @@ import { Skill } from "@domain/entities/Skill";
 import { BattleStatus } from "@domain/entities/BattleStatus";
 
 export class BattleSystem {
-  // constructor(private battleService: IBattleService) {}
 
   getElementEffectiveness(attackerElement: string, defenderElement: string): number {
-    // Fire > Earth > Air > Water > Lightning > Fire
-    // Using the correct effectiveness values from BOT_REQ.md:
-    // 2.0x for super effective, 1.0x for normal, 0.5x for not very effective
     
     const effectivenessChart: { [key: string]: { [key: string]: number } } = {
       [ElementType.FIRE]: {
@@ -58,7 +54,7 @@ export class BattleSystem {
     effectiveness: string;
     statusApplied: boolean;
   } {
-    // Get element effectiveness
+    
     const elementModifier = this.getElementEffectiveness(skill.element, defender.element);
     
     let effectiveness = "normal";
@@ -68,36 +64,36 @@ export class BattleSystem {
       effectiveness = "not very effective";
     }
     
-    // Apply status effects that modify stats
+    
     let effectiveAttack = attacker.attack;
     let effectiveDefense = defender.defense;
     let effectiveSpeed = attacker.speed;
     
-    // Apply attacker's status effects
+    
     for (const status of attacker.statusEffects) {
       if (status.type === "paralyze") {
         effectiveSpeed = Math.max(1, effectiveSpeed * (1 - (status.speedReduction || 0) / 100));
       }
     }
     
-    // Apply defender's status effects
+    
     for (const status of defender.statusEffects) {
       if (status.type === "blind") {
-        // Blind reduces the effectiveness of the defender's evasion
+        
       }
     }
     
-    // Combat formula: (Attack * Element_Modifier - Defense) * Speed_Factor
+    
     const speedFactor = effectiveSpeed / 100 + 1;
     let damage = (effectiveAttack * elementModifier - effectiveDefense) * speedFactor;
     
-    // Apply skill damage
+    
     damage = (damage * skill.damage) / 100;
     
-    // Ensure damage is at least 1
+    
     damage = Math.max(1, damage);
     
-    // Apply status effect if applicable
+    
     let statusApplied = false;
     if (skill.statusEffect && Math.random() * 100 < skill.statusEffect.chance) {
       statusApplied = true;
@@ -124,7 +120,7 @@ export class BattleSystem {
     let totalDamage = 0;
     const messages: string[] = [];
     
-    // Process each status effect
+    
     for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
       const status = pet.statusEffects[i];
       status.turnsRemaining--;
@@ -140,13 +136,13 @@ export class BattleSystem {
           if (status.damage) {
             totalDamage += status.damage;
             messages.push(`${pet.name} takes ${status.damage} poison damage!`);
-            // Increase poison damage each turn
+            
             status.damage = Math.floor(status.damage * 1.5);
           }
           break;
       }
       
-      // Remove status if expired
+      
       if (status.turnsRemaining <= 0) {
         messages.push(`${pet.name}'s ${status.type} effect wore off!`);
         pet.statusEffects.splice(i, 1);
@@ -156,12 +152,12 @@ export class BattleSystem {
     return { damage: totalDamage, messages };
   }
 
-  // Select a random skill for the pet to use
+  
   selectSkill(pet: Pet): Skill {
-    // Filter skills that the pet has enough energy for
+    
     const availableSkills = pet.skills.filter(skill => skill.energyCost <= pet.energy);
     
-    // If no skills are available, use a basic tackle
+    
     if (availableSkills.length === 0) {
       return {
         name: "Struggle",
@@ -172,12 +168,12 @@ export class BattleSystem {
       };
     }
     
-    // Select a random skill from available skills
+    
     const randomIndex = Math.floor(Math.random() * availableSkills.length);
     return availableSkills[randomIndex];
   }
 
-  // Check if a pet has any skills of the same element
+  
   hasSameElementSkills(pets: Pet[], element: string): boolean {
     return pets.some(pet => pet.element === element);
   }

@@ -8,8 +8,8 @@ export interface Skill {
     chance: number;
     turns: number;
     damage?: number;
-    accuracyReduction?: number; // For blind effect
-    speedReduction?: number; // For paralyze effect
+    accuracyReduction?: number;
+    speedReduction?: number;
   };
   effect?: {
     type: 'heal' | 'buff' | 'debuff';

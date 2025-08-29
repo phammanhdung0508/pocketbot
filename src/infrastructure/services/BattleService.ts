@@ -8,7 +8,7 @@ export class BattleService implements IBattleService {
   private battleSystem: BattleSystem;
 
   constructor() {
-    this.battleSystem = new BattleSystem(/*this*/);
+    this.battleSystem = new BattleSystem();
   }
 
   getElementModifier(attackerElement: string, defenderElement: string): number {
@@ -24,7 +24,6 @@ export class BattleService implements IBattleService {
   }
 
   calculateDamage(attacker: Pet, defender: Pet): number {
-    // This is the old method, we'll use a default skill for backward compatibility
     const defaultSkill: Skill = {
       name: "Basic Attack",
       damage: 100,
@@ -37,7 +36,6 @@ export class BattleService implements IBattleService {
     return result.damage;
   }
 
-  // New method for advanced battle calculations
   calculateSkillDamage(attacker: Pet, defender: Pet, skill: Skill): { 
     damage: number; 
     effectiveness: string;

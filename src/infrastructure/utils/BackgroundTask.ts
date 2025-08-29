@@ -14,7 +14,7 @@ export class BackgroundTask {
       } catch (error) {
         console.error("Error during auto-save:", error);
       }
-    }, 60 * 60 * 1000); // minutes
+    }, 60 * 60 * 1000);
 
     this.updateInterval = setInterval(async () => {
       try {
@@ -35,7 +35,7 @@ export class BackgroundTask {
       } catch (error) {
         console.error("Error updating pet stats:", error);
       }
-    }, 40 * 60 * 1000); // minutes
+    }, 40 * 60 * 1000);
   }
 
   stopBackgroundTasks(): void {

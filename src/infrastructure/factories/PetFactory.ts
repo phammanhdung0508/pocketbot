@@ -19,7 +19,7 @@ export class PetFactory {
       case PetSpecies.EEL:
         return ElementType.LIGHTNING;
       default:
-        return ElementType.FIRE; // Default element
+        return ElementType.FIRE;
     }
   }
 
@@ -65,7 +65,7 @@ export class PetFactory {
               turns: 3,
               damage: 20
             },
-            description: "A devastating fire attack that also damages the user."
+            description: "A devastating fire attack that also paralyzes the user."
           }
         ];
       case PetSpecies.FISH:
@@ -252,7 +252,6 @@ export class PetFactory {
           }
         ];
       default:
-        // Default skills for any other species
         return [
           {
             name: "Tackle",
@@ -266,7 +265,6 @@ export class PetFactory {
   }
 
   static createPet(name: string, species: string, element: string): Pet {    
-    // Validate that the element matches the species
     const expectedElement = this.createElementForSpecies(species);
     if (element !== expectedElement) {
       throw new Error(`Element ${element} does not match species ${species}. Expected element: ${expectedElement}`);
@@ -294,7 +292,6 @@ export class PetFactory {
   }
 
   static levelUpPet(pet: Pet): Pet {
-    // Increase all stats by 5
     const updatedPet = {
       ...pet,
       level: pet.level + 1,
@@ -303,18 +300,16 @@ export class PetFactory {
       attack: pet.attack + 5,
       defense: pet.defense + 5,
       speed: pet.speed + 5,
-      exp: 0, // Reset EXP after level up
+      exp: 0,
       lastUpdate: new Date()
     };
     
-    // Restore HP to max when leveling up
     updatedPet.hp = updatedPet.maxHp;
     
     return updatedPet;
   }
 
   static evolvePet(pet: Pet): Pet {
-    // Evolution at levels 10, 25, 50
     let evolvedName = pet.name;
     
     if (pet.level >= 50) {
@@ -328,7 +323,6 @@ export class PetFactory {
     return {
       ...pet,
       name: evolvedName,
-      // Add bonus stats on evolution
       maxHp: pet.maxHp + 10,
       attack: pet.attack + 5,
       defense: pet.defense + 5,

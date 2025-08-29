@@ -2,15 +2,11 @@ import { EMarkdownType, type MarkdownOnMessage } from "mezon-sdk";
 
 export function parseMarkdown(input: string): { t: string; mk: MarkdownOnMessage[] } {
     const patterns: [RegExp, EMarkdownType][] = [
-        [/\*\*(.+?)\*\*/g, EMarkdownType.BOLD], //**bold**
-        [/__(.+?)__/g, EMarkdownType.BOLD], //__bold__
-        // [/\*(.+?)\*/g, EMarkdownType.ITALIC],
-        // [/_(.+?)_/g, EMarkdownType.ITALIC],
-        // [/~~(.+?)~~/g, EMarkdownType.STRIKE],
-        [/`([^`]+?)`/g, EMarkdownType.CODE], // `inline code`
-        [/```[\s\S]*?```/g, EMarkdownType.PRE], // ```code block```
-        [/\[([^\]]+)\]\(([^)]+)\)/g, EMarkdownType.LINK], // [link text](url)
-        // [/==(.+?)==/g, EMarkdownType.HIGHLIGHT]
+        [/\*\*(.+?)\*\*/g, EMarkdownType.BOLD],
+        [/__(.+?)__/g, EMarkdownType.BOLD],
+        [/`([^`]+?)`/g, EMarkdownType.CODE],
+        [/```[\s\S]*?```/g, EMarkdownType.PRE],
+        [/\\\[([^\\\]]+)\\\]\(([^)]+)\)/g, EMarkdownType.LINK],
     ];
 
     let result = { t: "", mk: [] as MarkdownOnMessage[] };

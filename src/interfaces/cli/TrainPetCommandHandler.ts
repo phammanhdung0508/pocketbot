@@ -21,9 +21,8 @@ export class TrainPetCommandHandler implements CommandHandler {
         return;
       }
       
-      const pet = pets[0]; // Train the first pet
+      const pet = pets[0];
       
-      // Check if pet has enough energy
       if (pet.energy <= 20) {
         await message.reply(parseMarkdown(PetErrors.LOW_ENERGY(pet.energy)));
         return;
@@ -31,7 +30,6 @@ export class TrainPetCommandHandler implements CommandHandler {
       
       const updatedPet = await this.trainPetUseCase.execute(message.sender_id, pet.id);
       
-      // Check if pet's HP was reduced due to hunger
       let additionalMessage = "";
       if (pet.hunger === 0) {
         additionalMessage = " But your pet was hungry, so it lost 30 HP!";

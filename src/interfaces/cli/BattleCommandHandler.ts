@@ -10,7 +10,6 @@ export class BattleCommandHandler implements CommandHandler {
 
   async handle(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
     try {
-      // Extract opponent ID from message
       const opponentId = message.mentions?.[0]?.user_id;
       
       if (!opponentId) {
@@ -23,15 +22,12 @@ export class BattleCommandHandler implements CommandHandler {
         return;
       }
       
-      // Create a function to send messages to the channel
       const sendMessage = async (content: string) => {
         await channel.send(parseMarkdown(content));
       };
       
-      // const result = await this.petService.battleTurnBased(message.sender_id, opponentId, sendMessage);
       const result = await this.battleUseCase.execute(message.sender_id, opponentId, sendMessage);
       
-      // Send final result summary
       let battleResult = `
 **Battle Summary:**
 ${result.attacker.name} (Level ${result.attacker.level}) vs ${result.defender.name} (Level ${result.defender.level})`;

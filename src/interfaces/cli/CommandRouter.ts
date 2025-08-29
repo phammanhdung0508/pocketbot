@@ -28,7 +28,6 @@ export class CommandRouter {
     trainPetUseCase: TrainPetUseCase,
     battleUseCase: BattleUseCase
   ) {
-    // Register command handlers
     this.registerHandler("pet create", new CreatePetCommandHandler(createPetUseCase));
     this.registerHandler("pet info", new PetInfoCommandHandler(getPetsUseCase));
     this.registerHandler("pet feed", new FeedPetCommandHandler( feedPetUseCase, getPetsUseCase));
@@ -50,7 +49,6 @@ export class CommandRouter {
 
     if (!command) return;
 
-    // Handle multi-word commands like "pet create"
     let handler: CommandHandler | undefined;
     let commandKey = command;
     
@@ -60,7 +58,6 @@ export class CommandRouter {
       handler = this.handlers.get(commandKey);
     }
     
-    // If no subcommand handler found, try the main command
     if (!handler) {
       commandKey = command;
       handler = this.handlers.get(commandKey);
@@ -71,7 +68,6 @@ export class CommandRouter {
         await handler.handle(channel, message);
       } catch (error: any) {
         console.error(`Error handling command ${commandKey}:`, error);
-        // Send error message to user
         await message.reply(parseMarkdown(`An error occurred while processing your command: ${error.message}`));
       }
     }

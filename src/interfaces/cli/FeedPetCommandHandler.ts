@@ -21,7 +21,7 @@ export class FeedPetCommandHandler implements CommandHandler {
         return;
       }
       
-      const pet = pets[0]; // Feed the first pet
+      const pet = pets[0];
       const updatedPet = await this.feedPetUseCase.execute(message.sender_id, pet.id);
       
       await message.reply(parseMarkdown(`You fed ${updatedPet.name}! HP restored and hunger increased.`));

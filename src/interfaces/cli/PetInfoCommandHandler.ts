@@ -18,7 +18,7 @@ export class PetInfoCommandHandler implements CommandHandler {
         return;
       }
       
-      const pet = pets[0]; // Show info for the first pet
+      const pet = pets[0];
       const infoMessage = `
         **${pet.name}** (ID: ${pet.id})
         Species: ${pet.species}

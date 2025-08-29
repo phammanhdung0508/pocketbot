@@ -13,7 +13,6 @@ export class PetListCommandHandler implements CommandHandler {
         channelMsg?: ChannelMessage): Promise<void> {
     try {
       const speciesList = Object.values(PetSpecies).map(species => {
-        // Get the element for this species
         let element = "";
         switch (species) {
           case PetSpecies.DRAGON:

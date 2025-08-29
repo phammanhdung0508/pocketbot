@@ -32,12 +32,10 @@ export class PetRepository implements IPetRepository {
       db.users[mezonId] = { pets: [] };
     }
     
-    // Convert dates to strings for JSON serialization
     const petToSave = {
       ...pet,
       createdAt: pet.createdAt.toISOString(),
       lastUpdate: pet.lastUpdate.toISOString(),
-      // Remove functions and complex objects for JSON serialization
       skills: pet.skills,
       statusEffects: pet.statusEffects
     };
@@ -53,7 +51,6 @@ export class PetRepository implements IPetRepository {
       return [];
     }
     
-    // Convert string dates back to Date objects
     return db.users[mezonId].pets.map(pet => ({
       ...pet,
       createdAt: new Date(pet.createdAt),
@@ -76,12 +73,10 @@ export class PetRepository implements IPetRepository {
       db.users[mezonId] = { pets: [] };
     }
     
-    // Convert dates to strings for JSON serialization
     const petToSave = {
       ...pet,
       createdAt: pet.createdAt.toISOString(),
       lastUpdate: pet.lastUpdate.toISOString(),
-      // Remove functions and complex objects for JSON serialization
       skills: pet.skills,
       statusEffects: pet.statusEffects
     };
@@ -111,7 +106,6 @@ export class PetRepository implements IPetRepository {
   async getAllUsersWithPets(): Promise<{ [mezonId: string]: { pets: Pet[] } }> {
     const db = await this.readDb();
     
-    // Convert string dates back to Date objects for all pets
     const usersWithPets: { [mezonId: string]: { pets: Pet[] } } = {};
     
     for (const mezonId in db.users) {
@@ -132,7 +126,6 @@ export class PetRepository implements IPetRepository {
   async saveAllUsers(users: { [mezonId: string]: { pets: Pet[] } }): Promise<void> {
     const db = { users: {} as { [mezonId: string]: { pets: any[] } } };
     
-    // Convert Date objects to strings for all pets
     for (const mezonId in users) {
       db.users[mezonId] = {
         pets: users[mezonId].pets.map(pet => ({

@@ -21,7 +21,6 @@ export class BattleUseCase {
     defender: Pet,
     winner: string
   }> {
-    // For simplicity, we'll battle the first pet of each user
     const attackerPets = await this.petRepository.getPetsByUserId(attackerMezonId);
     const defenderPets = await this.petRepository.getPetsByUserId(defenderMezonId);
 
@@ -33,11 +32,9 @@ export class BattleUseCase {
       throw new Error("Defender has no pets");
     }
 
-    // Get the first pet of each user without updating stats
     let attacker = attackerPets[0];
     let defender = defenderPets[0];
 
-    // Check if pets have full HP and energy before battle
     if (attacker.hp < attacker.maxHp || attacker.energy < 100) {
       await sendMessage(`**Battle Cancelled!** ${attacker.name} (owned by <@${attackerMezonId}>) is not ready for battle! HP: ${attacker.hp}/${attacker.maxHp}, Energy: ${attacker.energy}/100`);
       throw new Error("Attacker pet is not ready for battle");
@@ -48,15 +45,12 @@ export class BattleUseCase {
       throw new Error("Defender pet is not ready for battle");
     }
 
-    // Reset status effects for battle
     attacker.statusEffects = [];
     defender.statusEffects = [];
 
-    // Send initial battle info
     await sendMessage(`**Battle Start!**`);
     await sendMessage(`${attacker.name} (Level ${attacker.level}, HP: ${attacker.hp}/${attacker.maxHp}) vs ${defender.name} (Level ${defender.level}, HP: ${defender.hp}/${defender.maxHp})`);
 
-    // Element effectiveness info
     const elementModifier = this.battleService.getElementModifier(attacker.element, defender.element);
     if (elementModifier > 1.0) {
       await sendMessage(`${attacker.name}'s ${attacker.element} type is **super effective** against ${defender.name}'s ${defender.element} type!`);
@@ -67,18 +61,15 @@ export class BattleUseCase {
     let turn = 1;
     let winner = "draw";
 
-    // Battle loop
     while (attacker.hp > 0 && defender.hp > 0) {
       await sendMessage(`**Turn ${turn}**`);
 
-      // Process status effects at the beginning of each turn
       const attackerStatusResult = this.processStatusEffects(attacker);
       for (const message of attackerStatusResult.messages) {
         await sendMessage(message);
       }
       attacker.hp = Math.max(0, attacker.hp - attackerStatusResult.damage);
 
-      // Check if attacker is defeated by status effects
       if (attacker.hp <= 0) {
         winner = defenderMezonId;
         await sendMessage(`${attacker.name} has been defeated by status effects! **${defender.name} wins!**`);
@@ -92,7 +83,6 @@ export class BattleUseCase {
       }
       defender.hp = Math.max(0, defender.hp - defenderStatusResult.damage);
 
-      // Check if defender is defeated by status effects
       if (defender.hp <= 0) {
         winner = attackerMezonId;
         await sendMessage(`${defender.name} has been defeated by status effects! **${attacker.name} wins!**`);
@@ -100,25 +90,22 @@ export class BattleUseCase {
         break;
       }
 
-      // Attacker's turn
       const attackerTurnResult = await this.executePetTurn(attacker, defender, sendMessage);
       if (attackerTurnResult.isDefeated) {
-        winner = attackerMezonId; // Use the mezonId as winner identifier
+        winner = attackerMezonId;
         attacker.exp += attackerTurnResult.expGain;
         break;
       }
 
-      // Defender's turn
       const defenderTurnResult = await this.executePetTurn(defender, attacker, sendMessage);
       if (defenderTurnResult.isDefeated) {
-        winner = defenderMezonId; // Use the mezonId as winner identifier
+        winner = defenderMezonId;
         defender.exp += defenderTurnResult.expGain;
         break;
       }
 
       turn++;
 
-      // Safety break to prevent infinite loops
       if (turn > 100) {
         await sendMessage("**Battle timed out! It's a draw!**");
         winner = "draw";
@@ -126,7 +113,6 @@ export class BattleUseCase {
       }
     }
 
-    // Update pets in database
     await this.petRepository.updatePet(attackerMezonId, attacker);
     await this.petRepository.updatePet(defenderMezonId, defender);
 
@@ -141,7 +127,6 @@ export class BattleUseCase {
     let totalDamage = 0;
     const messages: string[] = [];
 
-    // Process each status effect
     for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
       const status = pet.statusEffects[i];
       status.turnsRemaining--;
@@ -157,13 +142,11 @@ export class BattleUseCase {
           if (status.damage) {
             totalDamage += status.damage;
             messages.push(`${pet.name} takes ${status.damage} poison damage!`);
-            // Increase poison damage each turn
             status.damage = Math.floor(status.damage * 1.5);
           }
           break;
       }
 
-      // Remove status if expired
       if (status.turnsRemaining <= 0) {
         messages.push(`${pet.name}'s ${status.type} effect wore off!`);
         pet.statusEffects.splice(i, 1);
@@ -174,10 +157,8 @@ export class BattleUseCase {
   }
 
   private selectSkill(pet: Pet): Skill {
-    // Filter skills that the pet has enough energy for
     const availableSkills = pet.skills.filter(skill => skill.energyCost <= pet.energy);
 
-    // If no skills are available, use a basic tackle
     if (availableSkills.length === 0) {
       return {
         name: "Struggle",
@@ -188,7 +169,6 @@ export class BattleUseCase {
       };
     }
 
-    // Select a random skill from available skills
     const randomIndex = Math.floor(Math.random() * availableSkills.length);
     return availableSkills[randomIndex];
   }
@@ -205,7 +185,6 @@ export class BattleUseCase {
 
     defendingPet.hp = Math.max(0, defendingPet.hp - damageResult.damage);
 
-    // Format effectiveness message
     let effectivenessMessage = "";
     switch (damageResult.effectiveness) {
       case "super effective":
@@ -218,7 +197,6 @@ export class BattleUseCase {
 
     await sendMessage(`${attackingPet.name} uses **${skill.name}** use ${skill.energyCost} (${attackingPet.energy})!${effectivenessMessage} It deals **${damageResult.damage}** damage! ${defendingPet.name}'s HP: ${defendingPet.hp}/${defendingPet.maxHp}`);
 
-    // Apply status effect if applicable
     if (damageResult.statusApplied && skill.statusEffect) {
       const statusEffect = skill.statusEffect;
       const newStatus: BattleStatus = {
@@ -233,15 +211,13 @@ export class BattleUseCase {
       await sendMessage(`${defendingPet.name} is affected by ${statusEffect.type}!`);
     }
 
-    // Reduce attacker's energy
     attackingPet.energy = Math.max(0, attackingPet.energy - skill.energyCost);
 
-    // Check if defender is defeated
     if (defendingPet.hp <= 0) {
       await sendMessage(`${defendingPet.name} has been defeated! **${attackingPet.name} wins!**`);
       return {
         isDefeated: true,
-        winner: attackingPet.id, // Using pet ID as winner identifier
+        winner: attackingPet.id,
         expGain: 50
       };
     }

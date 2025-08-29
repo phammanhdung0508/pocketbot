@@ -8,8 +8,6 @@ export class GetPetsUseCase {
   async execute(mezonId: string): Promise<Pet[]> {
     const pets = await this.petRepository.getPetsByUserId(mezonId);
     
-    // Update pet stats based on time passed
-    // TODO: updatePetStatsOverTime show wrong state of pets.
     return pets.map(pet => PetStats.updatePetStatsOverTime(pet));
   }
 }
