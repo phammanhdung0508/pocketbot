@@ -3,122 +3,114 @@
     "1840686084447539200": {
       "pets": [
         {
-          "id": "c7855264-8550-4968-8a92-31502bedb1d4",
-          "name": "eagle",
-          "species": "bird",
-          "element": "air",
+          "id": "5b145dac-b55f-41a2-a35f-81b2ed697aad",
+          "name": "dra",
+          "species": "dragon",
+          "element": "fire",
+          "secondaryElements": [],
           "level": 1,
           "exp": 0,
-          "hp": 100,
-          "maxHp": 100,
-          "attack": 10,
-          "defense": 10,
-          "speed": 10,
+          "hp": 350,
+          "maxHp": 350,
+          "attack": 140,
+          "defense": 90,
+          "speed": 100,
+          "energy": 6,
+          "maxEnergy": 6,
+          "stamina": 100,
           "hunger": 100,
-          "energy": 100,
-          "createdAt": "2025-08-27T15:13:00.692Z",
-          "lastUpdate": "2025-08-27T15:13:22.418Z",
+          "createdAt": "2025-09-01T10:18:04.948Z",
+          "lastUpdate": "2025-09-01T10:18:04.948Z",
           "skills": [
             {
-              "name": "Wind Slash",
-              "damage": 95,
-              "element": "air",
-              "energyCost": 25,
-              "description": "Sharp winds cut through the opponent, increasing critical hit rate."
+              "name": "Basic Attack",
+              "type": "skill",
+              "damage": 270,
+              "element": "physical",
+              "energyCost": 0,
+              "description": "A basic physical attack.",
+              "levelReq": 0
             },
             {
-              "name": "Gust",
-              "damage": 70,
-              "element": "air",
-              "energyCost": 20,
-              "statusEffect": {
-                "type": "blind",
-                "chance": 40,
-                "turns": 3,
-                "accuracyReduction": 50
-              },
-              "description": "A strong gust of wind that can blind the opponent."
-            },
-            {
-              "name": "Sky Dive",
-              "damage": 130,
-              "element": "air",
-              "energyCost": 35,
-              "description": "Dives at high speed, increasing the user's speed for the next turn."
-            },
-            {
-              "name": "Hurricane",
-              "damage": 60,
-              "element": "air",
-              "energyCost": 40,
-              "description": "Creates a powerful hurricane that hits multiple times."
+              "name": "Fire Breath",
+              "type": "skill",
+              "damage": 338,
+              "element": "fire",
+              "energyCost": 2,
+              "statusEffect": [
+                {
+                  "type": "burn",
+                  "target": "enemy",
+                  "chance": 30,
+                  "turns": 3,
+                  "value": 25,
+                  "valueType": "damage"
+                }
+              ],
+              "description": "Breathes fire with a chance to burn.",
+              "levelReq": 1
             }
           ],
-          "statusEffects": []
+          "statusEffects": [],
+          "buffs": [],
+          "passives": []
         }
       ]
     },
     "1948318166522269696": {
       "pets": [
         {
-          "id": "7c16ed80-e876-4993-bf5c-b72e480a1145",
-          "name": "drag",
-          "species": "dragon",
-          "element": "fire",
+          "id": "dde77a70-26c5-4fa7-9c34-2b48ee218a65",
+          "name": "fi",
+          "species": "fish",
+          "element": "water",
+          "secondaryElements": [],
           "level": 1,
           "exp": 0,
-          "hp": 100,
-          "maxHp": 100,
-          "attack": 10,
-          "defense": 10,
-          "speed": 10,
+          "hp": 320,
+          "maxHp": 320,
+          "attack": 100,
+          "defense": 110,
+          "speed": 120,
+          "energy": 8,
+          "maxEnergy": 8,
+          "stamina": 100,
           "hunger": 100,
-          "energy": 100,
-          "createdAt": "2025-08-27T15:13:13.689Z",
-          "lastUpdate": "2025-08-27T15:13:22.418Z",
+          "createdAt": "2025-09-01T10:18:42.378Z",
+          "lastUpdate": "2025-09-01T10:18:42.378Z",
           "skills": [
             {
-              "name": "Fire Breath",
-              "damage": 120,
-              "element": "fire",
-              "energyCost": 30,
-              "statusEffect": {
-                "type": "burn",
-                "chance": 30,
-                "turns": 3,
-                "damage": 20
-              },
-              "description": "Breathes intense fire at the opponent, with a chance to cause burn damage over time."
+              "name": "Basic Attack",
+              "type": "skill",
+              "damage": 194,
+              "element": "physical",
+              "energyCost": 0,
+              "description": "A basic physical attack.",
+              "levelReq": 0
             },
             {
-              "name": "Dragon Claw",
-              "damage": 100,
-              "element": "fire",
-              "energyCost": 25,
-              "description": "Sharp claws slash the opponent, increasing critical hit rate."
-            },
-            {
-              "name": "Flame Burst",
-              "damage": 80,
-              "element": "fire",
-              "energyCost": 20,
-              "description": "Bursts of flame hit all opponents, consuming 2 energy."
-            },
-            {
-              "name": "Inferno",
-              "damage": 200,
-              "element": "fire",
-              "energyCost": 50,
-              "statusEffect": {
-                "type": "burn",
-                "chance": 50,
-                "turns": 3,
-                "damage": 20
-              },
-              "description": "A devastating fire attack that also damages the user."
+              "name": "Water Pulse",
+              "type": "skill",
+              "damage": 242,
+              "element": "water",
+              "energyCost": 1,
+              "statusEffect": [
+                {
+                  "type": "freeze",
+                  "target": "enemy",
+                  "chance": 25,
+                  "value": 1,
+                  "valueType": "flag",
+                  "turns": 1
+                }
+              ],
+              "description": "A pulse of water that may freeze the target.",
+              "levelReq": 1
             }
           ],
-          "statusEffects": []
+          "statusEffects": [],
+          "buffs": [],
+          "passives": []
         }
       ]
     }
