@@ -16,6 +16,8 @@ import { FeedPetUseCase } from "@/application/use-cases/FeedPetUseCase";
 import { PlayPetUseCase } from "@/application/use-cases/PlayPetUseCase";
 import { TrainPetUseCase } from "@/application/use-cases/TrainPetUseCase";
 import { BattleUseCase } from "@/application/use-cases/BattleUseCase";
+import { CheatCommandHandler } from "./CheatCommandHandler";
+import { CheatUseCase } from "@/application/use-cases/CheatUseCase";
 
 export class CommandRouter {
   private handlers: Map<string, CommandHandler> = new Map();
@@ -26,7 +28,8 @@ export class CommandRouter {
     feedPetUseCase: FeedPetUseCase,
     playPetUseCase: PlayPetUseCase,
     trainPetUseCase: TrainPetUseCase,
-    battleUseCase: BattleUseCase
+    battleUseCase: BattleUseCase,
+    cheatUseCase: CheatUseCase
   ) {
     // Register command handlers
     this.registerHandler("pet create", new CreatePetCommandHandler(createPetUseCase));
@@ -36,6 +39,7 @@ export class CommandRouter {
     this.registerHandler("pet train", new TrainPetCommandHandler(trainPetUseCase, getPetsUseCase));
     this.registerHandler("battle", new BattleCommandHandler(battleUseCase));
     this.registerHandler("pet list", new PetListCommandHandler());
+    this.registerHandler("pet cheat", new CheatCommandHandler(cheatUseCase, getPetsUseCase))
   }
 
   registerHandler(command: string, handler: CommandHandler): void {

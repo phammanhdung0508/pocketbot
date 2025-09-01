@@ -16,7 +16,7 @@ export class CreatePetUseCase {
     const element = PetFactory.createElementForSpecies(species.toLowerCase());
 
     // Create pet using factory
-    const newPet = PetFactory.createPet(name, species.toLowerCase(), element);
+    const newPet = PetFactory.create(name, species.toLowerCase(), element);
     
     // Save pet to repository
     await this.petRepository.createPet(mezonId, newPet);

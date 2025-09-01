@@ -7,6 +7,7 @@ export class TrainPetUseCase {
   constructor(private petRepository: IPetRepository) {}
 
   async execute(mezonId: string, petId: string): Promise<Pet> {
+    //TODO: Fix call get pet 2 times
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
     PetValidator.validateCanPerformAction(pet);

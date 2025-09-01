@@ -1,8 +1,9 @@
 import { Pet } from "@domain/entities/Pet";
 import { IPetRepository } from "@/domain/interfaces/repositories/IPetRepository";
 import { IBattleService } from "@/domain/interfaces/services/IBattleService";
-import { BattleStatus } from "@/domain/entities/BattleStatus";
-import { Skill } from "@/domain/entities/Skill";
+import { BattleStatus } from "@domain/entities/BattleStatus";
+import { Skill } from "@domain/entities/Skill";
+import { EffectTypes } from "@/domain/enums/EffectTypes";
 
 interface TurnResult {
   isDefeated: boolean;
@@ -21,176 +22,117 @@ export class BattleUseCase {
     defender: Pet,
     winner: string
   }> {
-    // For simplicity, we'll battle the first pet of each user
     const attackerPets = await this.petRepository.getPetsByUserId(attackerMezonId);
     const defenderPets = await this.petRepository.getPetsByUserId(defenderMezonId);
 
-    if (attackerPets.length === 0) {
-      throw new Error("Attacker has no pets");
-    }
+    if (attackerPets.length === 0) throw new Error("Attacker has no pets");
+    if (defenderPets.length === 0) throw new Error("Defender has no pets");
 
-    if (defenderPets.length === 0) {
-      throw new Error("Defender has no pets");
-    }
-
-    // Get the first pet of each user without updating stats
     let attacker = attackerPets[0];
     let defender = defenderPets[0];
 
-    // Check if pets have full HP and energy before battle
-    if (attacker.hp < attacker.maxHp || attacker.energy < 100) {
-      await sendMessage(`**Battle Cancelled!** ${attacker.name} (owned by <@${attackerMezonId}>) is not ready for battle! HP: ${attacker.hp}/${attacker.maxHp}, Energy: ${attacker.energy}/100`);
-      throw new Error("Attacker pet is not ready for battle");
+    if (attacker.hp < attacker.maxHp || attacker.energy < attacker.maxEnergy) {
+      throw new Error(`Attacker's pet ${attacker.name} is not at full HP and Energy.`);
+    }
+    if (defender.hp < defender.maxHp || defender.energy < defender.maxEnergy) {
+      throw new Error(`Defender's pet ${defender.name} is not at full HP and Energy.`);
     }
 
-    if (defender.hp < defender.maxHp || defender.energy < 100) {
-      await sendMessage(`**Battle Cancelled!** ${defender.name} (owned by <@${defenderMezonId}>) is not ready for battle! HP: ${defender.hp}/${defender.maxHp}, Energy: ${defender.energy}/100`);
-      throw new Error("Defender pet is not ready for battle");
-    }
-
-    // Reset status effects for battle
     attacker.statusEffects = [];
     defender.statusEffects = [];
+    attacker.buffs = [];
+    defender.buffs = [];
 
-    // Send initial battle info
     await sendMessage(`**Battle Start!**`);
-    await sendMessage(`${attacker.name} (Level ${attacker.level}, HP: ${attacker.hp}/${attacker.maxHp}) vs ${defender.name} (Level ${defender.level}, HP: ${defender.hp}/${defender.maxHp})`);
-
-    // Element effectiveness info
-    const elementModifier = this.battleService.getElementModifier(attacker.element, defender.element);
-    if (elementModifier > 1.0) {
-      await sendMessage(`${attacker.name}'s ${attacker.element} type is **super effective** against ${defender.name}'s ${defender.element} type!`);
-    } else if (elementModifier < 1.0) {
-      await sendMessage(`${attacker.name}'s ${attacker.element} type is **not very effective** against ${defender.name}'s ${defender.element} type!`);
-    }
+    await sendMessage(`${attacker.name} (Lvl ${attacker.level}) vs ${defender.name} (Lvl ${defender.level})`);
 
     let turn = 1;
     let winner = "draw";
 
-    // Battle loop
     while (attacker.hp > 0 && defender.hp > 0) {
-      await sendMessage(`**Turn ${turn}**`);
+      await sendMessage(`--- **Turn ${turn}** ---`);
 
-      // Process status effects at the beginning of each turn
-      const attackerStatusResult = this.processStatusEffects(attacker);
-      for (const message of attackerStatusResult.messages) {
-        await sendMessage(message);
+      const [firstPet, secondPet] = this.battleService.getTurnOrder(attacker, defender);
+      
+      if (firstPet.hp > 0) {
+        const turnResult1 = await this.executePetTurn(firstPet, secondPet, sendMessage);
+        if (turnResult1.isDefeated) {
+          winner = firstPet.id === attacker.id ? attackerMezonId : defenderMezonId;
+          break;
+        }
       }
-      attacker.hp = Math.max(0, attacker.hp - attackerStatusResult.damage);
 
-      // Check if attacker is defeated by status effects
+      if (secondPet.hp > 0) {
+        const turnResult2 = await this.executePetTurn(secondPet, firstPet, sendMessage);
+        if (turnResult2.isDefeated) {
+          winner = secondPet.id === attacker.id ? attackerMezonId : defenderMezonId;
+          break;
+        }
+      }
+      
+      await this.processEndOfTurnStatus(attacker, sendMessage);
       if (attacker.hp <= 0) {
         winner = defenderMezonId;
-        await sendMessage(`${attacker.name} has been defeated by status effects! **${defender.name} wins!**`);
-        defender.exp += 50;
+        await sendMessage(`${attacker.name} fainted from status effects!`);
         break;
       }
-
-      const defenderStatusResult = this.processStatusEffects(defender);
-      for (const message of defenderStatusResult.messages) {
-        await sendMessage(message);
-      }
-      defender.hp = Math.max(0, defender.hp - defenderStatusResult.damage);
-
-      // Check if defender is defeated by status effects
+      await this.processEndOfTurnStatus(defender, sendMessage);
       if (defender.hp <= 0) {
         winner = attackerMezonId;
-        await sendMessage(`${defender.name} has been defeated by status effects! **${attacker.name} wins!**`);
-        attacker.exp += 50;
-        break;
-      }
-
-      // Attacker's turn
-      const attackerTurnResult = await this.executePetTurn(attacker, defender, sendMessage);
-      if (attackerTurnResult.isDefeated) {
-        winner = attackerMezonId; // Use the mezonId as winner identifier
-        attacker.exp += attackerTurnResult.expGain;
-        break;
-      }
-
-      // Defender's turn
-      const defenderTurnResult = await this.executePetTurn(defender, attacker, sendMessage);
-      if (defenderTurnResult.isDefeated) {
-        winner = defenderMezonId; // Use the mezonId as winner identifier
-        defender.exp += defenderTurnResult.expGain;
+        await sendMessage(`${defender.name} fainted from status effects!`);
         break;
       }
 
       turn++;
-
-      // Safety break to prevent infinite loops
-      if (turn > 100) {
+      if (turn > 50) {
         await sendMessage("**Battle timed out! It's a draw!**");
-        winner = "draw";
         break;
       }
     }
+    
+    if (winner === attackerMezonId) {
+        attacker.exp += 50;
+    } else if (winner === defenderMezonId) {
+        defender.exp += 50;
+    }
 
-    // Update pets in database
     await this.petRepository.updatePet(attackerMezonId, attacker);
     await this.petRepository.updatePet(defenderMezonId, defender);
 
-    return {
-      attacker,
-      defender,
-      winner
-    };
+    return { attacker, defender, winner };
   }
 
-  private processStatusEffects(pet: Pet): { damage: number; messages: string[] } {
-    let totalDamage = 0;
-    const messages: string[] = [];
+  private async processEndOfTurnStatus(pet: Pet, sendMessage: (message: string) => Promise<void>) {
+      const statusDamages = { burn: 0, poison: 0 };
 
-    // Process each status effect
-    for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
-      const status = pet.statusEffects[i];
-      status.turnsRemaining--;
+      for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
+          const status = pet.statusEffects[i];
+          status.turnsRemaining--;
 
-      switch (status.type) {
-        case "burn":
-          if (status.damage) {
-            totalDamage += status.damage;
-            messages.push(`${pet.name} takes ${status.damage} burn damage!`);
+          //TODO: Check lại
+          if (status.type === EffectTypes.BURN && status.damage) statusDamages.burn += status.damage;
+          if (status.type === EffectTypes.POISON && status.damage) statusDamages.poison += status.damage;
+
+          if (status.turnsRemaining <= 0) {
+              await sendMessage(`${pet.name}'s ${status.type} effect wore off.`);
+              pet.statusEffects.splice(i, 1);
           }
-          break;
-        case "poison":
-          if (status.damage) {
-            totalDamage += status.damage;
-            messages.push(`${pet.name} takes ${status.damage} poison damage!`);
-            // Increase poison damage each turn
-            status.damage = Math.floor(status.damage * 1.5);
-          }
-          break;
       }
 
-      // Remove status if expired
-      if (status.turnsRemaining <= 0) {
-        messages.push(`${pet.name}'s ${status.type} effect wore off!`);
-        pet.statusEffects.splice(i, 1);
+      const totalStatusDamage = statusDamages.burn + statusDamages.poison;
+      if (totalStatusDamage > 0) {
+          pet.hp = Math.max(0, pet.hp - totalStatusDamage);
+          await sendMessage(`${pet.name} took ${totalStatusDamage} damage from status effects. HP is now ${pet.hp}/${pet.maxHp}`);
       }
-    }
-
-    return { damage: totalDamage, messages };
   }
 
   private selectSkill(pet: Pet): Skill {
-    // Filter skills that the pet has enough energy for
-    const availableSkills = pet.skills.filter(skill => skill.energyCost <= pet.energy);
-
-    // If no skills are available, use a basic tackle
+    const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
+    // TODO: Check lai
     if (availableSkills.length === 0) {
-      return {
-        name: "Basic Attack",
-        damage: 50,
-        element: pet.element,
-        energyCost: 0,
-        description: "A basic attack."
-      };
+      return { name: "Basic Attack", type: 'skill', damage: 50, element: 'physical', energyCost: 0, description: "A desperate move.", levelReq: 0 };
     }
-
-    // Select a random skill from available skills
-    const randomIndex = Math.floor(Math.random() * availableSkills.length);
-    return availableSkills[randomIndex];
+    return availableSkills[Math.floor(Math.random() * availableSkills.length)];
   }
 
   private async executePetTurn(
@@ -198,55 +140,48 @@ export class BattleUseCase {
     defendingPet: Pet,
     sendMessage: (message: string) => Promise<void>
   ): Promise<TurnResult> {
+    
+    // TODO: Neu skill la buff thi khong gay sat thuong
     const skill = this.selectSkill(attackingPet);
-    const damageResult = this.battleService.calculateSkillDamage!(attackingPet, defendingPet, skill);
+    const damageResult = this.battleService.calculateSkillDamage(attackingPet, defendingPet, skill);
 
     defendingPet.hp = Math.max(0, defendingPet.hp - damageResult.damage);
+    attackingPet.energy -= skill.energyCost!;
 
-    // Format effectiveness message
-    let effectivenessMessage = "";
-    switch (damageResult.effectiveness) {
-      case "super effective":
-        effectivenessMessage = " It's super effective!";
-        break;
-      case "not very effective":
-        effectivenessMessage = " It's not very effective...";
-        break;
+    let message = `${attackingPet.name} uses **${skill.name}**!`;
+    if (damageResult.isCrit) message += " **Critical Hit!**";
+    message += ` It deals **${damageResult.damage}** damage!`;
+    if (damageResult.effectiveness !== 'neutral') message += ` (${damageResult.effectiveness})`;
+    await sendMessage(message);
+    await sendMessage(`${defendingPet.name}'s HP: ${defendingPet.hp}/${defendingPet.maxHp}`);
+
+    if (damageResult.statusApplied && skill.statusEffect && skill.statusEffect.length > 0) {
+      // Apply all status effects from the skill
+      for (const statusEffect of skill.statusEffect) {
+        const newStatus: BattleStatus = {
+          type: statusEffect.type,
+          turnsRemaining: statusEffect.turns,
+          casterId: attackingPet.id,
+          damage: statusEffect.valueType === 'damage' ? statusEffect.value : undefined
+        };
+
+        if(statusEffect.target === 'enemy'){
+          defendingPet.statusEffects.push(newStatus);
+          await sendMessage(`${defendingPet.name} is now ${statusEffect.type}!`);
+        }else if(statusEffect.target === 'self'){
+          attackingPet.statusEffects.push(newStatus);
+          await sendMessage(`${attackingPet.name} is now ${statusEffect.type}!`);
+        }
+      }
     }
 
-    await sendMessage(`${attackingPet.name} uses **${skill.name}** use ${skill.energyCost} (${attackingPet.energy})!${effectivenessMessage} It deals **${damageResult.damage}** damage! ${defendingPet.name}'s HP: ${defendingPet.hp}/${defendingPet.maxHp}`);
-
-    // Apply status effect if applicable
-    if (damageResult.statusApplied && skill.statusEffect) {
-      const statusEffect = skill.statusEffect;
-      const newStatus: BattleStatus = {
-        type: statusEffect.type,
-        turnsRemaining: statusEffect.turns,
-        ...(statusEffect.damage ? { damage: statusEffect.damage } : {}),
-        ...(statusEffect.accuracyReduction ? { accuracyReduction: statusEffect.accuracyReduction } : {}),
-        ...(statusEffect.speedReduction ? { speedReduction: statusEffect.speedReduction } : {})
-      };
-
-      defendingPet.statusEffects.push(newStatus);
-      await sendMessage(`${defendingPet.name} is affected by ${statusEffect.type}!`);
-    }
-
-    // Reduce attacker's energy
-    attackingPet.energy = Math.max(0, attackingPet.energy - skill.energyCost);
-
-    // Check if defender is defeated
     if (defendingPet.hp <= 0) {
-      await sendMessage(`${defendingPet.name} has been defeated! **${attackingPet.name} wins!**`);
-      return {
-        isDefeated: true,
-        winner: attackingPet.id, // Using pet ID as winner identifier
-        expGain: 50
-      };
+      const winnerName = attackingPet.name;
+      const expGain = 50;
+      await sendMessage(`${defendingPet.name} has been defeated! **${winnerName} wins!**`);
+      return { isDefeated: true, winner: attackingPet.id, expGain };
     }
 
-    return {
-      isDefeated: false,
-      expGain: 0
-    };
+    return { isDefeated: false, expGain: 0 };
   }
 }

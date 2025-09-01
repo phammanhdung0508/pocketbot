@@ -11,7 +11,7 @@ export class PetValidator {
   }
 
   static validateEnergy(pet: Pet): void {
-    if (pet.energy <= this.MIN_ENERGY_THRESHOLD) {
+    if (pet.stamina <= this.MIN_ENERGY_THRESHOLD) {
       throw new Error(PetErrors.LOW_ENERGY(pet.energy));
     }
   }

@@ -6,6 +6,7 @@ export interface Pet {
   name: string;
   species: string;
   element: string;
+  secondaryElements: string[];
   level: number;
   exp: number;
   hp: number;
@@ -13,10 +14,14 @@ export interface Pet {
   attack: number;
   defense: number;
   speed: number;
-  hunger: number;
   energy: number;
+  maxEnergy: number;
+  stamina: number;
+  hunger: number;
   createdAt: Date;
   lastUpdate: Date;
   skills: Skill[];
   statusEffects: BattleStatus[];
+  buffs: any[]; // General purpose buffs/debuffs
+  passives: any[]; // Passive abilities
 }
