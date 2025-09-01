@@ -8,19 +8,19 @@
           "species": "dragon",
           "element": "fire",
           "secondaryElements": [],
-          "level": 1,
+          "level": 20,
           "exp": 0,
-          "hp": 350,
-          "maxHp": 350,
-          "attack": 140,
-          "defense": 90,
-          "speed": 100,
-          "energy": 6,
-          "maxEnergy": 6,
+          "hp": 504,
+          "maxHp": 504,
+          "attack": 180,
+          "defense": 124,
+          "speed": 129,
+          "energy": 7,
+          "maxEnergy": 7,
           "stamina": 100,
           "hunger": 100,
           "createdAt": "2025-09-01T10:18:04.948Z",
-          "lastUpdate": "2025-09-01T10:18:04.948Z",
+          "lastUpdate": "2025-09-01T16:34:01.357Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -49,6 +49,34 @@
               ],
               "description": "Breathes fire with a chance to burn.",
               "levelReq": 1
+            },
+            {
+              "name": "Dragon Rage",
+              "type": "skill",
+              "element": "fire",
+              "energyCost": 3,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "stat": "atk",
+                  "value": 45,
+                  "valueType": "percentage",
+                  "turns": 4
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "stat": "spd",
+                  "value": 25,
+                  "valueType": "percentage",
+                  "turns": 4
+                }
+              ],
+              "description": "+45% ATK, +25% SPD for 4 turns.",
+              "levelReq": 20
             }
           ],
           "statusEffects": [],
@@ -65,19 +93,19 @@
           "species": "fish",
           "element": "water",
           "secondaryElements": [],
-          "level": 1,
+          "level": 20,
           "exp": 0,
-          "hp": 320,
-          "maxHp": 320,
-          "attack": 100,
-          "defense": 110,
-          "speed": 120,
-          "energy": 8,
-          "maxEnergy": 8,
+          "hp": 458,
+          "maxHp": 458,
+          "attack": 129,
+          "defense": 148,
+          "speed": 162,
+          "energy": 10,
+          "maxEnergy": 10,
           "stamina": 100,
           "hunger": 100,
           "createdAt": "2025-09-01T10:18:42.378Z",
-          "lastUpdate": "2025-09-01T10:18:42.378Z",
+          "lastUpdate": "2025-09-01T16:34:01.359Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -106,6 +134,26 @@
               ],
               "description": "A pulse of water that may freeze the target.",
               "levelReq": 1
+            },
+            {
+              "name": "Aqua Restoration",
+              "type": "skill",
+              "element": "water",
+              "energyCost": 2,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 1,
+                  "value": 45,
+                  "valueType": "percentage",
+                  "stat": "hp",
+                  "affects": "debuffCure"
+                }
+              ],
+              "description": "Heals 45% of max HP and cleanses debuffs.",
+              "levelReq": 20
             }
           ],
           "statusEffects": [],
