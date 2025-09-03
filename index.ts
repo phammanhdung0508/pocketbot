@@ -10,6 +10,7 @@ import { FeedPetUseCase } from "./src/application/use-cases/FeedPetUseCase"
 import { PlayPetUseCase } from "./src/application/use-cases/PlayPetUseCase"
 import { TrainPetUseCase } from "./src/application/use-cases/TrainPetUseCase"
 import { BattleUseCase } from "./src/application/use-cases/BattleUseCase"
+import { CheatUseCase } from "./src/application/use-cases/CheatUseCase"
 import { BackgroundTask } from "./src/infrastructure/utils/BackgroundTask"
 
 dotenv.config()
@@ -26,6 +27,7 @@ async function main() {
     const playPetUseCase = new PlayPetUseCase(petRepository);
     const trainPetUseCase = new TrainPetUseCase(petRepository);
     const battleUseCase = new BattleUseCase(petRepository, battleService);
+    const cheatUseCase = new CheatUseCase(petRepository);
 
     // Initialize background task manager
     const backgroundTask = new BackgroundTask(petRepository);
@@ -39,6 +41,7 @@ async function main() {
         playPetUseCase,
         trainPetUseCase,
         battleUseCase,
+        cheatUseCase
     );
 
     // Initialize Mezon client

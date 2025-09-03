@@ -13,17 +13,17 @@ export class CreatePetCommandHandler implements CommandHandler {
 
     if(!args) return
 
-    args.shift();
-    args.shift();
+    args.shift(); // command
+    args.shift(); // subcommand
     
     if (args.length < 2) {
-      await message.reply(parseMarkdown("Usage: *pet create <name> <species>"));
+      await message.reply(parseMarkdown("Usage: *pet create <name> <species>\nUse `*pet list` to see available species."));
       return;
     }
     
     try {
       const pet = await this.createPetUseCase.execute(message.sender_id, args[0], args[1]);
-      await message.reply(parseMarkdown(`Successfully created pet ${pet.name} (ID: ${pet.id}) with element ${pet.element}`));
+      await message.reply(parseMarkdown(`Successfully created pet **${pet.name}** (Species: ${pet.species}, Element: ${pet.element})!`));
     } catch (error: any) {
       await message.reply(parseMarkdown(`Error creating pet: ${error.message}`));
     }

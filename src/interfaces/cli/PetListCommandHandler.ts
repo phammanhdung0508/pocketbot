@@ -5,6 +5,7 @@ import { ElementType } from "@domain/enums/ElementType";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "../../shared/utils/parseMarkdown";
+import { PetFactory } from "@/infrastructure/factories/PetFactory";
 
 export class PetListCommandHandler implements CommandHandler {
   async handle(
@@ -13,39 +14,14 @@ export class PetListCommandHandler implements CommandHandler {
         channelMsg?: ChannelMessage): Promise<void> {
     try {
       const speciesList = Object.values(PetSpecies).map(species => {
-        let element = "";
-        switch (species) {
-          case PetSpecies.DRAGON:
-            element = ElementType.FIRE;
-            break;
-          case PetSpecies.FISH:
-            element = ElementType.WATER;
-            break;
-          case PetSpecies.GOLEM:
-            element = ElementType.EARTH;
-            break;
-          case PetSpecies.BIRD:
-            element = ElementType.AIR;
-            break;
-          case PetSpecies.EEL:
-            element = ElementType.LIGHTNING;
-            break;
-        }
-        
-        return `${species} (${element})`;
+        const element = PetFactory.createElementForSpecies(species);
+        return `**${species}** (Element: ${element})`;
       });
       
       let listMessage = "**Available Pet Species:**\n";
-      speciesList.forEach(s => {
-        listMessage += `- ${s}\n`;
-      });
+      listMessage += speciesList.join("\n");
       
-      listMessage += "\n**Available Elements:**\n";
-      Object.values(ElementType).forEach(element => {
-        listMessage += `- ${element}\n`;
-      });
-      
-      listMessage += "\nCreate a pet with: *pet create <name> <species> <element>";
+      listMessage += "\n\nCreate a pet with: `*pet create <name> <species>`";
       
       await message.reply(parseMarkdown(listMessage.trim()));
     } catch (error: any) {

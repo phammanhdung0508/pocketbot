@@ -3,29 +3,33 @@ import { PetStats } from "../utils/PetStats";
 import { PetFactory } from "../factories/PetFactory";
 
 export class PetCareService {
-  static careForPet(pet: Pet, action: 'feed' | 'play' | 'train'): Pet {
-    let updatedPet = PetStats.updatePetStatsOverTime(pet);
-    
+  static careForPet(pet: Pet, action?: 'feed' | 'play' | 'train'): Pet {
+    //TODO: CÁI QUẦN QUÈ GÌ ĐÂY
+    // let updatedPet = PetStats.updatePetStatsOverTime(pet);
+
     switch (action) {
       case 'feed':
-        updatedPet = PetStats.feedPet(updatedPet);
+        pet = PetStats.feedPet(pet);
         break;
       case 'play':
-        updatedPet = PetStats.playPet(updatedPet);
+        pet = PetStats.playPet(pet);
         break;
       case 'train':
-        updatedPet = PetStats.trainPet(updatedPet);
+        pet = PetStats.trainPet(pet);
+        break;
+      default:
         break;
     }
-    
-    if (updatedPet.exp >= updatedPet.level * 100) {
-      updatedPet = PetFactory.levelUpPet(updatedPet);
+
+    if (pet.exp >= pet.level * 100) {
+      pet = PetFactory.levelUp(pet);
       
-      if ([10, 25, 50].includes(updatedPet.level)) {
-        updatedPet = PetFactory.evolvePet(updatedPet);
+      // Evolution at levels 20, 60, 100
+      if ([20, 40, 60, 100].includes(pet.level)) {
+        pet = PetFactory.evolve(pet);
       }
     }
-    
-    return updatedPet;
+
+    return pet;
   }
 }

@@ -2,332 +2,107 @@ import { v4 as uuidv4 } from "uuid";
 import { Pet } from "@domain/entities/Pet";
 import { ElementType } from "@domain/enums/ElementType";
 import { PetSpecies } from "@domain/enums/PetSpecies";
-import { Skill } from "@domain/entities/Skill";
-import { BattleStatus } from "@domain/entities/BattleStatus";
+import { PetStats } from "../utils/PetStats";
+import PET_STATS_MAP from "@/application/constants/PetStatsMap";
+import PET_SKILLS_MAP from "@/application/constants/PetSkillsMap";
 
 export class PetFactory {
   static createElementForSpecies(species: string): string {
-    switch (species) {
-      case PetSpecies.DRAGON:
-        return ElementType.FIRE;
-      case PetSpecies.FISH:
-        return ElementType.WATER;
-      case PetSpecies.GOLEM:
-        return ElementType.EARTH;
-      case PetSpecies.BIRD:
-        return ElementType.AIR;
-      case PetSpecies.EEL:
-        return ElementType.LIGHTNING;
-      default:
-        return ElementType.FIRE;
-    }
+    const speciesMap: { [key: string]: ElementType } = {
+      [PetSpecies.DRAGON]: ElementType.FIRE,
+      [PetSpecies.FISH]: ElementType.WATER,
+      [PetSpecies.GOLEM]: ElementType.EARTH,
+      [PetSpecies.BIRD]: ElementType.AIR,
+      [PetSpecies.EEL]: ElementType.LIGHTNING,
+    };
+    return speciesMap[species] || ElementType.FIRE;
   }
 
-  static getSkillsForSpecies(species: string): Skill[] {
-    switch (species) {
-      case PetSpecies.DRAGON:
-        return [
-          {
-            name: "Fire Breath",
-            damage: 120,
-            element: ElementType.FIRE,
-            energyCost: 30,
-            statusEffect: {
-              type: "burn",
-              chance: 30,
-              turns: 3,
-              damage: 20
-            },
-            description: "Breathes intense fire at the opponent, with a chance to cause burn damage over time."
-          },
-          {
-            name: "Dragon Claw",
-            damage: 100,
-            element: ElementType.FIRE,
-            energyCost: 25,
-            description: "Sharp claws slash the opponent, increasing critical hit rate."
-          },
-          {
-            name: "Flame Burst",
-            damage: 80,
-            element: ElementType.FIRE,
-            energyCost: 20,
-            description: "Bursts of flame hit all opponents, consuming 2 energy."
-          },
-          {
-            name: "Inferno",
-            damage: 200,
-            element: ElementType.FIRE,
-            energyCost: 50,
-            statusEffect: {
-              type: "burn",
-              chance: 50,
-              turns: 3,
-              damage: 20
-            },
-            description: "A devastating fire attack that also paralyzes the user."
-          }
-        ];
-      case PetSpecies.FISH:
-        return [
-          {
-            name: "Water Splash",
-            damage: 90,
-            element: ElementType.WATER,
-            energyCost: 25,
-            statusEffect: {
-              type: "freeze",
-              chance: 25,
-              turns: 1
-            },
-            description: "Splashes water at the opponent with a chance to freeze them."
-          },
-          {
-            name: "Healing Wave",
-            damage: 0,
-            element: ElementType.WATER,
-            energyCost: 30,
-            effect: {
-              type: "heal",
-              value: 80,
-              target: "self"
-            },
-            description: "Heals the user and allies."
-          },
-          {
-            name: "Tidal Wave",
-            damage: 110,
-            element: ElementType.WATER,
-            energyCost: 35,
-            description: "A powerful wave that pushes the opponent back, reducing their energy."
-          },
-          {
-            name: "Ice Shard",
-            damage: 70,
-            element: ElementType.WATER,
-            energyCost: 20,
-            statusEffect: {
-              type: "freeze",
-              chance: 60,
-              turns: 1
-            },
-            description: "Sharp ice shards hit the opponent twice."
-          }
-        ];
-      case PetSpecies.GOLEM:
-        return [
-          {
-            name: "Rock Throw",
-            damage: 110,
-            element: ElementType.EARTH,
-            energyCost: 25,
-            statusEffect: {
-              type: "stun",
-              chance: 20,
-              turns: 1
-            },
-            description: "Throws a large rock at the opponent with a chance to stun them."
-          },
-          {
-            name: "Stone Shield",
-            damage: 0,
-            element: ElementType.EARTH,
-            energyCost: 20,
-            effect: {
-              type: "buff",
-              value: 50,
-              target: "self"
-            },
-            description: "Creates a stone shield that increases defense and reflects damage."
-          },
-          {
-            name: "Earthquake",
-            damage: 85,
-            element: ElementType.EARTH,
-            energyCost: 30,
-            effect: {
-              type: "debuff",
-              value: 30,
-              target: "all_enemies"
-            },
-            description: "Shakes the ground, damaging all opponents and reducing their speed."
-          },
-          {
-            name: "Toxic Spikes",
-            damage: 60,
-            element: ElementType.EARTH,
-            energyCost: 25,
-            statusEffect: {
-              type: "poison",
-              chance: 80,
-              turns: 3,
-              damage: 15
-            },
-            description: "Poisonous spikes that deal damage over time, increasing each turn."
-          }
-        ];
-      case PetSpecies.BIRD:
-        return [
-          {
-            name: "Wind Slash",
-            damage: 95,
-            element: ElementType.AIR,
-            energyCost: 25,
-            description: "Sharp winds cut through the opponent, increasing critical hit rate."
-          },
-          {
-            name: "Gust",
-            damage: 70,
-            element: ElementType.AIR,
-            energyCost: 20,
-            statusEffect: {
-              type: "blind",
-              chance: 40,
-              turns: 3,
-              accuracyReduction: 50
-            },
-            description: "A strong gust of wind that can blind the opponent."
-          },
-          {
-            name: "Sky Dive",
-            damage: 130,
-            element: ElementType.AIR,
-            energyCost: 35,
-            description: "Dives at high speed, increasing the user's speed for the next turn."
-          },
-          {
-            name: "Hurricane",
-            damage: 60,
-            element: ElementType.AIR,
-            energyCost: 40,
-            description: "Creates a powerful hurricane that hits multiple times."
-          }
-        ];
-      case PetSpecies.EEL:
-        return [
-          {
-            name: "Thunder Bolt",
-            damage: 105,
-            element: ElementType.LIGHTNING,
-            energyCost: 30,
-            statusEffect: {
-              type: "paralyze",
-              chance: 35,
-              turns: 3,
-              speedReduction: 50
-            },
-            description: "A powerful electrical attack that can paralyze the opponent."
-          },
-          {
-            name: "Electric Shock",
-            damage: 80,
-            element: ElementType.LIGHTNING,
-            energyCost: 25,
-            effect: {
-              type: "debuff",
-              value: 1,
-              target: "enemy"
-            },
-            description: "An electrical shock that drains energy from the opponent."
-          },
-          {
-            name: "Chain Lightning",
-            damage: 70,
-            element: ElementType.LIGHTNING,
-            energyCost: 30,
-            description: "Lightning that jumps between multiple targets."
-          },
-          {
-            name: "Overcharge",
-            damage: 150,
-            element: ElementType.LIGHTNING,
-            energyCost: 45,
-            statusEffect: {
-              type: "paralyze",
-              chance: 70,
-              turns: 3,
-              speedReduction: 50
-            },
-            description: "A devastating electrical attack that also paralyzes the user."
-          }
-        ];
-      default:
-        return [
-          {
-            name: "Tackle",
-            damage: 50,
-            element: ElementType.FIRE,
-            energyCost: 15,
-            description: "A basic physical attack."
-          }
-        ];
+  static create(name: string, species: string, element: string): Pet {
+    const stats = PET_STATS_MAP[species as PetSpecies];
+    if (!stats) {
+      throw new Error(`Invalid species: ${species}`);
     }
-  }
 
-  static createPet(name: string, species: string, element: string): Pet {    
-    const expectedElement = this.createElementForSpecies(species);
-    if (element !== expectedElement) {
-      throw new Error(`Element ${element} does not match species ${species}. Expected element: ${expectedElement}`);
-    }
-    
+    const baseStats = stats.lv1;
+    const allSkills = PET_SKILLS_MAP[species as PetSpecies];
+
     return {
       id: uuidv4(),
       name,
       species,
       element,
+      secondaryElements: [],
       level: 1,
       exp: 0,
-      hp: 100,
-      maxHp: 100,
-      attack: 10,
-      defense: 10,
-      speed: 10,
+      hp: baseStats.hp,
+      maxHp: baseStats.hp,
+      attack: baseStats.atk,
+      defense: baseStats.def,
+      speed: baseStats.spd,
+      energy: baseStats.energy,
+      maxEnergy: baseStats.energy,
+      stamina: 100,
       hunger: 100,
-      energy: 100,
       createdAt: new Date(),
       lastUpdate: new Date(),
-      skills: this.getSkillsForSpecies(species),
-      statusEffects: []
+      skills: allSkills.filter(s => s.levelReq <= 1),
+      statusEffects: [],
+      buffs: [],
+      passives: [] // allSkills.filter(s => s.level === 40),
     };
   }
 
-  static levelUpPet(pet: Pet): Pet {
-    const updatedPet = {
+  static levelUp(pet: Pet): Pet {
+    const newLevel = pet.level + 1;
+    const speciesStats = PET_STATS_MAP[pet.species as PetSpecies];
+
+    const newMaxHp = PetStats.calculateStatAtLevel(newLevel, speciesStats.lv1.hp, speciesStats.lv100.hp);
+    const newAttack = PetStats.calculateStatAtLevel(newLevel, speciesStats.lv1.atk, speciesStats.lv100.atk);
+    const newDefense = PetStats.calculateStatAtLevel(newLevel, speciesStats.lv1.def, speciesStats.lv100.def);
+    const newSpeed = PetStats.calculateStatAtLevel(newLevel, speciesStats.lv1.spd, speciesStats.lv100.spd);
+    const newMaxEnergy = PetStats.calculateStatAtLevel(newLevel, speciesStats.lv1.energy, speciesStats.lv100.energy);
+
+    const updatedPet: Pet = {
       ...pet,
-      level: pet.level + 1,
-      hp: pet.hp + 5,
-      maxHp: pet.maxHp + 5,
-      attack: pet.attack + 5,
-      defense: pet.defense + 5,
-      speed: pet.speed + 5,
-      exp: 0,
-      lastUpdate: new Date()
+      level: newLevel,
+      maxHp: newMaxHp,
+      hp: newMaxHp, // Full heal on level up
+      attack: newAttack,
+      defense: newDefense,
+      speed: newSpeed,
+      maxEnergy: newMaxEnergy,
+      energy: newMaxEnergy, // Full energy on level up
+      exp: 0, // Reset EXP
+      lastUpdate: new Date(),
     };
-    
-    updatedPet.hp = updatedPet.maxHp;
-    
+
     return updatedPet;
   }
 
-  static evolvePet(pet: Pet): Pet {
-    let evolvedName = pet.name;
-    
-    if (pet.level >= 50) {
-      evolvedName = `Mega ${pet.name}`;
-    } else if (pet.level >= 25) {
-      evolvedName = `Great ${pet.name}`;
-    } else if (pet.level >= 10) {
-      evolvedName = `Super ${pet.name}`;
+  static evolve(pet: Pet): Pet {
+    let element = pet.element
+
+    if (pet.level === 40) {
+      const allPossibleElements = [ElementType.FIRE, ElementType.WATER, ElementType.EARTH, ElementType.AIR, ElementType.LIGHTNING];
+      const availableElements = allPossibleElements.filter(e => e !== pet.element && !pet.secondaryElements.includes(e));
+
+      if (availableElements.length === 0) return pet; // No new elements to learn
+
+      element = availableElements[Math.floor(Math.random() * availableElements.length)];
+      pet.secondaryElements.push(element);
+
+      console.log(`${pet.name} has evolved and learned the element ${element}!`);
     }
-    
-    return {
-      ...pet,
-      name: evolvedName,
-      maxHp: pet.maxHp + 10,
-      attack: pet.attack + 5,
-      defense: pet.defense + 5,
-      speed: pet.speed + 5,
-      lastUpdate: new Date()
-    };
+
+    // Add evolution skills - This is a simplified approach
+    // A more robust solution would be to have a separate evolution skill map
+    const evolutionSkills = PET_SKILLS_MAP[pet.species as PetSpecies].filter(s => s.levelReq === pet.level && s.element === element);
+
+    // TODO: tempory fix
+    pet.skills.push(/*...evolutionSkills*/evolutionSkills[0]);
+    pet.lastUpdate = new Date();
+
+    return pet;
   }
 }

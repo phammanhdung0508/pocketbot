@@ -3,5 +3,6 @@ export enum ElementType {
   WATER = 'water',
   EARTH = 'earth',
   AIR = 'air',
-  LIGHTNING = 'lightning'
+  LIGHTNING = 'lightning',
+  PHYSICAL = 'physical'
 }

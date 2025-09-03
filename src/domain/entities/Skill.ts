@@ -1,20 +1,35 @@
+import { AffectTypes } from "../enums/AffectTypes";
+import { EffectTypes } from "../enums/EffectTypes";
+import { ElementType } from "../enums/ElementType";
+
 export interface Skill {
   name: string;
-  damage: number;
+  type: 'skill' | 'passive'
+  damage?: number; // Can be a multiplier for some skills
   element: string;
-  energyCost: number;
+  energyCost?: number;
+  description: string;
+  levelReq: number; // Level required to learn
+
+  // Status effect applied to target
   statusEffect?: {
-    type: 'burn' | 'freeze' | 'paralyze' | 'poison' | 'blind' | 'stun';
+    type: EffectTypes;
+    target: 'self' | 'enemy';
     chance: number;
     turns: number;
-    damage?: number;
-    accuracyReduction?: number;
-    speedReduction?: number;
-  };
-  effect?: {
-    type: 'heal' | 'buff' | 'debuff';
-    value: number;
-    target: 'self' | 'ally' | 'enemy' | 'all_enemies';
-  };
-  description: string;
+    value: number; // Can be damage, percentage, or flag
+    valueType: 'damage' | 'percentage' | 'flag';
+    immunities?: ElementType | 'all'; 
+    stat?: 'atk' | 'def' | 'spd' | 'hp';
+    affects?: AffectTypes
+    // Special properties
+    properties?: {
+      dmgReflect?: number; // Percentage of damage to reflect
+      critRateBonus?: number;
+      costModifier?: { // For passive skills
+        element: string;
+        amount: number;
+      }
+    };
+  }[];
 }
