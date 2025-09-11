@@ -14,4 +14,5 @@ export interface IBattleService {
   getTurnOrder(petA: Pet, petB: Pet): [Pet, Pet];
   calculateDotDamage(pet: Pet, statusEffect: any): number;
   resetBattle(): void;
+  getEffectiveStat(pet: Pet, stat: 'attack' | 'defense' | 'speed'): number;
 }

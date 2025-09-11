@@ -42,4 +42,8 @@ export class BattleService implements IBattleService {
   resetBattle(): void {
     this.battleSystem.resetBattle();
   }
+
+  getEffectiveStat(pet: Pet, stat: 'attack' | 'defense' | 'speed'): number {
+    return this.battleSystem.getEffectiveStat(pet, stat);
+  }
 }

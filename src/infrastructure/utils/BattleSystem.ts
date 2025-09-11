@@ -166,7 +166,7 @@ export class BattleSystem {
     };
   }
 
-  private getEffectiveStat(pet: Pet, stat: 'attack' | 'defense' | 'speed'): number {
+  public getEffectiveStat(pet: Pet, stat: 'attack' | 'defense' | 'speed'): number {
     Logger.info(`Calculating effective ${stat} for ${pet.name}`);
     
     let baseStat = pet[stat];

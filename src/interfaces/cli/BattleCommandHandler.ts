@@ -1,5 +1,5 @@
 import { CommandHandler } from "./CommandHandler";
-import { ChannelMessage } from "mezon-sdk";
+import { ChannelMessage, ChannelMessageContent } from "mezon-sdk";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "@/shared/utils/parseMarkdown";
@@ -22,8 +22,12 @@ export class BattleCommandHandler implements CommandHandler {
         return;
       }
       
-      const sendMessage = async (content: string) => {
-        await channel.send(parseMarkdown(content));
+      const sendMessage = async (payload: ChannelMessageContent) => {
+        if(payload.embed){
+          await channel.send(payload);
+        } else if (payload.t){
+          await channel.send(parseMarkdown(payload.t));
+        }
       };
       
       const result = await this.battleUseCase.execute(message.sender_id, opponentId, sendMessage);
