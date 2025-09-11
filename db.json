@@ -3,24 +3,24 @@
     "1840686084447539200": {
       "pets": [
         {
-          "id": "5b145dac-b55f-41a2-a35f-81b2ed697aad",
-          "name": "dra",
+          "id": "cfbfa2d1-bc8b-405c-8cfd-061dcada91de",
+          "name": "kingdra",
           "species": "dragon",
           "element": "fire",
           "secondaryElements": [],
-          "level": 20,
+          "level": 1,
           "exp": 0,
-          "hp": 504,
-          "maxHp": 504,
-          "attack": 180,
-          "defense": 124,
-          "speed": 129,
-          "energy": 7,
-          "maxEnergy": 7,
+          "hp": 3500,
+          "maxHp": 3500,
+          "attack": 140,
+          "defense": 90,
+          "speed": 100,
+          "energy": 6,
+          "maxEnergy": 6,
           "stamina": 100,
           "hunger": 100,
-          "createdAt": "2025-09-01T10:18:04.948Z",
-          "lastUpdate": "2025-09-01T16:34:01.357Z",
+          "createdAt": "2025-09-11T14:15:34.281Z",
+          "lastUpdate": "2025-09-11T14:15:34.281Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -49,34 +49,60 @@
               ],
               "description": "Breathes fire with a chance to burn.",
               "levelReq": 1
+            }
+          ],
+          "statusEffects": [],
+          "buffs": [],
+          "passives": []
+        },
+        {
+          "id": "982b6fc4-dc16-4d5f-bfbc-3695a6d3f894",
+          "name": "nidoking",
+          "species": "golem",
+          "element": "earth",
+          "secondaryElements": [],
+          "level": 1,
+          "exp": 0,
+          "hp": 4500,
+          "maxHp": 4500,
+          "attack": 120,
+          "defense": 150,
+          "speed": 60,
+          "energy": 10,
+          "maxEnergy": 10,
+          "stamina": 100,
+          "hunger": 100,
+          "createdAt": "2025-09-11T14:16:57.312Z",
+          "lastUpdate": "2025-09-11T14:16:57.312Z",
+          "skills": [
+            {
+              "name": "Basic Attack",
+              "type": "skill",
+              "damage": 232,
+              "element": "physical",
+              "energyCost": 0,
+              "description": "A basic physical attack.",
+              "levelReq": 0
             },
             {
-              "name": "Dragon Rage",
+              "name": "Boulder Crush",
               "type": "skill",
-              "element": "fire",
-              "energyCost": 3,
+              "damage": 290,
+              "element": "earth",
+              "energyCost": 1,
               "statusEffect": [
                 {
-                  "type": "buff",
-                  "target": "self",
-                  "chance": 100,
-                  "stat": "atk",
-                  "value": 45,
+                  "type": "slow",
+                  "target": "enemy",
+                  "chance": 20,
+                  "turns": 2,
+                  "value": 30,
                   "valueType": "percentage",
-                  "turns": 4
-                },
-                {
-                  "type": "buff",
-                  "target": "self",
-                  "chance": 100,
-                  "stat": "spd",
-                  "value": 25,
-                  "valueType": "percentage",
-                  "turns": 4
+                  "stat": "spd"
                 }
               ],
-              "description": "+45% ATK, +25% SPD for 4 turns.",
-              "levelReq": 20
+              "description": "Crushes with a boulder, may slow the target.",
+              "levelReq": 1
             }
           ],
           "statusEffects": [],
@@ -88,72 +114,53 @@
     "1948318166522269696": {
       "pets": [
         {
-          "id": "dde77a70-26c5-4fa7-9c34-2b48ee218a65",
-          "name": "fi",
-          "species": "fish",
-          "element": "water",
+          "id": "982b6fc4-dc16-4d5f-bfbc-3695a6d3f894",
+          "name": "nidoking",
+          "species": "golem",
+          "element": "earth",
           "secondaryElements": [],
-          "level": 20,
+          "level": 1,
           "exp": 0,
-          "hp": 458,
-          "maxHp": 458,
-          "attack": 129,
-          "defense": 148,
-          "speed": 162,
+          "hp": 4500,
+          "maxHp": 4500,
+          "attack": 120,
+          "defense": 150,
+          "speed": 60,
           "energy": 10,
           "maxEnergy": 10,
           "stamina": 100,
           "hunger": 100,
-          "createdAt": "2025-09-01T10:18:42.378Z",
-          "lastUpdate": "2025-09-01T16:34:01.359Z",
+          "createdAt": "2025-09-11T14:16:57.312Z",
+          "lastUpdate": "2025-09-11T14:16:57.312Z",
           "skills": [
             {
               "name": "Basic Attack",
               "type": "skill",
-              "damage": 194,
+              "damage": 232,
               "element": "physical",
               "energyCost": 0,
               "description": "A basic physical attack.",
               "levelReq": 0
             },
             {
-              "name": "Water Pulse",
+              "name": "Boulder Crush",
               "type": "skill",
-              "damage": 242,
-              "element": "water",
+              "damage": 290,
+              "element": "earth",
               "energyCost": 1,
               "statusEffect": [
                 {
-                  "type": "freeze",
+                  "type": "slow",
                   "target": "enemy",
-                  "chance": 25,
-                  "value": 1,
-                  "valueType": "flag",
-                  "turns": 1
-                }
-              ],
-              "description": "A pulse of water that may freeze the target.",
-              "levelReq": 1
-            },
-            {
-              "name": "Aqua Restoration",
-              "type": "skill",
-              "element": "water",
-              "energyCost": 2,
-              "statusEffect": [
-                {
-                  "type": "buff",
-                  "target": "self",
-                  "chance": 100,
-                  "turns": 1,
-                  "value": 45,
+                  "chance": 20,
+                  "turns": 2,
+                  "value": 30,
                   "valueType": "percentage",
-                  "stat": "hp",
-                  "affects": "debuffCure"
+                  "stat": "spd"
                 }
               ],
-              "description": "Heals 45% of max HP and cleanses debuffs.",
-              "levelReq": 20
+              "description": "Crushes with a boulder, may slow the target.",
+              "levelReq": 1
             }
           ],
           "statusEffects": [],
