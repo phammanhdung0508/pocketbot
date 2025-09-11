@@ -6,13 +6,20 @@ export function parseMarkdown(input: string): { t: string; mk: MarkdownOnMessage
         [/__(.+?)__/g, EMarkdownType.BOLD],
         [/`([^`]+?)`/g, EMarkdownType.CODE],
         [/```[\s\S]*?```/g, EMarkdownType.PRE],
-        [/\\\[([^\\\]]+)\\\]\(([^)]+)\)/g, EMarkdownType.LINK],
+        [/\\\[(.+?)\\\]\((.+?)\)/g, EMarkdownType.LINK],
     ];
 
     let result = { t: "", mk: [] as MarkdownOnMessage[] };
     let pos = 0;
 
     while (pos < input.length) {
+        // Handle newlines
+        if (input[pos] === '\n') {
+            result.t += '\n';
+            pos++;
+            continue;
+        }
+
         let matched = false;
 
         for (let [regex, type] of patterns) {

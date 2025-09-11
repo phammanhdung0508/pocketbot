@@ -28,17 +28,92 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**Level:** ${attacker.level}\n**Species:** ${attacker.species.toUpperCase()} ${ELEMENT_EMOJIS[attacker.element]}\n**HP:** ${attacker.hp}/${attacker.maxHp}\n**Energy:** ${attacker.energy}/${attacker.maxEnergy}\n**Secondary Elements:** ${attacker.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "None"}`,
+                value: `**Level:** ${attacker.level}`,
                 inline: true
             },
             {
-                name: "🆚",
-                value: "\u200B", // Zero-width space
+                name: "\u200B",
+                value: "\u200B",
                 inline: true
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**Level:** ${defender.level}\n**Species:** ${defender.species.toUpperCase()} ${ELEMENT_EMOJIS[defender.element]}\n**HP:** ${defender.hp}/${defender.maxHp}\n**Energy:** ${defender.energy}/${defender.maxEnergy}\n**Secondary Elements:** ${defender.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "None"}`,
+                value: `**Level:** ${defender.level}`,
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Species`,
+                value: `${attacker.species.toUpperCase()} ${ELEMENT_EMOJIS[attacker.element]}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Species`,
+                value: `${defender.species.toUpperCase()} ${ELEMENT_EMOJIS[defender.element]}`,
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${attacker.hp}/${attacker.maxHp}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${defender.hp}/${defender.maxHp}`,
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${defender.energy}/${defender.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: `Secondary Elements`,
+                value: `${attacker.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "None"}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Secondary Elements`,
+                value: `${defender.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "None"}`,
                 inline: true
             }
         ],
@@ -58,7 +133,7 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**HP:** ${attacker.hp}/${attacker.maxHp}\n**Energy:** ${attacker.energy}/${attacker.maxEnergy}\n**Status Effects:** ${getStatusEffectsString(attacker.statusEffects)}\n**Speed:** ${battleService.getEffectiveStat(attacker, 'speed').toFixed(2)}`,
+                value: `**Level:** ${attacker.level}`,
                 inline: true
             },
             {
@@ -68,7 +143,82 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**HP:** ${defender.hp}/${defender.maxHp}\n**Energy:** ${defender.energy}/${defender.maxEnergy}\n**Status Effects:** ${getStatusEffectsString(defender.statusEffects)}\n**Speed:** ${battleService.getEffectiveStat(defender, 'speed').toFixed(2)}`,
+                value: `**Level:** ${defender.level}`,
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${attacker.hp}/${attacker.maxHp}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${defender.hp}/${defender.maxHp}`,
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${defender.energy}/${defender.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: `Status Effects`,
+                value: `${getStatusEffectsString(attacker.statusEffects)}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Status Effects`,
+                value: `${getStatusEffectsString(defender.statusEffects)}`,
+                inline: true
+            },
+            {
+                name: `Speed`,
+                value: `${battleService.getEffectiveStat(attacker, 'speed').toFixed(2)}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Speed`,
+                value: `${battleService.getEffectiveStat(defender, 'speed').toFixed(2)}`,
                 inline: true
             }
         ],
@@ -86,7 +236,7 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**HP:** ${attacker.hp}/${attacker.maxHp}\n**Energy:** ${attacker.energy}/${attacker.maxEnergy}\n**Status Effects:** ${getStatusEffectsString(attacker.statusEffects)}`,
+                value: `**Level:** ${attacker.level}`,
                 inline: true
             },
             {
@@ -96,7 +246,67 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**HP:** ${defender.hp}/${defender.maxHp}\n**Energy:** ${defender.energy}/${defender.maxEnergy}\n**Status Effects:** ${getStatusEffectsString(defender.statusEffects)}`,
+                value: `**Level:** ${defender.level}`,
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${attacker.hp}/${attacker.maxHp}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${defender.hp}/${defender.maxHp}`,
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${defender.energy}/${defender.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: `Status Effects`,
+                value: `${getStatusEffectsString(attacker.statusEffects)}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Status Effects`,
+                value: `${getStatusEffectsString(defender.statusEffects)}`,
                 inline: true
             }
         ],
@@ -115,7 +325,7 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
         fields: [
             {
                 name: `👑 Winner: ${SPECIES_EMOJIS[winner.species] || "🐾"} ${winner.name}`,
-                value: `**Level:** ${winner.level}\n**HP:** ${winner.hp}/${winner.maxHp}\n**Energy:** ${winner.energy}/${winner.maxEnergy}\n**Status Effects:** ${getStatusEffectsString(winner.statusEffects)}`,
+                value: `**Level:** ${winner.level}`,
                 inline: true
             },
             {
@@ -125,7 +335,67 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
             },
             {
                 name: `💀 Loser: ${SPECIES_EMOJIS[loser.species] || "🐾"} ${loser.name}`,
-                value: `**Level:** ${loser.level}\n**HP:** ${loser.hp}/${loser.maxHp}\n**Energy:** ${loser.energy}/${loser.maxEnergy}\n**Status Effects:** ${getStatusEffectsString(loser.statusEffects)}`,
+                value: `**Level:** ${loser.level}`,
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${winner.hp}/${winner.maxHp}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${loser.hp}/${loser.maxHp}`,
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${winner.energy}/${winner.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${loser.energy}/${loser.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: `Status Effects`,
+                value: `${getStatusEffectsString(winner.statusEffects)}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Status Effects`,
+                value: `${getStatusEffectsString(loser.statusEffects)}`,
                 inline: true
             }
         ],
@@ -144,7 +414,7 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**Level:** ${attacker.level}\n**HP:** ${attacker.hp}/${attacker.maxHp}\n**Energy:** ${attacker.energy}/${attacker.maxEnergy}`,
+                value: `**Level:** ${attacker.level}`,
                 inline: true
             },
             {
@@ -154,7 +424,52 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**Level:** ${defender.level}\n**HP:** ${defender.hp}/${defender.maxHp}\n**Energy:** ${defender.energy}/${defender.maxEnergy}`,
+                value: `**Level:** ${defender.level}`,
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: "\u200B",  // Empty field for spacing
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${attacker.hp}/${attacker.maxHp}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `HP`,
+                value: `${defender.hp}/${defender.maxHp}`,
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                inline: true
+            },
+            {
+                name: "\u200B",
+                value: "\u200B",
+                inline: true
+            },
+            {
+                name: `Energy`,
+                value: `${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             }
         ],
