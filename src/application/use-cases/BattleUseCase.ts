@@ -15,7 +15,7 @@ export class BattleUseCase {
   constructor(
     private petRepository: IPetRepository,
     private battleService: IBattleService
-  ) {}
+  ) { }
 
   async execute(attackerMezonId: string, defenderMezonId: string, sendMessage: (message: string) => Promise<void>): Promise<{
     attacker: Pet,
@@ -53,7 +53,7 @@ export class BattleUseCase {
       await sendMessage(`--- **Turn ${turn}** ---`);
 
       const [firstPet, secondPet] = this.battleService.getTurnOrder(attacker, defender);
-      
+
       if (firstPet.hp > 0) {
         const turnResult1 = await this.executePetTurn(firstPet, secondPet, sendMessage);
         if (turnResult1.isDefeated) {
@@ -69,7 +69,7 @@ export class BattleUseCase {
           break;
         }
       }
-      
+
       await this.processEndOfTurnStatus(attacker, sendMessage);
       if (attacker.hp <= 0) {
         winner = defenderMezonId;
@@ -89,11 +89,11 @@ export class BattleUseCase {
         break;
       }
     }
-    
+
     if (winner === attackerMezonId) {
-        attacker.exp += 50;
+      attacker.exp += 50;
     } else if (winner === defenderMezonId) {
-        defender.exp += 50;
+      defender.exp += 50;
     }
 
     await this.petRepository.updatePet(attackerMezonId, attacker);
@@ -103,32 +103,64 @@ export class BattleUseCase {
   }
 
   private async processEndOfTurnStatus(pet: Pet, sendMessage: (message: string) => Promise<void>) {
-      const statusDamages = { burn: 0, poison: 0 };
+    for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
+      const status = pet.statusEffects[i];
+      const statusEffect = status.statusEffect;
+      status.turnsRemaining--;
 
-      for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
-          const status = pet.statusEffects[i];
-          status.turnsRemaining--;
-
-          //TODO: Check lại
-          if (status.type === EffectTypes.BURN && status.damage) statusDamages.burn += status.damage;
-          if (status.type === EffectTypes.POISON && status.damage) statusDamages.poison += status.damage;
-
-          if (status.turnsRemaining <= 0) {
-              await sendMessage(`${pet.name}'s ${status.type} effect wore off.`);
-              pet.statusEffects.splice(i, 1);
+      switch (statusEffect.type) {
+        case EffectTypes.BURN:
+        case EffectTypes.POISON:
+          if (statusEffect.valueType == 'damage') {
+            pet.hp = Math.max(0, pet.hp - statusEffect.value);
+            await sendMessage(`${pet.name} took ${statusEffect.value} damage from status effects. HP is now ${pet.hp}/${pet.maxHp}`);
           }
+          break;
+        case EffectTypes.SLOW:
+          if (statusEffect.valueType == 'percentage')
+            pet.speed *= (statusEffect.value / 100);
+          break;
+        case EffectTypes.BUFF:
+          if (statusEffect.valueType == 'percentage') {
+            if (statusEffect.stat == 'atk')
+              pet.attack += (pet.attack * (statusEffect.value / 100));
+            if (statusEffect.stat == 'def')
+              pet.defense += (pet.defense * (statusEffect.value / 100));
+            if (statusEffect.stat == 'spd')
+              pet.speed += (pet.speed * (statusEffect.value / 100));
+            if (statusEffect.stat == 'hp')
+              pet.hp += (pet.hp * (statusEffect.value / 100));
+          }
+          break;
+        case EffectTypes.DEBUFF:
+          if (statusEffect.valueType == 'percentage') {
+            if (statusEffect.stat == 'atk')
+              pet.attack -= (pet.attack * (statusEffect.value / 100));
+            if (statusEffect.stat == 'def')
+              pet.defense -= (pet.defense * (statusEffect.value / 100));
+            if (statusEffect.stat == 'spd')
+              pet.speed -= (pet.speed * (statusEffect.value / 100));
+            if (statusEffect.stat == 'hp')
+              pet.hp -= (pet.hp * (statusEffect.value / 100));
+          }
+          break;
+        case EffectTypes.FREEZE:
+        case EffectTypes.BLIND:
+        case EffectTypes.PARALYZE:
+        case EffectTypes.STUN:
+          break;
       }
 
-      const totalStatusDamage = statusDamages.burn + statusDamages.poison;
-      if (totalStatusDamage > 0) {
-          pet.hp = Math.max(0, pet.hp - totalStatusDamage);
-          await sendMessage(`${pet.name} took ${totalStatusDamage} damage from status effects. HP is now ${pet.hp}/${pet.maxHp}`);
+      if (status.turnsRemaining <= 0) {
+        await sendMessage(`${pet.name}'s ${statusEffect.type} effect wore off.`);
+        pet.statusEffects.splice(i, 1);
       }
+    }
   }
 
   private selectSkill(pet: Pet): Skill {
     const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
-    // TODO: Check lai
+    // TODO: Check lai, du thua logic
     if (availableSkills.length === 0) {
       return { name: "Basic Attack", type: 'skill', damage: 50, element: 'physical', energyCost: 0, description: "A desperate move.", levelReq: 0 };
     }
@@ -140,8 +172,6 @@ export class BattleUseCase {
     defendingPet: Pet,
     sendMessage: (message: string) => Promise<void>
   ): Promise<TurnResult> {
-    
-    // TODO: Neu skill la buff thi khong gay sat thuong
     const skill = this.selectSkill(attackingPet);
     const damageResult = this.battleService.calculateSkillDamage(attackingPet, defendingPet, skill);
 
@@ -159,16 +189,14 @@ export class BattleUseCase {
       // Apply all status effects from the skill
       for (const statusEffect of skill.statusEffect) {
         const newStatus: BattleStatus = {
-          type: statusEffect.type,
+          statusEffect: statusEffect,
           turnsRemaining: statusEffect.turns,
-          casterId: attackingPet.id,
-          damage: statusEffect.valueType === 'damage' ? statusEffect.value : undefined
         };
 
-        if(statusEffect.target === 'enemy'){
+        if (statusEffect.target === 'enemy') {
           defendingPet.statusEffects.push(newStatus);
           await sendMessage(`${defendingPet.name} is now ${statusEffect.type}!`);
-        }else if(statusEffect.target === 'self'){
+        } else if (statusEffect.target === 'self') {
           attackingPet.statusEffects.push(newStatus);
           await sendMessage(`${attackingPet.name} is now ${statusEffect.type}!`);
         }
