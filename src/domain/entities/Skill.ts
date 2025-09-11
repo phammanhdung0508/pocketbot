@@ -34,4 +34,7 @@ export interface StatusEffect {
       amount: number;
     }
   };
+  // Additional properties for battle calculations
+  sourceAtk?: number; // Attacker's ATK for DoT calculations
+  turnsTotal?: number; // Total turns for poison escalation
 }

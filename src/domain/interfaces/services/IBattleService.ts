@@ -12,4 +12,6 @@ export interface IBattleService {
     isCrit: boolean;
   };
   getTurnOrder(petA: Pet, petB: Pet): [Pet, Pet];
+  calculateDotDamage(pet: Pet, statusEffect: any): number;
+  resetBattle(): void;
 }

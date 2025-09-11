@@ -95,8 +95,6 @@ export class PetStats {
       pet.hp = Math.max(0, pet.hp - 30);
     }
 
-    
-
     pet.lastUpdate = new Date();
 
     return pet;

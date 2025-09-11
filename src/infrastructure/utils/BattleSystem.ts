@@ -1,9 +1,14 @@
 import { Pet } from "@domain/entities/Pet";
 import { Skill } from "@domain/entities/Skill";
 import { AffectTypes } from "@/domain/enums/AffectTypes";
+import { EffectTypes } from "@/domain/enums/EffectTypes";
 import { Logger } from "@/shared/utils/Logger";
+import { PassiveAbilityService } from "@/infrastructure/services/PassiveAbilityService";
 
 export class BattleSystem {
+  // Track hit counts for adaptive resistance
+  private hitCounts: Map<string, number> = new Map();
+
   getElementEffectiveness(attackerElement: string, defenderElement: string): number {
     Logger.info(`Calculating element effectiveness: ${attackerElement} vs ${defenderElement}`);
     
@@ -21,6 +26,24 @@ export class BattleSystem {
     return effectiveness;
   }
 
+  // Calculate adaptive resistance based on hit count
+  getAdaptiveResistance(targetId: string): number {
+    const hitCount = this.hitCounts.get(targetId) || 0;
+    // Resistance Bonus = Min(50%, Hit Count × 12.5%)
+    return Math.min(50, hitCount * 12.5);
+  }
+
+  // Apply hit to target for adaptive resistance tracking
+  applyHit(targetId: string): void {
+    const currentCount = this.hitCounts.get(targetId) || 0;
+    this.hitCounts.set(targetId, currentCount + 1);
+  }
+
+  // Reset hit count for a target
+  resetHitCount(targetId: string): void {
+    this.hitCounts.delete(targetId);
+  }
+
   calculateDamage(attacker: Pet, defender: Pet, skill: Skill): {
     damage: number;
     effectiveness: string;
@@ -29,60 +52,96 @@ export class BattleSystem {
   } {
     Logger.info(`Starting damage calculation: ${attacker.name} (${attacker.element}) attacks ${defender.name} (${defender.element}) with ${skill.name}`);
     
-    // 1. Calculate Effective Stats from buffs/debuffs
+    // 1. Handle Fire Soul passive for Dragon
+    const isBelowHalfHp = attacker.hp < attacker.maxHp / 2;
+    const fireSoulEffect = PassiveAbilityService.handleFireSoul(attacker, isBelowHalfHp, skill);
+    
+    // 2. Calculate Effective Stats from buffs/debuffs
     const effectiveAtk = this.getEffectiveStat(attacker, 'attack');
     const effectiveDef = this.getEffectiveStat(defender, 'defense');
     Logger.info(`Effective stats - Attacker ATK: ${effectiveAtk}, Defender DEF: ${effectiveDef}`);
 
-    // 2. Element Modifier
+    // 3. Element Modifier
     const elementModifier = this.getElementEffectiveness(skill.element, defender.element);
     let effectiveness = "neutral";
     if (elementModifier > 1.0) effectiveness = "super effective";
     if (elementModifier < 1.0) effectiveness = "not very effective";
     Logger.info(`Element modifier: ${elementModifier}x (${effectiveness})`);
 
-    // 3. Skill Multiplier (assuming skill.damage is the multiplier, e.g., 137 for 1.37x)
-    // TODO: Damge chuẩn.
-    const skillMultiplier = (skill.damage || 100) / 100;
+    // 4. Skill Multiplier (assuming skill.damage is the multiplier, e.g., 137 for 1.37x)
+    let skillMultiplier = (skill.damage || 100) / 100;
+    
+    // Apply Fire Soul damage boost
+    if (fireSoulEffect.damageBoost > 0) {
+      skillMultiplier *= (1 + fireSoulEffect.damageBoost / 100);
+      Logger.info(`Fire Soul damage boost: +${fireSoulEffect.damageBoost}%, new multiplier: ${skillMultiplier.toFixed(3)}`);
+    }
+    
     Logger.info(`Skill multiplier: ${skillMultiplier}x`);
 
-    // 4. Random Factor
+    // 5. Random Factor (±15% variance)
     const randomFactor = Math.random() * (1.15 - 0.85) + 0.85;
     Logger.info(`Random factor: ${randomFactor.toFixed(3)}`);
 
-    // 5. Base Damage
+    // 6. Base Damage
     let baseDamage = effectiveAtk * skillMultiplier * elementModifier * randomFactor;
     Logger.info(`Base damage calculation: ${effectiveAtk} × ${skillMultiplier} × ${elementModifier} × ${randomFactor.toFixed(3)} = ${baseDamage.toFixed(2)}`);
 
-    // 6. Critical Hit
-    const baseCritRate = 5;
-    const skillCritRate = skill.statusEffect?.find(s => s.properties?.critRateBonus);
-    const critRate = baseCritRate + (skillCritRate?.properties?.critRateBonus || 0);
-    const isCrit = Math.random() * 100 < critRate;
-    Logger.info(`Critical hit check: ${critRate}% chance, result: ${isCrit ? 'CRITICAL HIT!' : 'normal hit'}`);
-    if (isCrit) {
-      const oldDamage = baseDamage;
-      baseDamage *= 1.5; // Crit Damage Multiplier
-      Logger.info(`Critical damage applied: ${oldDamage.toFixed(2)} → ${baseDamage.toFixed(2)}`);
+    // 7. Adaptive Resistance
+    const adaptiveResistance = this.getAdaptiveResistance(defender.id);
+    const resistanceModifier = 1 - (adaptiveResistance / 100);
+    baseDamage *= resistanceModifier;
+    Logger.info(`Adaptive resistance: ${adaptiveResistance}%, damage after resistance: ${baseDamage.toFixed(2)}`);
+
+    // 8. Critical Hit
+    // Check for crit immunity (e.g., Stone Fortress, Earthen Shell)
+    const hasCritImmunity = defender.statusEffects.some(status => 
+      status.statusEffect.type === EffectTypes.BUFF && 
+      status.statusEffect.properties?.critRateBonus === -100
+    );
+    
+    let isCrit = false;
+    if (!hasCritImmunity) {
+      const baseCritRate = 5;
+      const skillCritRate = skill.statusEffect?.find(s => s.properties?.critRateBonus);
+      const critRate = baseCritRate + (skillCritRate?.properties?.critRateBonus || 0);
+      isCrit = Math.random() * 100 < critRate;
+      Logger.info(`Critical hit check: ${critRate}% chance, result: ${isCrit ? 'CRITICAL HIT!' : 'normal hit'}`);
+      if (isCrit) {
+        const oldDamage = baseDamage;
+        baseDamage *= 1.5; // Crit Damage Multiplier
+        Logger.info(`Critical damage applied: ${oldDamage.toFixed(2)} → ${baseDamage.toFixed(2)}`);
+      }
+    } else {
+      Logger.info(`Critical hit prevented by immunity`);
     }
 
-    // 7. Final Damage (with Defense Reduction)
-    const defenseReduction = 100 / (100 + effectiveDef);
-    let finalDamage = baseDamage * defenseReduction;
-    Logger.info(`Defense reduction: ${defenseReduction.toFixed(3)}, damage after defense: ${finalDamage.toFixed(2)}`);
+    // 9. Final Damage (with Defense Scaling System)
+    // Effective DEF = Base DEF × (1 + DEF Buffs) × (1 - DEF Debuffs)
+    // Defense Reduction = Effective DEF / (Effective DEF + 400)
+    const defenseReduction = effectiveDef / (effectiveDef + 400);
+    const defenseModifier = 1 - defenseReduction;
+    let finalDamage = baseDamage * defenseModifier;
+    Logger.info(`Defense scaling: ${effectiveDef} DEF → ${defenseReduction.toFixed(3)} reduction, damage: ${finalDamage.toFixed(2)}`);
 
-    // 8. Apply ignore defense property
+    // 10. Apply ignore defense property
     var ignoreDefense = skill.statusEffect?.find(s => s.affects === AffectTypes.IGNORE_DEFENSE)
     if (ignoreDefense && ignoreDefense.valueType === 'percentage') {
         const ignoredDefense = effectiveDef * (ignoreDefense.value / 100);
-        const damageWithIgnoredDef = baseDamage * (100 / (100 + (effectiveDef - ignoredDefense)));
+        const effectiveDefAfterIgnore = Math.max(0, effectiveDef - ignoredDefense);
+        const defenseReductionAfterIgnore = effectiveDefAfterIgnore / (effectiveDefAfterIgnore + 400);
+        const defenseModifierAfterIgnore = 1 - defenseReductionAfterIgnore;
+        const damageWithIgnoredDef = baseDamage * defenseModifierAfterIgnore;
         const oldFinalDamage = finalDamage;
         finalDamage = Math.max(finalDamage, damageWithIgnoredDef);
         Logger.info(`Ignore defense applied: ${ignoreDefense.value}% (${ignoredDefense.toFixed(2)} DEF ignored)`);
         Logger.info(`Damage with ignored defense: ${oldFinalDamage.toFixed(2)} → ${finalDamage.toFixed(2)}`);
     }
 
-    // 9. Status Effect Application
+    // 11. Apply hit for adaptive resistance tracking
+    this.applyHit(defender.id);
+
+    // 12. Status Effect Application
     let statusApplied = [];
     
     if (skill.statusEffect) {
@@ -131,7 +190,7 @@ export class BattleSystem {
     
     // Cap buffs at +/- 200%
     const uncappedMultiplier = buffMultiplier;
-    buffMultiplier = Math.max(-2, Math.min(2, buffMultiplier - 1)) + 1;
+    buffMultiplier = Math.max(0.01, Math.min(3, buffMultiplier)); // 1% minimum to 300% maximum
     if (uncappedMultiplier !== buffMultiplier) {
         Logger.warn(`Buff multiplier capped: ${uncappedMultiplier.toFixed(3)} → ${buffMultiplier.toFixed(3)}`);
     }
@@ -140,6 +199,25 @@ export class BattleSystem {
     Logger.info(`Effective ${stat}: ${baseStat} × ${buffMultiplier.toFixed(3)} = ${effectiveStat.toFixed(2)}`);
 
     return effectiveStat;
+  }
+
+  // Calculate dodge rate based on speed
+  calculateDodgeRate(pet: Pet): number {
+    const baseDodge = 5; // 5% base dodge
+    const speedBonus = Math.max(0, (pet.speed - 100) * 0.1); // (Current SPD - 100) × 0.1%
+    const totalDodge = baseDodge + speedBonus;
+    return Math.min(80, totalDodge); // Cap at 80%
+  }
+
+  // Calculate accuracy with blind effects
+  calculateAccuracy(attacker: Pet, skill: Skill): number {
+    const baseAccuracy = 95; // 95% base accuracy
+    const blindEffect = attacker.statusEffects.find(status => status.statusEffect.type === EffectTypes.BLIND);
+    const blindModifier = blindEffect ? 0.3 : 1; // 70% accuracy reduction if blinded
+    const skillBonus = skill.statusEffect?.find(s => s.affects === AffectTypes.ALWAYS_HITS) ? 100 : 0;
+    
+    const modifiedAccuracy = baseAccuracy * blindModifier + skillBonus;
+    return Math.min(95, Math.max(5, modifiedAccuracy)); // Between 5% and 95%
   }
 
   getTurnOrder(petA: Pet, petB: Pet): [Pet, Pet] {
@@ -165,5 +243,29 @@ export class BattleSystem {
       Logger.info(`Equal speeds, random order: ${firstPet.name} goes first`);
       
       return [firstPet, secondPet];
+  }
+
+  // Calculate DoT (Damage over Time) effects
+  calculateDotDamage(pet: Pet, statusEffect: any): number {
+    switch (statusEffect.type) {
+      case EffectTypes.BURN:
+        // Burn Damage = (Caster ATK × 0.15) + Fixed Base
+        const burnDamage = Math.floor((statusEffect.sourceAtk || 100) * 0.15) + (statusEffect.value || 20);
+        return burnDamage;
+      case EffectTypes.POISON:
+        // Escalating DoT
+        const basePoison = [15, 25, 35]; // Turn 1, 2, 3
+        const atkPoison = [0.10, 0.15, 0.20]; // Turn 1, 2, 3
+        const turnIndex = Math.min(2, (statusEffect.turnsTotal || 3) - statusEffect.turnsRemaining);
+        const poisonDamage = basePoison[turnIndex] + Math.floor((statusEffect.sourceAtk || 100) * atkPoison[turnIndex]);
+        return poisonDamage;
+      default:
+        return statusEffect.valueType === 'damage' ? statusEffect.value : 0;
+    }
+  }
+
+  // Reset battle state
+  resetBattle(): void {
+    this.hitCounts.clear();
   }
 }

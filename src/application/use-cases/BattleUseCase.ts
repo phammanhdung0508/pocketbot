@@ -4,6 +4,7 @@ import { IBattleService } from "@/domain/interfaces/services/IBattleService";
 import { BattleStatus } from "@domain/entities/BattleStatus";
 import { Skill } from "@domain/entities/Skill";
 import { EffectTypes } from "@/domain/enums/EffectTypes";
+import { AffectTypes } from "@/domain/enums/AffectTypes";
 
 interface TurnResult {
   isDefeated: boolean;
@@ -42,6 +43,9 @@ export class BattleUseCase {
     defender.statusEffects = [];
     attacker.buffs = [];
     defender.buffs = [];
+
+    // Reset battle system state
+    this.battleService.resetBattle();
 
     await sendMessage(`**Battle Start!**`);
     await sendMessage(`${attacker.name} (Lvl ${attacker.level}) vs ${defender.name} (Lvl ${defender.level})`);
@@ -84,7 +88,7 @@ export class BattleUseCase {
       }
 
       turn++;
-      if (turn > 50) {
+      if (turn > 20) {
         await sendMessage("**Battle timed out! It's a draw!**");
         break;
       }
@@ -111,43 +115,33 @@ export class BattleUseCase {
       switch (statusEffect.type) {
         case EffectTypes.BURN:
         case EffectTypes.POISON:
-          if (statusEffect.valueType == 'damage') {
-            pet.hp = Math.max(0, pet.hp - statusEffect.value);
-            await sendMessage(`${pet.name} took ${statusEffect.value} damage from status effects. HP is now ${pet.hp}/${pet.maxHp}`);
-          }
+          // Use the battle service to calculate DoT damage
+          const dotDamage = this.battleService.calculateDotDamage(pet, statusEffect);
+          pet.hp = Math.max(0, pet.hp - dotDamage);
+          await sendMessage(`${pet.name} took ${dotDamage} damage from ${statusEffect.type} status effects. HP is now ${pet.hp}/${pet.maxHp}`);
           break;
         case EffectTypes.SLOW:
-          if (statusEffect.valueType == 'percentage')
-            pet.speed *= (statusEffect.value / 100);
+          // Slow effect is applied when calculating stats, not here
           break;
         case EffectTypes.BUFF:
-          if (statusEffect.valueType == 'percentage') {
-            if (statusEffect.stat == 'atk')
-              pet.attack += (pet.attack * (statusEffect.value / 100));
-            if (statusEffect.stat == 'def')
-              pet.defense += (pet.defense * (statusEffect.value / 100));
-            if (statusEffect.stat == 'spd')
-              pet.speed += (pet.speed * (statusEffect.value / 100));
-            if (statusEffect.stat == 'hp')
-              pet.hp += (pet.hp * (statusEffect.value / 100));
-          }
+          // Buffs are applied when calculating stats
           break;
         case EffectTypes.DEBUFF:
-          if (statusEffect.valueType == 'percentage') {
-            if (statusEffect.stat == 'atk')
-              pet.attack -= (pet.attack * (statusEffect.value / 100));
-            if (statusEffect.stat == 'def')
-              pet.defense -= (pet.defense * (statusEffect.value / 100));
-            if (statusEffect.stat == 'spd')
-              pet.speed -= (pet.speed * (statusEffect.value / 100));
-            if (statusEffect.stat == 'hp')
-              pet.hp -= (pet.hp * (statusEffect.value / 100));
-          }
+          // Debuffs are applied when calculating stats
           break;
         case EffectTypes.FREEZE:
+          // Skip turn completely
+          await sendMessage(`${pet.name} is frozen and cannot move!`);
+          break;
         case EffectTypes.BLIND:
+          // Blind effect affects accuracy
+          break;
         case EffectTypes.PARALYZE:
+          // Paralyze effect affects speed (70% reduction)
+          break;
         case EffectTypes.STUN:
+          // Skip turn completely
+          await sendMessage(`${pet.name} is stunned and cannot move!`);
           break;
       }
 
@@ -172,6 +166,22 @@ export class BattleUseCase {
     defendingPet: Pet,
     sendMessage: (message: string) => Promise<void>
   ): Promise<TurnResult> {
+    // Check if pet is frozen or stunned
+    const isFrozen = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.FREEZE);
+    const isStunned = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.STUN);
+    
+    if (isFrozen || isStunned) {
+      await sendMessage(`${attackingPet.name} is unable to move!`);
+      return { isDefeated: false, expGain: 0 };
+    }
+
+    // Check if pet is paralyzed (30% chance to move)
+    const isParalyzed = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.PARALYZE);
+    if (isParalyzed && Math.random() > 0.3) {
+      await sendMessage(`${attackingPet.name} is paralyzed and cannot move!`);
+      return { isDefeated: false, expGain: 0 };
+    }
+
     const skill = this.selectSkill(attackingPet);
     const damageResult = this.battleService.calculateSkillDamage(attackingPet, defendingPet, skill);
 
@@ -189,8 +199,9 @@ export class BattleUseCase {
       // Apply all status effects from the skill
       for (const statusEffect of skill.statusEffect) {
         const newStatus: BattleStatus = {
-          statusEffect: statusEffect,
+          statusEffect: { ...statusEffect, sourceAtk: attackingPet.attack }, // Store attacker's ATK for DoT calculations
           turnsRemaining: statusEffect.turns,
+          turnsTotal: statusEffect.turns, // Store total turns for poison escalation
         };
 
         if (statusEffect.target === 'enemy') {
@@ -203,10 +214,28 @@ export class BattleUseCase {
       }
     }
 
+    // Handle energy steal effects
+    const energyStealEffect = skill.statusEffect?.find(s => s.affects === AffectTypes.HEAL_ON_DAMAGE);
+    if (energyStealEffect && energyStealEffect.valueType === 'percentage') {
+      const energyStolen = Math.floor(energyStealEffect.value / 100 * damageResult.damage);
+      if (energyStolen > 0) {
+        attackingPet.energy = Math.min(attackingPet.maxEnergy, attackingPet.energy + energyStolen);
+        defendingPet.energy = Math.max(0, defendingPet.energy - energyStolen);
+        await sendMessage(`${attackingPet.name} stole ${energyStolen} energy from ${defendingPet.name}!`);
+      }
+    }
+
     if (defendingPet.hp <= 0) {
       const winnerName = attackingPet.name;
       const expGain = 50;
       await sendMessage(`${defendingPet.name} has been defeated! **${winnerName} wins!**`);
+      
+      // Handle kill rewards (e.g., Dragon Fire Soul)
+      if (attackingPet.species === "dragon" && attackingPet.skills.some(s => s.name === "Fire Soul")) {
+        attackingPet.energy = Math.min(attackingPet.maxEnergy, attackingPet.energy + 2);
+        await sendMessage(`${attackingPet.name} recovers 2 energy from Fire Soul!`);
+      }
+      
       return { isDefeated: true, winner: attackingPet.id, expGain };
     }
 

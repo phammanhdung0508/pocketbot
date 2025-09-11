@@ -102,7 +102,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         target: 'enemy',
         value: 60,
         valueType: 'percentage',
-        chance: 30,
+        chance: 100,
         turns: 3,
         affects: AffectTypes.ACCURACY_REDUCTION,
       }],
@@ -132,7 +132,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         valueType: 'percentage',
         stat: 'def',
       }],
-      description: 'Hồi 35% max HP, +40% Def cho 3 turns',
+      description: 'Hồi 35% max HP, +40% resistance vs all elements cho 3 turns',
       levelReq: 60,
     },
     {
@@ -144,7 +144,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       statusEffect: [{
         type: EffectTypes.DEBUFF,
         target: 'enemy',
-        chance: 40,
+        chance: 100,
         turns: 1,
         value: 60,
         valueType: 'percentage',
@@ -196,14 +196,14 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       statusEffect: [{
         type: EffectTypes.BUFF,
         target: "self",
-        chance: 50,
+        chance: 100,
         stat: "spd",
         value: 100,
         valueType: "percentage",
         turns: 1,
         affects: AffectTypes.ALWAYS_HITS,
       }],
-      description: 'Cause 473 damage, have 50% get +100% SPD this turn, always hits, cost 4',
+      description: 'Cause 473 damage, +100% SPD this turn, always hits, cost 4',
       levelReq: 60,
     },
     {
@@ -216,7 +216,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         target: "self",
         chance: 100,
         turns: 3,
-        value: 60,
+        value: 80,
         valueType: "percentage",
         stat: "atk",
       }, {
@@ -225,10 +225,10 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         chance: 50,
         turns: 3,
         value: 25,
-        valueType: "percentage",
+        valueType: "damage",
       },
       ],
-      description: "Next 3 attacks deal +60% damage và có 50% Burn chance, cost 3",
+      description: "Next 3 attacks deal +80% damage và có 50% Burn chance, cost 3",
       levelReq: 60,
     },
     {
@@ -261,7 +261,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
           target: "self",
           chance: 100,
           turns: 2,
-          value: 70,
+          value: 90,
           valueType: "percentage",
           stat: "atk",
         },
@@ -285,7 +285,33 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         stat: "hp",
         affects: AffectTypes.HEAL_ON_DAMAGE,
       },
-      ],
+      {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 2,
+        value: 100,
+        valueType: "percentage",
+        stat: "atk",
+      },
+      {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 2,
+        value: 100,
+        valueType: "percentage",
+        stat: "def",
+      },
+      {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 2,
+        value: 100,
+        valueType: "percentage",
+        stat: "spd",
+      }],
       description: "Deals massive damage, heals for 60% of it, and buffs all stats.",
       levelReq: 100,
     },
@@ -354,6 +380,15 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
           chance: 100,
           value: 60,
           valueType: 'percentage'
+        },
+        {
+          type: EffectTypes.BUFF,
+          target: "self",
+          stat: "def", // dodge rate represented as DEF buff
+          turns: 4,
+          chance: 100,
+          value: 40,
+          valueType: 'percentage'
         }
       ],
       description: "+60% SPD and +40% dodge rate for 4 turns.",
@@ -380,9 +415,17 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         value: 30,
         valueType: 'percentage',
         immunities: ElementType.FIRE,
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: -1,
+        value: 30,
+        valueType: 'percentage',
+        immunities: ElementType.LIGHTNING,
       }],
       description:
-        "Passive: Heals 8% max HP each turn. Taking Fire damage heals 15% more. Water skills cost -1 Energy.",
+        "Passive: Heals 8% max HP each turn. Taking Fire/Lightning damage heals 15% more. Water skills cost -1 Energy.",
       levelReq: 40,
     },
     {
@@ -393,6 +436,13 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       energyCost: 3,
       statusEffect:
         [{
+          type: EffectTypes.BURN,
+          target: "enemy",
+          chance: 100,
+          turns: 3,
+          value: 25,
+          valueType: 'damage'
+        }, {
           type: EffectTypes.DEBUFF,
           target: "enemy",
           stat: "def",
@@ -405,14 +455,218 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       levelReq: 60,
     },
     {
+      name: "Warm Current",
+      type: 'skill',
+      element: ElementType.FIRE,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'hp',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 50,
+        valueType: 'percentage',
+        stat: 'atk',
+      }],
+      description: 'Hồi 40% max HP, +50% ATK cho 3 turns',
+      levelReq: 60,
+    },
+    {
+      name: "Muddy Current",
+      type: 'skill',
+      damage: 339,
+      element: ElementType.EARTH,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.DEBUFF,
+        target: "enemy",
+        stat: "spd",
+        value: -50,
+        turns: 4,
+        valueType: 'percentage',
+        chance: 100
+      }, {
+        type: EffectTypes.DEBUFF,
+        target: "enemy",
+        stat: "def", // accuracy represented as DEF debuff
+        value: -40,
+        turns: 4,
+        valueType: 'percentage',
+        chance: 100,
+        affects: AffectTypes.ACCURACY_REDUCTION
+      }],
+      description: "339 damage, enemy SPD -50% và accuracy -40% cho 4 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Earthen Shell",
+      type: 'skill',
+      element: ElementType.EARTH,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 80,
+        valueType: 'percentage',
+        stat: 'def',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 25,
+        valueType: 'percentage',
+        stat: 'atk',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 1, // True
+        valueType: 'flag',
+        properties: {
+          critRateBonus: -100
+        }
+      }],
+      description: "+80% DEF, +25% ATK, immunity vs critical hits cho 4 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Hydro Cyclone",
+      type: 'skill',
+      damage: 339,
+      element: ElementType.AIR,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.STUN,
+        target: "enemy",
+        chance: 100,
+        turns: 1,
+        value: 1,
+        valueType: "flag",
+      }],
+      description: "339 damage, enemy lose next turn",
+      levelReq: 60,
+    },
+    {
+      name: "Mist Form",
+      type: 'skill',
+      element: ElementType.AIR,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 80,
+        valueType: 'percentage',
+        stat: 'def', // dodge rate represented as DEF buff
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 1, // True
+        valueType: 'flag',
+        immunities: ElementType.PHYSICAL,
+      }],
+      description: "+80% dodge, immunity vs Physical attacks cho 3 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Electro Tide",
+      type: 'skill',
+      damage: 339,
+      element: ElementType.LIGHTNING,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.PARALYZE,
+        target: "enemy",
+        chance: 70,
+        turns: 1,
+        value: 1,
+        valueType: "flag",
+      }, {
+        type: EffectTypes.DEBUFF,
+        target: "enemy",
+        chance: 100,
+        turns: 1,
+        value: 1,
+        valueType: 'flag',
+        stat: 'hp', // Energy steal represented as HP debuff
+        affects: AffectTypes.HEAL_ON_DAMAGE
+      }],
+      description: "339 damage, 70% chance Paralyze, steal 1 Energy từ enemy",
+      levelReq: 60,
+    },
+    {
+      name: "Conductive Flow",
+      type: 'skill',
+      element: ElementType.LIGHTNING,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 4,
+        value: 100,
+        valueType: "percentage",
+        stat: "atk",
+      }],
+      description: "Next 4 Electric attacks +100% damage và ignore resistances",
+      levelReq: 60,
+    },
+    {
       name: "Oceanic Dominion",
       type: "skill",
       damage: 517,
       element: ElementType.WATER,
       energyCost: 5,
       statusEffect:
-      [{ type: EffectTypes.BUFF, target: "self", chance: 100, turns: 3, value: 4, valueType: 'percentage' }],
-      description: "Deals damage, recovers 4 energy, and cleanses debuffs.",
+      [{
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 3,
+        value: 4,
+        valueType: 'flag',
+        stat: 'hp' // Energy recovery represented as HP buff
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 3,
+        value: 60,
+        valueType: 'percentage',
+        stat: 'atk'
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 3,
+        value: 60,
+        valueType: 'percentage',
+        stat: 'def'
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 3,
+        value: 60,
+        valueType: 'percentage',
+        stat: 'spd'
+      }],
+      description: "Deals damage, recovers 4 energy, and buffs all stats.",
       levelReq: 100,
     },
   ],
@@ -479,7 +733,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         value: 30,
         valueType: 'percentage',
         stat: 'spd',
-        affects: AffectTypes.ALWAYS_HITS
+        affects: AffectTypes.ALWAYS_HITS,
       }],
       description: "A powerful punch that always hits and may slow.",
       levelReq: 20,
@@ -489,7 +743,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       type: 'passive',
       element: ElementType.EARTH,
       description:
-        "Passive: If damage taken > 25% of current HP, reduce it by 60%. +5% DEF each turn (max 50%).",
+        "Passive: If damage taken >5% of current5% of current HP, reduce it by 60%. +5% DEF each turn (max 50%). Immunity vs Poison.",
       levelReq: 40,
     },
     {
@@ -505,9 +759,198 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         turns: 3,
         value: 25,
         valueType: 'damage',
-        affects: AffectTypes.IGNORE_DEFENSE
+      }, {
+        type: EffectTypes.DEBUFF,
+        target: 'enemy',
+        chance: 100,
+        turns: 1,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'def',
+        affects: AffectTypes.IGNORE_DEFENSE,
       }],
       description: "A fiery fist that burns and ignores 40% defense.",
+      levelReq: 60,
+    },
+    {
+      name: "Lava Armor",
+      type: 'skill',
+      element: ElementType.FIRE,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 60,
+        valueType: 'percentage',
+        stat: 'def',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 30,
+        valueType: 'percentage',
+        stat: 'atk',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'hp', // Fire damage reflection represented as HP buff
+        affects: AffectTypes.HEAL_ON_DAMAGE
+      }],
+      description: "+60% DEF, reflect 40% damage as Fire, +30% ATK cho 4 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Mud Barrage",
+      type: 'skill',
+      damage: 406,
+      element: ElementType.WATER,
+      energyCost: 4,
+      statusEffect: [{
+        type: EffectTypes.DEBUFF,
+        target: "enemy",
+        stat: "spd",
+        value: -70,
+        turns: 4,
+        valueType: 'percentage',
+        chance: 100
+      }, {
+        type: EffectTypes.DEBUFF,
+        target: "enemy",
+        stat: "def",
+        value: -30,
+        turns: 4,
+        valueType: 'percentage',
+        chance: 100
+      }],
+      description: "406 damage, enemy SPD -70% và DEF -30% cho 4 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Clay Regeneration",
+      type: 'skill',
+      element: ElementType.WATER,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'hp',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 60,
+        valueType: 'percentage',
+        stat: 'def',
+      }],
+      description: 'Hồi 40% max HP, +60% DEF cho 4 turns',
+      levelReq: 60,
+    },
+    {
+      name: "Dust Crusher",
+      type: 'skill',
+      damage: 406,
+      element: ElementType.AIR,
+      energyCost: 4,
+      statusEffect: [{
+        type: EffectTypes.BLIND,
+        target: 'enemy',
+        chance: 100,
+        turns: 4,
+        value: 1, // True
+        valueType: 'flag',
+        affects: AffectTypes.ACCURACY_REDUCTION
+      }],
+      description: "406 damage, enemy bị Blind cho 4 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Rock Slide",
+      type: 'skill',
+      damage: 406,
+      element: ElementType.AIR,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 250,
+        valueType: "percentage",
+        stat: "atk",
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 1, // True
+        valueType: 'flag',
+        properties: {
+          critRateBonus: 100
+        }
+      }],
+      description: "Next attack deals 250% damage và always crits",
+      levelReq: 60,
+    },
+    {
+      name: "Crystal Slam",
+      type: 'skill',
+      damage: 406,
+      element: ElementType.LIGHTNING,
+      energyCost: 4,
+      statusEffect: [{
+        type: EffectTypes.PARALYZE,
+        target: "enemy",
+        chance: 60,
+        turns: 1,
+        value: 1,
+        valueType: "flag",
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 1,
+        valueType: 'flag',
+        stat: 'hp', // Energy recovery represented as HP buff
+      }],
+      description: "406 damage, 60% chance Paralyze, recover 1 Energy",
+      levelReq: 60,
+    },
+    {
+      name: "Magnetic Field",
+      type: 'skill',
+      element: ElementType.LIGHTNING,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.DEBUFF,
+        target: "enemy",
+        chance: 100,
+        turns: 3,
+        value: 1, // True
+        valueType: 'flag',
+        immunities: ElementType.PHYSICAL,
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'atk',
+      }],
+      description: "Enemy không thể sử dụng Physical attacks cho 3 turns, +40% ATK",
       levelReq: 60,
     },
     {
@@ -524,8 +967,16 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         valueType: 'percentage',
         turns: 3,
         chance: 100
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 3,
+        value: 1, // True
+        valueType: 'flag',
+        immunities: 'all'
       }],
-      description: "Massive damage and +100% DEF for 3 turns.",
+      description: "Massive damage and +100% DEF for 3 turns, immunity vs all status effects.",
       levelReq: 100,
     },
   ],
@@ -571,6 +1022,14 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         valueType: 'percentage',
         turns: 4,
         chance: 100
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        stat: "def", // dodge rate represented as DEF buff
+        value: 50,
+        valueType: 'percentage',
+        turns: 4,
+        chance: 100
       }],
       description: "+80% SPD and +50% dodge rate for 4 turns.",
       levelReq: 20,
@@ -601,7 +1060,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       type: 'passive',
       element: ElementType.AIR,
       description:
-        "Passive: 35% chance to dodge an attack and recover 1 Energy. On successful dodge, next attack +50% damage.",
+        "Passive: 35% chance to dodge an attack and recover 1 Energy. +25% SPD base. Khi dodge thành công, next attack +50% damage. Wind skills cost -1 Energy (minimum 0).",
       levelReq: 40,
     },
     {
@@ -626,7 +1085,202 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         turns: 1,
         chance: 100
       }],
-      description: "A fiery dive that burns and massively boosts speed for one turn.",
+      description: "386 damage, 45% chance Burn, +150% SPD this turn",
+      levelReq: 60,
+    },
+    {
+      name: "Phoenix Rise",
+      type: 'skill',
+      element: ElementType.FIRE,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 1,
+        value: 50,
+        valueType: 'percentage',
+        stat: 'hp',
+        affects: AffectTypes.DEBUFF_CURE
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 70,
+        valueType: 'percentage',
+        stat: 'spd',
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 2,
+        valueType: 'flag',
+        stat: 'hp', // Energy recovery represented as HP buff
+      }],
+      description: "Hồi 50% max HP, cleanse debuffs, +70% SPD cho 3 turns, recover 2 Energy",
+      levelReq: 60,
+    },
+    {
+      name: "Ice Storm Strike",
+      type: 'skill',
+      damage: 386,
+      element: ElementType.WATER,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.FREEZE,
+        target: "enemy",
+        chance: 50,
+        value: 1,
+        valueType: "flag",
+        turns: 1
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'atk', // accuracy represented as ATK buff
+      }],
+      description: "386 damage, 50% chance Freeze, +40% accuracy",
+      levelReq: 60,
+    },
+    {
+      name: "Mist Veil",
+      type: 'skill',
+      element: ElementType.WATER,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 2,
+        value: 90,
+        valueType: 'percentage',
+        stat: 'def', // dodge rate represented as DEF buff
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 2,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'spd',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 2,
+        value: 1, // True
+        valueType: 'flag',
+        immunities: ElementType.PHYSICAL,
+      }],
+      description: "+90% dodge, +40% SPD, immunity vs targeted attacks cho 2 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Dust Tornado",
+      type: 'skill',
+      damage: 386,
+      element: ElementType.EARTH,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.BLIND,
+        target: 'enemy',
+        chance: 100,
+        turns: 3,
+        value: 1, // True
+        valueType: 'flag',
+        affects: AffectTypes.ACCURACY_REDUCTION
+      }, {
+        type: EffectTypes.SLOW,
+        target: 'enemy',
+        chance: 100,
+        turns: 3,
+        value: 50,
+        valueType: 'percentage',
+        stat: 'spd'
+      }],
+      description: "386 damage, Blind + Slow combo cho 3 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Mountain Gale",
+      type: 'skill',
+      element: ElementType.EARTH,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 50,
+        valueType: 'percentage',
+        stat: 'atk',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 40,
+        valueType: 'percentage',
+        stat: 'def',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 30,
+        valueType: 'percentage',
+        stat: 'spd',
+      }],
+      description: "+50% ATK, +40% DEF, +30% SPD cho 3 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Thunder Dive",
+      type: 'skill',
+      damage: 386,
+      element: ElementType.LIGHTNING,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.PARALYZE,
+        target: "enemy",
+        chance: 60,
+        turns: 1,
+        value: 1,
+        valueType: "flag",
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 1, // True
+        valueType: 'flag',
+        properties: {
+          critRateBonus: 100
+        }
+      }],
+      description: "386 damage, 60% chance Paralyze, always crits",
+      levelReq: 60,
+    },
+    {
+      name: "Static Shield",
+      type: 'skill',
+      element: ElementType.LIGHTNING,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 4,
+        value: 70,
+        valueType: "percentage",
+        stat: "def", // Paralyze chance represented as DEF buff
+      }],
+      description: "Next 4 enemy attacks have 70% chance to Paralyze attacker",
       levelReq: 60,
     },
     {
@@ -638,21 +1292,37 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       statusEffect: [{
         type: EffectTypes.BUFF,
         target: "self",
-        value: 3,
+        stat: "spd",
+        value: 150,
         valueType: 'percentage',
-        turns: 1,
-        chance: 100,
-        stat: 'hp'
+        turns: 3,
+        chance: 100
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        stat: "def", // dodge rate represented as DEF buff
+        value: 80,
+        valueType: 'percentage',
+        turns: 3,
+        chance: 100
       }, {
         type: EffectTypes.BLIND,
         target: 'enemy',
         chance: 100,
         turns: 4,
-        value: 60,
-        valueType: 'percentage',
+        value: 1, // True
+        valueType: 'flag',
         affects: AffectTypes.ACCURACY_REDUCTION
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 3,
+        valueType: 'flag',
+        stat: 'hp', // Energy recovery represented as HP buff
       }],
-      description: "Deals damage, recovers 3 energy, and blinds the enemy.",
+      description: "Deals damage, +150% SPD, +80% dodge cho 3 turns, enemy bị Blind cho 4 turns, recover 3 Energy",
       levelReq: 100,
     },
   ],
@@ -723,6 +1393,14 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         valueType: 'percentage',
         turns: 4,
         chance: 100
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 4,
+        value: 1,
+        valueType: 'flag',
+        stat: 'hp', // Energy recovery represented as HP buff
       }],
       description: "+60% DEF, +40% SPD, recover 1 Energy per turn for 4 turns.",
       levelReq: 20,
@@ -732,7 +1410,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       type: 'passive',
       element: ElementType.LIGHTNING,
       description:
-        "Passive: 50% chance to counter attacks with 25% ATK damage + Paralyze. Using Electric skills has 50% chance to recover 1 Energy.",
+        "Passive: 50% chance to counter attacks with 25% ATK damage + Paralyze. Using Electric skills has 50% chance to recover 1 Energy. Immunity vs Paralyze.",
       levelReq: 40,
     },
     {
@@ -743,11 +1421,11 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
       energyCost: 4,
       statusEffect: [{
         type: EffectTypes.PARALYZE,
-        target: 'enemy',
+        target: "enemy",
         chance: 100,
         turns: 2,
         value: 50,
-        valueType: 'percentage',
+        valueType: "percentage",
         stat: 'spd'
       }, {
         type: EffectTypes.BURN,
@@ -758,6 +1436,191 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         valueType: 'damage'
       }],
       description: "A bolt of plasma that also burns.",
+      levelReq: 60,
+    },
+    {
+      name: "Supercharged",
+      type: 'skill',
+      element: ElementType.FIRE,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 100,
+        valueType: 'percentage',
+        stat: 'atk',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 3,
+        value: 50,
+        valueType: 'percentage',
+        stat: 'spd',
+      }],
+      description: "+100% ATK, +50% SPD, next 3 attacks ignore DEF",
+      levelReq: 60,
+    },
+    {
+      name: "Hydro Shock",
+      type: 'skill',
+      damage: 427,
+      element: ElementType.WATER,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.PARALYZE,
+        target: "enemy",
+        chance: 100,
+        turns: 1,
+        value: 1,
+        valueType: "flag",
+      }, {
+        type: EffectTypes.DEBUFF,
+        target: "enemy",
+        chance: 100,
+        turns: 1,
+        value: 2,
+        valueType: 'flag',
+        stat: 'hp', // Energy steal represented as HP debuff
+        affects: AffectTypes.HEAL_ON_DAMAGE
+      }],
+      description: "427 damage, conduct damage (+50% if enemy wet), steal 2 Energy",
+      levelReq: 60,
+    },
+    {
+      name: "Tidal Charge",
+      type: 'skill',
+      element: ElementType.WATER,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 1,
+        value: 35,
+        valueType: 'percentage',
+        stat: 'hp',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 1,
+        value: 60,
+        valueType: 'percentage',
+        stat: 'atk',
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 3,
+        valueType: 'flag',
+        stat: 'hp', // Energy recovery represented as HP buff
+      }],
+      description: 'Hồi 35% max HP, +60% ATK, recover 3 Energy',
+      levelReq: 60,
+    },
+    {
+      name: "Ground Discharge",
+      type: 'skill',
+      damage: 427,
+      element: ElementType.EARTH,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.PARALYZE,
+        target: "enemy",
+        chance: 100,
+        turns: 1,
+        value: 1,
+        valueType: "flag",
+      }, {
+        type: EffectTypes.SLOW,
+        target: 'enemy',
+        chance: 100,
+        turns: 2,
+        value: 50,
+        valueType: 'percentage',
+        stat: 'spd'
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 1,
+        value: 1,
+        valueType: 'flag',
+        stat: 'hp', // Energy recovery represented as HP buff
+      }],
+      description: "427 damage, Paralyze + Slow combo, recover 1 Energy",
+      levelReq: 60,
+    },
+    {
+      name: "Crystal Matrix",
+      type: 'skill',
+      element: ElementType.EARTH,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 50,
+        valueType: 'percentage',
+        stat: 'atk',
+      }, {
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 70,
+        valueType: 'percentage',
+        stat: 'def',
+      }],
+      description: "+50% ATK, +70% DEF, Electric attacks gain +100% crit rate cho 4 turns",
+      levelReq: 60,
+    },
+    {
+      name: "Lightning Storm",
+      type: 'skill',
+      damage: 427,
+      element: ElementType.AIR,
+      energyCost: 3,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: "self",
+        stat: "spd",
+        value: 200,
+        valueType: 'percentage',
+        turns: 1,
+        chance: 100
+      }, {
+        type: EffectTypes.BLIND,
+        target: 'enemy',
+        chance: 80,
+        turns: 2,
+        value: 1, // True
+        valueType: 'flag',
+        affects: AffectTypes.ACCURACY_REDUCTION
+      }],
+      description: "427 damage, +200% SPD this turn, 80% chance Blind",
+      levelReq: 60,
+    },
+    {
+      name: "Storm Call",
+      type: 'skill',
+      element: ElementType.AIR,
+      energyCost: 2,
+      statusEffect: [{
+        type: EffectTypes.BUFF,
+        target: 'self',
+        chance: 100,
+        turns: 4,
+        value: 80,
+        valueType: 'percentage',
+        stat: 'spd',
+      }],
+      description: "+80% SPD, next 4 attacks heal 20% damage dealt and recover 1 Energy each",
       levelReq: 60,
     },
     {
@@ -780,10 +1643,35 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         chance: 100,
         turns: 1,
         value: 4,
-        valueType: 'percentage',
-        stat: 'hp'
+        valueType: 'flag',
+        stat: 'hp', // Energy steal represented as HP debuff
+        affects: AffectTypes.HEAL_ON_DAMAGE
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 2,
+        value: 90,
+        valueType: "percentage",
+        stat: "atk",
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 2,
+        value: 90,
+        valueType: "percentage",
+        stat: "def",
+      }, {
+        type: EffectTypes.BUFF,
+        target: "self",
+        chance: 100,
+        turns: 2,
+        value: 90,
+        valueType: "percentage",
+        stat: "spd",
       }],
-      description: "Deals massive damage, paralyzes for 3 turns, and steals 4 energy.",
+      description: "Deals massive damage, paralyzes for 3 turns, steals 4 energy, and buffs all stats.",
       levelReq: 100,
     },
   ],

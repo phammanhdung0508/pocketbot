@@ -34,4 +34,12 @@ export class BattleService implements IBattleService {
   getTurnOrder(petA: Pet, petB: Pet): [Pet, Pet] {
       return this.battleSystem.getTurnOrder(petA, petB);
   }
+
+  calculateDotDamage(pet: Pet, statusEffect: any): number {
+    return this.battleSystem.calculateDotDamage(pet, statusEffect);
+  }
+
+  resetBattle(): void {
+    this.battleSystem.resetBattle();
+  }
 }
