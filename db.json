@@ -110,6 +110,64 @@
           "passives": []
         }
       ]
+    },
+    "1952273582008569856": {
+      "pets": [
+        {
+          "id": "8126b5f2-10a2-4c4a-9e47-5d4b5e844624",
+          "name": "kingspeed",
+          "species": "bird",
+          "element": "air",
+          "secondaryElements": [],
+          "level": 1,
+          "exp": 0,
+          "hp": 880,
+          "maxHp": 880,
+          "attack": 115,
+          "defense": 75,
+          "speed": 160,
+          "energy": 7,
+          "maxEnergy": 7,
+          "stamina": 100,
+          "hunger": 100,
+          "createdAt": "2025-09-12T14:49:19.274Z",
+          "lastUpdate": "2025-09-12T14:49:19.274Z",
+          "skills": [
+            {
+              "name": "Basic Attack",
+              "type": "skill",
+              "damage": 220,
+              "element": "physical",
+              "energyCost": 0,
+              "description": "A basic physical attack.",
+              "levelReq": 0
+            },
+            {
+              "name": "Wind Razor",
+              "type": "skill",
+              "damage": 275,
+              "element": "air",
+              "energyCost": 1,
+              "statusEffect": [
+                {
+                  "type": "blind",
+                  "target": "enemy",
+                  "chance": 25,
+                  "turns": 2,
+                  "value": 40,
+                  "valueType": "percentage",
+                  "affects": "accuracyReduction"
+                }
+              ],
+              "description": "Slashes with wind, may blind the target.",
+              "levelReq": 1
+            }
+          ],
+          "statusEffects": [],
+          "buffs": [],
+          "passives": []
+        }
+      ]
     }
   }
 }
