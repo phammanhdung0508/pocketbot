@@ -1,22 +1,24 @@
 import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
 import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
+import { ELEMENT_COLORS } from "@/application/constants/ElementColors";
 import { BattleStatus } from "@/domain/entities/BattleStatus";
 import { Pet } from "@/domain/entities/Pet";
 import { EffectTypes } from "@/domain/enums/EffectTypes";
 import { IBattleService } from "@/domain/interfaces/services/IBattleService";
 import { IEmbedProps } from "mezon-sdk";
+import { Skill } from "@domain/entities/Skill";
 
 // Status effect emojis
 const STATUS_EMOJIS: { [key: string]: string } = {
-  [EffectTypes.BURN]: "🔥",
-  [EffectTypes.FREEZE]: "🧊",
-  [EffectTypes.PARALYZE]: "⚡",
-  [EffectTypes.POISON]: "☠️",
-  [EffectTypes.BLIND]: "👁️",
-  [EffectTypes.SLOW]: "🦥",
-  [EffectTypes.STUN]: "💫",
-  [EffectTypes.BUFF]: "⬆️",
-  [EffectTypes.DEBUFF]: "⬇️"
+    [EffectTypes.BURN]: "🔥",
+    [EffectTypes.FREEZE]: "🧊",
+    [EffectTypes.PARALYZE]: "⚡",
+    [EffectTypes.POISON]: "☠️",
+    [EffectTypes.BLIND]: "👁️",
+    [EffectTypes.SLOW]: "🦥",
+    [EffectTypes.STUN]: "💫",
+    [EffectTypes.BUFF]: "⬆️",
+    [EffectTypes.DEBUFF]: "⬇️"
 };
 
 // Create battle start embed
@@ -28,7 +30,7 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**Level:** ${attacker.level}`,
+                value: `Level: ${attacker.level}`,
                 inline: true
             },
             {
@@ -38,22 +40,7 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**Level:** ${defender.level}`,
-                inline: true
-            },
-            {
-                name: "\u200B",  // Empty field for spacing
-                value: "\u200B",
-                inline: true
-            },
-            {
-                name: "\u200B",  // Empty field for spacing
-                value: "\u200B",
-                inline: true
-            },
-            {
-                name: "\u200B",  // Empty field for spacing
-                value: "\u200B",
+                value: `Level: ${defender.level}`,
                 inline: true
             },
             {
@@ -73,7 +60,7 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
             },
             {
                 name: `HP`,
-                value: `${attacker.hp}/${attacker.maxHp}`,
+                value: `❤️ ${attacker.hp}/${attacker.maxHp}`,
                 inline: true
             },
             {
@@ -83,12 +70,12 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
             },
             {
                 name: `HP`,
-                value: `${defender.hp}/${defender.maxHp}`,
+                value: `❤️ ${defender.hp}/${defender.maxHp}`,
                 inline: true
             },
             {
                 name: `Energy`,
-                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
             {
@@ -98,7 +85,7 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
             },
             {
                 name: `Energy`,
-                value: `${defender.energy}/${defender.maxEnergy}`,
+                value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             },
             {
@@ -163,7 +150,7 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
             },
             {
                 name: `HP`,
-                value: `${attacker.hp}/${attacker.maxHp}`,
+                value: `❤️ ${attacker.hp}/${attacker.maxHp}`,
                 inline: true
             },
             {
@@ -173,12 +160,12 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
             },
             {
                 name: `HP`,
-                value: `${defender.hp}/${defender.maxHp}`,
+                value: `❤️ ${defender.hp}/${defender.maxHp}`,
                 inline: true
             },
             {
                 name: `Energy`,
-                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
             {
@@ -188,7 +175,7 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
             },
             {
                 name: `Energy`,
-                value: `${defender.energy}/${defender.maxEnergy}`,
+                value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             },
             {
@@ -236,7 +223,7 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**Level:** ${attacker.level}`,
+                value: `Level: ${attacker.level}`,
                 inline: true
             },
             {
@@ -246,7 +233,7 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**Level:** ${defender.level}`,
+                value: `Level: ${defender.level}`,
                 inline: true
             },
             {
@@ -266,7 +253,7 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
             },
             {
                 name: `HP`,
-                value: `${attacker.hp}/${attacker.maxHp}`,
+                value: `❤️ ${attacker.hp}/${attacker.maxHp}`,
                 inline: true
             },
             {
@@ -276,12 +263,12 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
             },
             {
                 name: `HP`,
-                value: `${defender.hp}/${defender.maxHp}`,
+                value: `❤️ ${defender.hp}/${defender.maxHp}`,
                 inline: true
             },
             {
                 name: `Energy`,
-                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
             {
@@ -291,7 +278,7 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
             },
             {
                 name: `Energy`,
-                value: `${defender.energy}/${defender.maxEnergy}`,
+                value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             },
             {
@@ -355,7 +342,7 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
             },
             {
                 name: `HP`,
-                value: `${winner.hp}/${winner.maxHp}`,
+                value: `❤️ ${winner.hp}/${winner.maxHp}`,
                 inline: true
             },
             {
@@ -365,12 +352,12 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
             },
             {
                 name: `HP`,
-                value: `${loser.hp}/${loser.maxHp}`,
+                value: `❤️ ${loser.hp}/${loser.maxHp}`,
                 inline: true
             },
             {
                 name: `Energy`,
-                value: `${winner.energy}/${winner.maxEnergy}`,
+                value: `⚡️ ${winner.energy}/${winner.maxEnergy}`,
                 inline: true
             },
             {
@@ -380,7 +367,7 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
             },
             {
                 name: `Energy`,
-                value: `${loser.energy}/${loser.maxEnergy}`,
+                value: `⚡️ ${loser.energy}/${loser.maxEnergy}`,
                 inline: true
             },
             {
@@ -444,7 +431,7 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
             },
             {
                 name: `HP`,
-                value: `${attacker.hp}/${attacker.maxHp}`,
+                value: `❤️ ${attacker.hp}/${attacker.maxHp}`,
                 inline: true
             },
             {
@@ -454,12 +441,12 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
             },
             {
                 name: `HP`,
-                value: `${defender.hp}/${defender.maxHp}`,
+                value: `❤️ ${defender.hp}/${defender.maxHp}`,
                 inline: true
             },
             {
                 name: `Energy`,
-                value: `${attacker.energy}/${attacker.maxEnergy}`,
+                value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
             {
@@ -469,12 +456,39 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
             },
             {
                 name: `Energy`,
-                value: `${defender.energy}/${defender.maxEnergy}`,
+                value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             }
         ],
         footer: {
             text: "The battle has gone on too long."
+        }
+    };
+}
+
+// Create skill usage embed
+export function createSkillUsageEmbed(attackingPet: Pet, skill: Skill, damageResult: any): IEmbedProps {
+    const elementColor = ELEMENT_COLORS[skill.element] || "#95a5a6";
+    const elementEmoji = ELEMENT_EMOJIS[skill.element] || "";
+
+    return {
+        color: elementColor,
+        title: `${SPECIES_EMOJIS[attackingPet.species] || "🐾"} ${attackingPet.name} used ${skill.name} ${elementEmoji}`,
+        description: `Skill Type: ${skill.name}\nEnergy Cost: ${skill.energyCost || 0}\nDamage: ${skill.damage || "Varies"}`,
+        fields: [
+            {
+                name: "🎯 Damage Result",
+                value: `⚔️ Damage Dealt: ${damageResult.damage}\n💥 Critical Hit: ${damageResult.isCrit ? "Yes" : "No"}\n🔮 Effectiveness: ${damageResult.effectiveness}`,
+                inline: true
+            },
+            {
+                name: "📊 Battle Stats",
+                value: `❤️ HP: ${attackingPet.hp}/${attackingPet.maxHp}\n⚡️ Energy: ${attackingPet.energy}/${attackingPet.maxEnergy}`,
+                inline: true
+            }
+        ],
+        footer: {
+            text: `Skill Level Requirement: ${skill.levelReq}`
         }
     };
 }

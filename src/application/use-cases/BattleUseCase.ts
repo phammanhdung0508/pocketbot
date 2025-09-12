@@ -5,14 +5,11 @@ import { BattleStatus } from "@domain/entities/BattleStatus";
 import { Skill } from "@domain/entities/Skill";
 import { EffectTypes } from "@/domain/enums/EffectTypes";
 import { AffectTypes } from "@/domain/enums/AffectTypes";
-import { ElementType } from "@/domain/enums/ElementType";
 import { ChannelMessageContent, IEmbedProps, MarkdownOnMessage } from "mezon-sdk";
-import { parseMarkdown } from "@/shared/utils/parseMarkdown";
-import { ELEMENT_COLORS } from "../constants/ElementColors";
 import { ELEMENT_EMOJIS } from "../constants/ElementEmojis";
 import { SPECIES_EMOJIS } from "../constants/SpeciesEmojis";
 import TurnResult from "@/domain/entities/TurnResult";
-import { createBattleDrawEmbed, createBattleEndEmbed, createBattleStartEmbed, createTurnEndStatusEmbed, createTurnStatusEmbed } from "@/infrastructure/utils/Embed";
+import { createBattleDrawEmbed, createBattleEndEmbed, createBattleStartEmbed, createTurnEndStatusEmbed, createTurnStatusEmbed, createSkillUsageEmbed } from "@/infrastructure/utils/Embed";
 
 interface MarkdownMessage { t: string; mk: MarkdownOnMessage[] }
 
@@ -28,6 +25,9 @@ const STATUS_EMOJIS: { [key: string]: string } = {
   [EffectTypes.BUFF]: "⬆️",
   [EffectTypes.DEBUFF]: "⬇️"
 };
+
+// Utility function for delaying execution
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export class BattleUseCase {
   constructor(
@@ -66,8 +66,19 @@ export class BattleUseCase {
 
     // Battle start message with visual elements
     await sendMessage({
-      t: "**🌟 PVP BATTLE START 🌟**",
+      t: "**BATTLE START**",
       embed: [createBattleStartEmbed(attacker, defender)]
+    });
+
+    // 3-2-1 countdown before battle begins
+    for (let i = 3; i > 0; i--) {
+      await sendMessage({
+        t: `**${i}**`
+      });
+      await delay(1000); // 1 second delay between numbers
+    }
+    await sendMessage({
+      t: "**FIGHT!** 🎉"
     });
 
     let turn = 1;
@@ -75,7 +86,7 @@ export class BattleUseCase {
 
     while (attacker.hp > 0 && defender.hp > 0) {
       await sendMessage({
-        t: "**══════════════════════════════**",
+        t: "",
         embed: [createTurnStatusEmbed(attacker, defender, turn, this.battleService)]
       });
 
@@ -87,6 +98,11 @@ export class BattleUseCase {
           winner = firstPet.id === attacker.id ? attackerMezonId : defenderMezonId;
           break;
         }
+      }
+
+      // Add a 2-second delay before the second pet's turn
+      if (secondPet.hp > 0 && firstPet.hp > 0) {
+        await delay(2000); // 2 second delay
       }
 
       if (secondPet.hp > 0) {
@@ -120,10 +136,18 @@ export class BattleUseCase {
         embed: [createTurnEndStatusEmbed(attacker, defender)]
       });
 
-      turn++;
-      if (turn > 3) {
+      // Add a 5-second delay between turns for better viewing experience
+      if (attacker.hp > 0 && defender.hp > 0 && turn < 3) {
         await sendMessage({
-          t: "**⏰ BATTLE TIMEOUT ⏰**\n*The battle has gone on too long. It's a draw!*"
+          t: "⏳ Preparing next turn..."
+        });
+        await delay(5000); // 5 second delay
+      }
+
+      turn++;
+      if (turn > 5) {
+        await sendMessage({
+          t: "**⏰ BATTLE TIMEOUT**\n*The battle has gone on too long. It's a draw!*"
         });
         break;
       }
@@ -131,7 +155,7 @@ export class BattleUseCase {
 
     // Battle end messages
     await sendMessage({
-      t: "**══════════════════════════════**"
+      t: ""
     });
     
     if (winner !== "draw") {
@@ -139,12 +163,12 @@ export class BattleUseCase {
       const loserPet = winner === attackerMezonId ? defender : attacker;
       
       await sendMessage({
-        t: `🏆 **${winnerPet.name} wins the battle!** 🏆`,
+        t: `🏆 **${winnerPet.name} wins the battle!**`,
         embed: [createBattleEndEmbed(winnerPet, loserPet, winner)]
       });
     } else {
       await sendMessage({
-        t: "🤝 **It's a draw!** 🤝",
+        t: "🤝 **It's a draw!**",
         embed: [createBattleDrawEmbed(attacker, defender)]
       });
     }
@@ -256,8 +280,8 @@ export class BattleUseCase {
     // Show skill usage with element emoji
     const elementEmoji = ELEMENT_EMOJIS[skill.element] || "";
     await sendMessage({
-      t: `${SPECIES_EMOJIS[attackingPet.species] || "🐾"} **${attackingPet.name}** used **${skill.name}** ${elementEmoji}!`,
-      embed: [this.createSkillUsageEmbed(attackingPet, skill, damageResult)]
+      t: ''/*`${SPECIES_EMOJIS[attackingPet.species] || "🐾"} **${attackingPet.name}** used **${skill.name}** ${elementEmoji}!`*/,
+      embed: [createSkillUsageEmbed(attackingPet, skill, damageResult)]
     });
 
     // Show critical hit if applicable
@@ -439,32 +463,5 @@ export class BattleUseCase {
     }
 
     return { isDefeated: false, expGain: 0 };
-  }
-
-  // Create skill usage embed
-  private createSkillUsageEmbed(attackingPet: Pet, skill: Skill, damageResult: any): IEmbedProps {
-    const elementColor = ELEMENT_COLORS[skill.element] || "#95a5a6";
-    const elementEmoji = ELEMENT_EMOJIS[skill.element] || "";
-    
-    return {
-      color: elementColor,
-      title: `${SPECIES_EMOJIS[attackingPet.species] || "🐾"} ${attackingPet.name} used ${skill.name} ${elementEmoji}`,
-      description: `**Skill Type:** ${skill.type}\n**Energy Cost:** ${skill.energyCost || 0}\n**Damage:** ${skill.damage || "Varies"}`,
-      fields: [
-        {
-          name: "🎯 Damage Result",
-          value: `**Damage Dealt:** ${damageResult.damage}\n**Critical Hit:** ${damageResult.isCrit ? "Yes" : "No"}\n**Effectiveness:** ${damageResult.effectiveness}`,
-          inline: true
-        },
-        {
-          name: "📊 Battle Stats",
-          value: `**Attacker HP:** ${attackingPet.hp}/${attackingPet.maxHp}\n**Attacker Energy:** ${attackingPet.energy}/${attackingPet.maxEnergy}`,
-          inline: true
-        }
-      ],
-      footer: {
-        text: `Skill Level Requirement: ${skill.levelReq}`
-      }
-    };
   }
 }

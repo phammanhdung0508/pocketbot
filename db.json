@@ -3,15 +3,15 @@
     "1840686084447539200": {
       "pets": [
         {
-          "id": "cfbfa2d1-bc8b-405c-8cfd-061dcada91de",
-          "name": "kingdra",
+          "id": "93044e7f-81cf-4c2c-9675-f3812b451ec5",
+          "name": "draking",
           "species": "dragon",
           "element": "fire",
           "secondaryElements": [],
           "level": 1,
           "exp": 0,
-          "hp": 3500,
-          "maxHp": 3500,
+          "hp": 850,
+          "maxHp": 850,
           "attack": 140,
           "defense": 90,
           "speed": 100,
@@ -19,8 +19,8 @@
           "maxEnergy": 6,
           "stamina": 100,
           "hunger": 100,
-          "createdAt": "2025-09-11T14:15:34.281Z",
-          "lastUpdate": "2025-09-11T14:15:34.281Z",
+          "createdAt": "2025-09-12T14:48:19.539Z",
+          "lastUpdate": "2025-09-12T14:48:19.539Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -56,110 +56,52 @@
           "passives": []
         },
         {
-          "id": "982b6fc4-dc16-4d5f-bfbc-3695a6d3f894",
-          "name": "nidoking",
-          "species": "golem",
-          "element": "earth",
+          "id": "8126b5f2-10a2-4c4a-9e47-5d4b5e844624",
+          "name": "kingspeed",
+          "species": "bird",
+          "element": "air",
           "secondaryElements": [],
           "level": 1,
           "exp": 0,
-          "hp": 4500,
-          "maxHp": 4500,
-          "attack": 120,
-          "defense": 150,
-          "speed": 60,
-          "energy": 10,
-          "maxEnergy": 10,
+          "hp": 880,
+          "maxHp": 880,
+          "attack": 115,
+          "defense": 75,
+          "speed": 160,
+          "energy": 7,
+          "maxEnergy": 7,
           "stamina": 100,
           "hunger": 100,
-          "createdAt": "2025-09-11T14:16:57.312Z",
-          "lastUpdate": "2025-09-11T14:16:57.312Z",
+          "createdAt": "2025-09-12T14:49:19.274Z",
+          "lastUpdate": "2025-09-12T14:49:19.274Z",
           "skills": [
             {
               "name": "Basic Attack",
               "type": "skill",
-              "damage": 232,
+              "damage": 220,
               "element": "physical",
               "energyCost": 0,
               "description": "A basic physical attack.",
               "levelReq": 0
             },
             {
-              "name": "Boulder Crush",
+              "name": "Wind Razor",
               "type": "skill",
-              "damage": 290,
-              "element": "earth",
+              "damage": 275,
+              "element": "air",
               "energyCost": 1,
               "statusEffect": [
                 {
-                  "type": "slow",
+                  "type": "blind",
                   "target": "enemy",
-                  "chance": 20,
+                  "chance": 25,
                   "turns": 2,
-                  "value": 30,
+                  "value": 40,
                   "valueType": "percentage",
-                  "stat": "spd"
+                  "affects": "accuracyReduction"
                 }
               ],
-              "description": "Crushes with a boulder, may slow the target.",
-              "levelReq": 1
-            }
-          ],
-          "statusEffects": [],
-          "buffs": [],
-          "passives": []
-        }
-      ]
-    },
-    "1948318166522269696": {
-      "pets": [
-        {
-          "id": "982b6fc4-dc16-4d5f-bfbc-3695a6d3f894",
-          "name": "nidoking",
-          "species": "golem",
-          "element": "earth",
-          "secondaryElements": [],
-          "level": 1,
-          "exp": 0,
-          "hp": 4500,
-          "maxHp": 4500,
-          "attack": 120,
-          "defense": 150,
-          "speed": 60,
-          "energy": 10,
-          "maxEnergy": 10,
-          "stamina": 100,
-          "hunger": 100,
-          "createdAt": "2025-09-11T14:16:57.312Z",
-          "lastUpdate": "2025-09-11T14:16:57.312Z",
-          "skills": [
-            {
-              "name": "Basic Attack",
-              "type": "skill",
-              "damage": 232,
-              "element": "physical",
-              "energyCost": 0,
-              "description": "A basic physical attack.",
-              "levelReq": 0
-            },
-            {
-              "name": "Boulder Crush",
-              "type": "skill",
-              "damage": 290,
-              "element": "earth",
-              "energyCost": 1,
-              "statusEffect": [
-                {
-                  "type": "slow",
-                  "target": "enemy",
-                  "chance": 20,
-                  "turns": 2,
-                  "value": 30,
-                  "valueType": "percentage",
-                  "stat": "spd"
-                }
-              ],
-              "description": "Crushes with a boulder, may slow the target.",
+              "description": "Slashes with wind, may blind the target.",
               "levelReq": 1
             }
           ],
