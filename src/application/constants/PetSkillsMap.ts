@@ -606,7 +606,7 @@ const PET_SKILLS_MAP: { [key in PetSpecies]: Skill[] } = {
         stat: 'hp', // Energy steal represented as HP debuff
         affects: AffectTypes.HEAL_ON_DAMAGE
       }],
-      description: "339 damage, 70% chance Paralyze, steal 1 Energy từ enemy",
+      description: "339 damage, 70% chance Paralyze, steal 2 Energy từ enemy",
       levelReq: 60,
     },
     {

@@ -145,7 +145,7 @@ export class BattleUseCase {
       }
 
       turn++;
-      if (turn > 5) {
+      if (turn > 10) {
         await sendMessage({
           t: "**⏰ HẾT GIỜ**\n*Trận đấu kéo dài quá lâu. Hòa nhau!*"
         });
@@ -445,7 +445,7 @@ export class BattleUseCase {
     // Handle energy steal effects
     const energyStealEffect = skill.statusEffect?.find(s => s.affects === AffectTypes.HEAL_ON_DAMAGE);
     if (energyStealEffect && energyStealEffect.valueType === 'percentage') {
-      const energyStolen = Math.floor(energyStealEffect.value / 100 * damageResult.damage);
+      const energyStolen = 2;
       if (energyStolen > 0) {
         attackingPet.energy = Math.min(attackingPet.maxEnergy, attackingPet.energy + energyStolen);
         defendingPet.energy = Math.max(0, defendingPet.energy - energyStolen);
