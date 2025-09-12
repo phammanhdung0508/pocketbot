@@ -25,12 +25,12 @@ const STATUS_EMOJIS: { [key: string]: string } = {
 export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProps {
     return {
         color: "#3498db",
-        title: "⚔️ PVP BATTLE START",
+        title: "⚔️ TRẬN ĐẤU PVP BẮT ĐẦU",
         description: `**${attacker.name}** vs **${defender.name}**`,
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `Level: ${attacker.level}`,
+                value: `Cấp độ: ${attacker.level}`,
                 inline: true
             },
             {
@@ -40,11 +40,11 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `Level: ${defender.level}`,
+                value: `Cấp độ: ${defender.level}`,
                 inline: true
             },
             {
-                name: `Species`,
+                name: `Loài`,
                 value: `${attacker.species.toUpperCase()} ${ELEMENT_EMOJIS[attacker.element]}`,
                 inline: true
             },
@@ -54,7 +54,7 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
                 inline: true
             },
             {
-                name: `Species`,
+                name: `Loài`,
                 value: `${defender.species.toUpperCase()} ${ELEMENT_EMOJIS[defender.element]}`,
                 inline: true
             },
@@ -74,7 +74,7 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
@@ -84,13 +84,13 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             },
             {
-                name: `Secondary Elements`,
-                value: `${attacker.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "None"}`,
+                name: `Nguyên tố phụ`,
+                value: `${attacker.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "Không có"}`,
                 inline: true
             },
             {
@@ -99,13 +99,13 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
                 inline: true
             },
             {
-                name: `Secondary Elements`,
-                value: `${defender.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "None"}`,
+                name: `Nguyên tố phụ`,
+                value: `${defender.secondaryElements.map(e => ELEMENT_EMOJIS[e]).join(" ") || "Không có"}`,
                 inline: true
             }
         ],
         footer: {
-            text: "Battle System v2.0"
+            text: "Hệ thống chiến đấu v2.0"
         },
         timestamp: new Date().toISOString()
     };
@@ -115,12 +115,12 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
 export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number, battleService: IBattleService): IEmbedProps {
     return {
         color: "#f39c12",
-        title: `TURN ${turn}`,
-        description: "Current battle status",
+        title: `LƯỢT ${turn}`,
+        description: "Tình trạng trận đấu hiện tại",
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**Level:** ${attacker.level}`,
+                value: `**Cấp độ:** ${attacker.level}`,
                 inline: true
             },
             {
@@ -130,7 +130,7 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**Level:** ${defender.level}`,
+                value: `**Cấp độ:** ${defender.level}`,
                 inline: true
             },
             {
@@ -164,7 +164,7 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
@@ -174,12 +174,12 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             },
             {
-                name: `Status Effects`,
+                name: `Hiệu ứng`,
                 value: `${getStatusEffectsString(attacker.statusEffects)}`,
                 inline: true
             },
@@ -189,12 +189,12 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
                 inline: true
             },
             {
-                name: `Status Effects`,
+                name: `Hiệu ứng`,
                 value: `${getStatusEffectsString(defender.statusEffects)}`,
                 inline: true
             },
             {
-                name: `Speed`,
+                name: `Tốc độ`,
                 value: `${battleService.getEffectiveStat(attacker, 'speed').toFixed(2)}`,
                 inline: true
             },
@@ -204,13 +204,13 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
                 inline: true
             },
             {
-                name: `Speed`,
+                name: `Tốc độ`,
                 value: `${battleService.getEffectiveStat(defender, 'speed').toFixed(2)}`,
                 inline: true
             }
         ],
         footer: {
-            text: `Turn ${turn} | Effective skills deal more damage!`
+            text: `Lượt ${turn} | Các kỹ năng hiệu quả sẽ gây nhiều sát thương hơn!`
         }
     };
 }
@@ -219,11 +219,11 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
 export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedProps {
     return {
         color: "#2ecc71",
-        title: "📊 STATUS UPDATE",
+        title: "📊 CẬP NHẬT TRẠNG THÁI",
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `Level: ${attacker.level}`,
+                value: `Cấp độ: ${attacker.level}`,
                 inline: true
             },
             {
@@ -233,7 +233,7 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `Level: ${defender.level}`,
+                value: `Cấp độ: ${defender.level}`,
                 inline: true
             },
             {
@@ -267,7 +267,7 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
@@ -277,12 +277,12 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             },
             {
-                name: `Status Effects`,
+                name: `Hiệu ứng`,
                 value: `${getStatusEffectsString(attacker.statusEffects)}`,
                 inline: true
             },
@@ -292,13 +292,13 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
                 inline: true
             },
             {
-                name: `Status Effects`,
+                name: `Hiệu ứng`,
                 value: `${getStatusEffectsString(defender.statusEffects)}`,
                 inline: true
             }
         ],
         footer: {
-            text: "Energy management is key to victory!"
+            text: "Quản lý năng lượng là chìa khóa để chiến thắng!"
         }
     };
 }
@@ -307,12 +307,12 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
 export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string): IEmbedProps {
     return {
         color: "#27ae60",
-        title: "🏆 BATTLE RESULT 🏆",
-        description: `**${winner.name}** wins the battle!`,
+        title: "🏆 KẾT QUẢ TRẬN ĐẤU 🏆",
+        description: `**${winner.name}** thắng trận đấu!`,
         fields: [
             {
-                name: `👑 Winner: ${SPECIES_EMOJIS[winner.species] || "🐾"} ${winner.name}`,
-                value: `**Level:** ${winner.level}`,
+                name: `👑 Người thắng: ${SPECIES_EMOJIS[winner.species] || "🐾"} ${winner.name}`,
+                value: `**Cấp độ:** ${winner.level}`,
                 inline: true
             },
             {
@@ -321,8 +321,8 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
                 inline: true
             },
             {
-                name: `💀 Loser: ${SPECIES_EMOJIS[loser.species] || "🐾"} ${loser.name}`,
-                value: `**Level:** ${loser.level}`,
+                name: `💀 Người thua: ${SPECIES_EMOJIS[loser.species] || "🐾"} ${loser.name}`,
+                value: `**Cấp độ:** ${loser.level}`,
                 inline: true
             },
             {
@@ -356,7 +356,7 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${winner.energy}/${winner.maxEnergy}`,
                 inline: true
             },
@@ -366,12 +366,12 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${loser.energy}/${loser.maxEnergy}`,
                 inline: true
             },
             {
-                name: `Status Effects`,
+                name: `Hiệu ứng`,
                 value: `${getStatusEffectsString(winner.statusEffects)}`,
                 inline: true
             },
@@ -381,13 +381,13 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
                 inline: true
             },
             {
-                name: `Status Effects`,
+                name: `Hiệu ứng`,
                 value: `${getStatusEffectsString(loser.statusEffects)}`,
                 inline: true
             }
         ],
         footer: {
-            text: "Victory rewards: 50 EXP"
+            text: "Phần thưởng chiến thắng: 50 EXP"
         }
     };
 }
@@ -396,12 +396,12 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
 export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps {
     return {
         color: "#9b59b6",
-        title: "🤝 BATTLE RESULT 🤝",
-        description: "It's a draw!",
+        title: "🤝 KẾT QUẢ TRẬN ĐẤU 🤝",
+        description: "Hòa nhau!",
         fields: [
             {
                 name: `${SPECIES_EMOJIS[attacker.species] || "🐾"} ${attacker.name}`,
-                value: `**Level:** ${attacker.level}`,
+                value: `**Cấp độ:** ${attacker.level}`,
                 inline: true
             },
             {
@@ -411,7 +411,7 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
             },
             {
                 name: `${SPECIES_EMOJIS[defender.species] || "🐾"} ${defender.name}`,
-                value: `**Level:** ${defender.level}`,
+                value: `**Cấp độ:** ${defender.level}`,
                 inline: true
             },
             {
@@ -445,7 +445,7 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${attacker.energy}/${attacker.maxEnergy}`,
                 inline: true
             },
@@ -455,13 +455,13 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
                 inline: true
             },
             {
-                name: `Energy`,
+                name: `Năng lượng`,
                 value: `⚡️ ${defender.energy}/${defender.maxEnergy}`,
                 inline: true
             }
         ],
         footer: {
-            text: "The battle has gone on too long."
+            text: "Trận đấu kéo dài quá lâu."
         }
     };
 }
@@ -473,22 +473,22 @@ export function createSkillUsageEmbed(attackingPet: Pet, skill: Skill, damageRes
 
     return {
         color: elementColor,
-        title: `${SPECIES_EMOJIS[attackingPet.species] || "🐾"} ${attackingPet.name} used ${skill.name} ${elementEmoji}`,
-        description: `Skill Type: ${skill.name}\nEnergy Cost: ${skill.energyCost || 0}\nDamage: ${skill.damage || "Varies"}`,
+        title: `${SPECIES_EMOJIS[attackingPet.species] || "🐾"} ${attackingPet.name} đã sử dụng ${skill.name} ${elementEmoji}`,
+        description: `Loại kỹ năng: ${skill.name}\nChi phí năng lượng: ${skill.energyCost || 0}\nSát thương: ${skill.damage || "Thay đổi"}`,
         fields: [
             {
-                name: "🎯 Damage Result",
-                value: `⚔️ Damage Dealt: ${damageResult.damage}\n💥 Critical Hit: ${damageResult.isCrit ? "Yes" : "No"}\n🔮 Effectiveness: ${damageResult.effectiveness}`,
+                name: "🎯 Kết quả sát thương",
+                value: `⚔️ Sát thương gây ra: ${damageResult.damage}\n💥 Chí mạng: ${damageResult.isCrit ? "Có" : "Không"}\n🔮 Hiệu quả: ${damageResult.effectiveness}`,
                 inline: true
             },
             {
-                name: "📊 Battle Stats",
-                value: `❤️ HP: ${attackingPet.hp}/${attackingPet.maxHp}\n⚡️ Energy: ${attackingPet.energy}/${attackingPet.maxEnergy}`,
+                name: "📊 Chỉ số chiến đấu",
+                value: `❤️ HP: ${attackingPet.hp}/${attackingPet.maxHp}\n⚡️ Năng lượng: ${attackingPet.energy}/${attackingPet.maxEnergy}`,
                 inline: true
             }
         ],
         footer: {
-            text: `Skill Level Requirement: ${skill.levelReq}`
+            text: `Yêu cầu cấp độ kỹ năng: ${skill.levelReq}`
         }
     };
 }
@@ -496,11 +496,11 @@ export function createSkillUsageEmbed(attackingPet: Pet, skill: Skill, damageRes
 // Get status effects string for display
 function getStatusEffectsString(statusEffects: BattleStatus[]): string {
     if (statusEffects.length === 0) {
-        return "None";
+        return "Không có";
     }
 
     return statusEffects.map(status => {
         const emoji = STATUS_EMOJIS[status.statusEffect.type] || "❓";
-        return `${emoji} ${status.statusEffect.type} (${status.turnsRemaining} turns)`;
+        return `${emoji} ${status.statusEffect.type} (${status.turnsRemaining} lượt)`;
     }).join("\n");
 }

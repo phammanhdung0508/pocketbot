@@ -43,17 +43,17 @@ export class BattleUseCase {
     const attackerPets = await this.petRepository.getPetsByUserId(attackerMezonId);
     const defenderPets = await this.petRepository.getPetsByUserId(defenderMezonId);
 
-    if (attackerPets.length === 0) throw new Error("Attacker has no pets");
-    if (defenderPets.length === 0) throw new Error("Defender has no pets");
+    if (attackerPets.length === 0) throw new Error("Người tấn công không có thú cưng");
+    if (defenderPets.length === 0) throw new Error("Người phòng thủ không có thú cưng");
 
     let attacker = attackerPets[0];
     let defender = defenderPets[0];
 
     if (attacker.hp < attacker.maxHp || attacker.energy < attacker.maxEnergy) {
-      throw new Error(`Attacker's pet ${attacker.name} is not at full HP and Energy.`);
+      throw new Error(`Thú cưng ${attacker.name} của người tấn công chưa đầy HP và Năng lượng.`);
     }
     if (defender.hp < defender.maxHp || defender.energy < defender.maxEnergy) {
-      throw new Error(`Defender's pet ${defender.name} is not at full HP and Energy.`);
+      throw new Error(`Thú cưng ${defender.name} của người phòng thủ chưa đầy HP và Năng lượng.`);
     }
 
     attacker.statusEffects = [];
@@ -66,7 +66,7 @@ export class BattleUseCase {
 
     // Battle start message with visual elements
     await sendMessage({
-      t: "**BATTLE START**",
+      t: "**TRẬN ĐẤU BẮT ĐẦU**",
       embed: [createBattleStartEmbed(attacker, defender)]
     });
 
@@ -78,7 +78,7 @@ export class BattleUseCase {
       await delay(1000); // 1 second delay between numbers
     }
     await sendMessage({
-      t: "**FIGHT!** 🎉"
+      t: "**CHIẾN NÀO!** 🎉"
     });
 
     let turn = 1;
@@ -137,9 +137,9 @@ export class BattleUseCase {
       });
 
       // Add a 5-second delay between turns for better viewing experience
-      if (attacker.hp > 0 && defender.hp > 0 && turn < 3) {
+      if (attacker.hp > 0 && defender.hp > 0 && turn < 5) {
         await sendMessage({
-          t: "⏳ Preparing next turn..."
+          t: "⏳ Đang chuẩn bị lượt tiếp theo..."
         });
         await delay(5000); // 5 second delay
       }
@@ -147,7 +147,7 @@ export class BattleUseCase {
       turn++;
       if (turn > 5) {
         await sendMessage({
-          t: "**⏰ BATTLE TIMEOUT**\n*The battle has gone on too long. It's a draw!*"
+          t: "**⏰ HẾT GIỜ**\n*Trận đấu kéo dài quá lâu. Hòa nhau!*"
         });
         break;
       }
@@ -163,12 +163,12 @@ export class BattleUseCase {
       const loserPet = winner === attackerMezonId ? defender : attacker;
       
       await sendMessage({
-        t: `🏆 **${winnerPet.name} wins the battle!**`,
+        t: `🏆 **${winnerPet.name} thắng trận đấu!**`,
         embed: [createBattleEndEmbed(winnerPet, loserPet, winner)]
       });
     } else {
       await sendMessage({
-        t: "🤝 **It's a draw!**",
+        t: "🤝 **Hòa nhau!**",
         embed: [createBattleDrawEmbed(attacker, defender)]
       });
     }
@@ -191,7 +191,7 @@ export class BattleUseCase {
           const dotDamage = this.battleService.calculateDotDamage(pet, statusEffect);
           pet.hp = Math.max(0, pet.hp - dotDamage);
           await sendMessage({
-            t: `🔥 **${pet.name}** is hurt by burn! Took **${dotDamage}** damage!`
+            t: `🔥 **${pet.name}** bị bỏng! Nhận **${dotDamage}** sát thương!`
           });
           break;
         case EffectTypes.POISON:
@@ -199,7 +199,7 @@ export class BattleUseCase {
           const poisonDamage = this.battleService.calculateDotDamage(pet, statusEffect);
           pet.hp = Math.max(0, pet.hp - poisonDamage);
           await sendMessage({
-            t: `☠️ **${pet.name}** is hurt by poison! Took **${poisonDamage}** damage!`
+            t: `☠️ **${pet.name}** bị ngộ độc! Nhận **${poisonDamage}** sát thương!`
           });
           break;
         case EffectTypes.SLOW:
@@ -214,7 +214,7 @@ export class BattleUseCase {
         case EffectTypes.FREEZE:
           // Skip turn completely
           await sendMessage({
-            t: `🧊 **${pet.name}** is frozen and cannot move!`
+            t: `🧊 **${pet.name}** bị đóng băng và không thể di chuyển!`
           });
           break;
         case EffectTypes.BLIND:
@@ -226,14 +226,14 @@ export class BattleUseCase {
         case EffectTypes.STUN:
           // Skip turn completely
           await sendMessage({
-            t: `💫 **${pet.name}** is stunned and cannot move!`
+            t: `💫 **${pet.name}** bị choáng và không thể di chuyển!`
           });
           break;
       }
 
       if (status.turnsRemaining <= 0) {
         await sendMessage({
-          t: `✨ **${pet.name}**'s ${statusEffect.type} effect wore off.`
+          t: `✨ Hiệu ứng ${statusEffect.type} của **${pet.name}** đã hết.`
         });
         pet.statusEffects.splice(i, 1);
       }
@@ -260,7 +260,7 @@ export class BattleUseCase {
     
     if (isFrozen || isStunned) {
       await sendMessage({
-        t: `❌ **${attackingPet.name}** is unable to move!`
+        t: `❌ **${attackingPet.name}** không thể di chuyển!`
       });
       return { isDefeated: false, expGain: 0 };
     }
@@ -269,7 +269,7 @@ export class BattleUseCase {
     const isParalyzed = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.PARALYZE);
     if (isParalyzed && Math.random() > 0.3) {
       await sendMessage({
-        t: `⚡ **${attackingPet.name}** is paralyzed and cannot move!`
+        t: `⚡ **${attackingPet.name}** bị tê liệt và không thể di chuyển!`
       });
       return { isDefeated: false, expGain: 0 };
     }
@@ -287,7 +287,7 @@ export class BattleUseCase {
     // Show critical hit if applicable
     if (damageResult.isCrit) {
       await sendMessage({
-        t: "💥 **Critical Hit!**"
+        t: "💥 **Chí mạng!**"
       });
     }
 
@@ -295,16 +295,16 @@ export class BattleUseCase {
     let effectivenessMessage = "";
     switch (damageResult.effectiveness) {
       case "super effective":
-        effectivenessMessage = "🎯 It's super effective!";
+        effectivenessMessage = "🎯 Hiệu quả cao!";
         break;
       case "not very effective":
-        effectivenessMessage = "🛡️ It's not very effective...";
+        effectivenessMessage = "🛡️ Hiệu quả thấp...";
         break;
       default:
-        effectivenessMessage = "✅ Hit!";
+        effectivenessMessage = "✅ Trúng đích!";
     }
     await sendMessage({
-      t: `${effectivenessMessage} Dealt **${damageResult.damage}** damage!`
+      t: `${effectivenessMessage} Gây **${damageResult.damage}** sát thương!`
     });
 
     // Update HP
@@ -334,12 +334,12 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `🔥 **${defendingPet.name}** was burned!`
+                  t: `🔥 **${defendingPet.name}** bị bỏng!`
                 });
               } else if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `🔥 **${attackingPet.name}** was burned!`
+                  t: `🔥 **${attackingPet.name}** bị bỏng!`
                 });
               }
               break;
@@ -347,12 +347,12 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `🧊 **${defendingPet.name}** was frozen!`
+                  t: `🧊 **${defendingPet.name}** bị đóng băng!`
                 });
               } else if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `🧊 **${attackingPet.name}** was frozen!`
+                  t: `🧊 **${attackingPet.name}** bị đóng băng!`
                 });
               }
               break;
@@ -360,12 +360,12 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `⚡ **${defendingPet.name}** was paralyzed!`
+                  t: `⚡ **${defendingPet.name}** bị tê liệt!`
                 });
               } else if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `⚡ **${attackingPet.name}** was paralyzed!`
+                  t: `⚡ **${attackingPet.name}** bị tê liệt!`
                 });
               }
               break;
@@ -373,12 +373,12 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `☠️ **${defendingPet.name}** was poisoned!`
+                  t: `☠️ **${defendingPet.name}** bị ngộ độc!`
                 });
               } else if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `☠️ **${attackingPet.name}** was poisoned!`
+                  t: `☠️ **${attackingPet.name}** bị ngộ độc!`
                 });
               }
               break;
@@ -386,12 +386,12 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `👁️ **${defendingPet.name}** was blinded!`
+                  t: `👁️ **${defendingPet.name}** bị mù!`
                 });
               } else if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `👁️ **${attackingPet.name}** was blinded!`
+                  t: `👁️ **${attackingPet.name}** bị mù!`
                 });
               }
               break;
@@ -399,12 +399,12 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `🦥 **${defendingPet.name}** was slowed!`
+                  t: `🦥 **${defendingPet.name}** bị chậm!`
                 });
               } else if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `🦥 **${attackingPet.name}** was slowed!`
+                  t: `🦥 **${attackingPet.name}** bị chậm!`
                 });
               }
               break;
@@ -412,12 +412,12 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `💫 **${defendingPet.name}** was stunned!`
+                  t: `💫 **${defendingPet.name}** bị choáng!`
                 });
               } else if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `💫 **${attackingPet.name}** was stunned!`
+                  t: `💫 **${attackingPet.name}** bị choáng!`
                 });
               }
               break;
@@ -425,7 +425,7 @@ export class BattleUseCase {
               if (statusEffect.target === 'self') {
                 attackingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `⬆️ **${attackingPet.name}**'s ${statusEffect.stat} rose!`
+                  t: `⬆️ ${statusEffect.stat} của **${attackingPet.name}** tăng lên!`
                 });
               }
               break;
@@ -433,7 +433,7 @@ export class BattleUseCase {
               if (statusEffect.target === 'enemy') {
                 defendingPet.statusEffects.push(newStatus);
                 await sendMessage({
-                  t: `⬇️ **${defendingPet.name}**'s ${statusEffect.stat} fell!`
+                  t: `⬇️ ${statusEffect.stat} của **${defendingPet.name}** giảm xuống!`
                 });
               }
               break;
@@ -450,14 +450,14 @@ export class BattleUseCase {
         attackingPet.energy = Math.min(attackingPet.maxEnergy, attackingPet.energy + energyStolen);
         defendingPet.energy = Math.max(0, defendingPet.energy - energyStolen);
         await sendMessage({
-          t: `⚡ **${attackingPet.name}** stole ${energyStolen} energy from **${defendingPet.name}**!`
+          t: `⚡ **${attackingPet.name}** đã đánh cắp ${energyStolen} năng lượng từ **${defendingPet.name}**!`
         });
       }
     }
 
     if (defendingPet.hp <= 0) {
       await sendMessage({
-        t: `💥 **${defendingPet.name}** fainted!`
+        t: `💥 **${defendingPet.name}** đã ngất xỉu!`
       });
       return { isDefeated: true, winner: attackingPet.id, expGain: 0 };
     }
