@@ -6,7 +6,15 @@ import { PetStats } from "../utils/PetStats";
 import PET_STATS_MAP from "@/application/constants/PetStatsMap";
 import PET_SKILLS_MAP from "@/application/constants/PetSkillsMap";
 
+/**
+ * Factory class for creating and managing pets
+ */
 export class PetFactory {
+  /**
+   * Get the element type for a given species
+   * @param species The species to get the element for
+   * @returns The element type for the species
+   */
   static createElementForSpecies(species: string): string {
     const speciesMap: { [key: string]: ElementType } = {
       [PetSpecies.DRAGON]: ElementType.FIRE,
@@ -18,6 +26,14 @@ export class PetFactory {
     return speciesMap[species] || ElementType.FIRE;
   }
 
+  /**
+   * Create a new pet with the specified name, species, and element
+   * @param name The name of the pet
+   * @param species The species of the pet
+   * @param element The element of the pet
+   * @returns A new pet object
+   * @throws Error if the species is invalid
+   */
   static create(name: string, species: string, element: string): Pet {
     const stats = PET_STATS_MAP[species as PetSpecies];
     if (!stats) {
@@ -53,6 +69,11 @@ export class PetFactory {
     };
   }
 
+  /**
+   * Level up a pet, increasing its stats
+   * @param pet The pet to level up
+   * @returns The leveled up pet
+   */
   static levelUp(pet: Pet): Pet {
     const newLevel = pet.level + 1;
     const speciesStats = PET_STATS_MAP[pet.species as PetSpecies];
@@ -78,6 +99,11 @@ export class PetFactory {
     };
   }
 
+  /**
+   * Evolve a pet at specific levels, adding new skills and elements
+   * @param pet The pet to evolve
+   * @returns The evolved pet
+   */
   static evolve(pet: Pet): Pet {
     if ([20, 60, 100].includes(pet.level)) {
       const allPossibleElements = [ElementType.FIRE, ElementType.WATER, ElementType.EARTH, ElementType.AIR, ElementType.LIGHTNING];

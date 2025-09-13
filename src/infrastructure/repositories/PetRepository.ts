@@ -10,29 +10,52 @@ interface Database {
   users: Record<string, PetData>;
 }
 
+/**
+ * Repository implementation for managing pet data using a JSON file
+ */
 export class PetRepository implements IPetRepository {
   private dbPath: string;
 
+  /**
+   * Create a new PetRepository
+   * @param dbPath The path to the database file (default: "./db.json")
+   */
   constructor(dbPath: string = "./db.json") {
     this.dbPath = dbPath;
     this.initializeDb();
   }
 
+  /**
+   * Initialize the database file if it doesn't exist
+   */
   private initializeDb(): void {
     if (!fs.existsSync(this.dbPath)) {
       fs.writeFileSync(this.dbPath, JSON.stringify({ users: {} }, null, 2));
     }
   }
 
+  /**
+   * Read the database from the file
+   * @returns The database object
+   */
   private readDb(): Database {
     const data = fs.readFileSync(this.dbPath, "utf8");
     return JSON.parse(data);
   }
 
+  /**
+   * Write the database to the file
+   * @param data The database object to write
+   */
   private writeDb(data: Database): void {
     fs.writeFileSync(this.dbPath, JSON.stringify(data, null, 2));
   }
 
+  /**
+   * Create a new pet for a user
+   * @param mezonId The user's Mezon ID
+   * @param pet The pet to create
+   */
   async createPet(mezonId: string, pet: Pet): Promise<void> {
     const db = this.readDb();
     
@@ -54,6 +77,11 @@ export class PetRepository implements IPetRepository {
     this.writeDb(db);
   }
 
+  /**
+   * Get all pets for a user
+   * @param mezonId The user's Mezon ID
+   * @returns Array of pets for the user
+   */
   async getPetsByUserId(mezonId: string): Promise<Pet[]> {
     const db = this.readDb();
     
@@ -70,12 +98,23 @@ export class PetRepository implements IPetRepository {
     }));
   }
 
+  /**
+   * Get a specific pet by ID for a user
+   * @param mezonId The user's Mezon ID
+   * @param petId The pet's ID
+   * @returns The pet if found, null otherwise
+   */
   async getPetById(mezonId: string, petId: string): Promise<Pet | null> {
     const pets = await this.getPetsByUserId(mezonId);
     const pet = pets.find(p => p.id === petId);
     return pet || null;
   }
 
+  /**
+   * Update a pet for a user
+   * @param mezonId The user's Mezon ID
+   * @param pet The pet to update
+   */
   async updatePet(mezonId: string, pet: Pet): Promise<void> {
     const db = this.readDb();
     
@@ -104,6 +143,11 @@ export class PetRepository implements IPetRepository {
     this.writeDb(db);
   }
 
+  /**
+   * Delete a pet for a user
+   * @param mezonId The user's Mezon ID
+   * @param petId The pet's ID to delete
+   */
   async deletePet(mezonId: string, petId: string): Promise<void> {
     const db = this.readDb();
     
@@ -115,6 +159,10 @@ export class PetRepository implements IPetRepository {
     this.writeDb(db);
   }
 
+  /**
+   * Get all users with their pets
+   * @returns Record of users with their pets
+   */
   async getAllUsersWithPets(): Promise<Record<string, { pets: Pet[] }>> {
     const db = this.readDb();
     
@@ -135,6 +183,10 @@ export class PetRepository implements IPetRepository {
     return usersWithPets;
   }
 
+  /**
+   * Save all users with their pets
+   * @param users Record of users with their pets
+   */
   async saveAllUsers(users: Record<string, { pets: Pet[] }>): Promise<void> {
     const db: Database = { users: {} };
     

@@ -5,6 +5,27 @@ import { EffectTypes } from "@/domain/enums/EffectTypes";
 import { Logger } from "@/shared/utils/Logger";
 import { PassiveAbilityService } from "@/infrastructure/services/PassiveAbilityService";
 import { StatusEffect } from "@domain/entities/Skill";
+import { 
+  DEFENSE_SCALING_FACTOR,
+  SUPER_EFFECTIVE_MULTIPLIER,
+  NOT_VERY_EFFECTIVE_MULTIPLIER,
+  NEUTRAL_EFFECTIVE_MULTIPLIER,
+  BASE_CRIT_RATE,
+  CRIT_DAMAGE_MULTIPLIER,
+  BURN_DAMAGE_PERCENTAGE,
+  BASE_BURN_DAMAGE,
+  ADAPTIVE_RESISTANCE_PER_HIT,
+  MAX_ADAPTIVE_RESISTANCE,
+  MIN_RANDOM_FACTOR,
+  MAX_RANDOM_FACTOR,
+  MIN_STAT_MULTIPLIER,
+  MAX_STAT_MULTIPLIER,
+  BASE_DODGE_RATE,
+  SPEED_DODGE_BONUS_FACTOR,
+  MAX_DODGE_RATE,
+  BASE_ACCURACY,
+  BLIND_ACCURACY_MODIFIER
+} from "@/application/constants/BattleConstants";
 
 export class BattleSystem {
   private hitCounts: Map<string, number> = new Map();
@@ -13,14 +34,14 @@ export class BattleSystem {
     Logger.info(`Calculating element effectiveness: ${attackerElement} vs ${defenderElement}`);
     
     const effectivenessChart: { [key: string]: { [key: string]: number } } = {
-      fire: { air: 1.5, water: 0.75 },
-      water: { fire: 1.5, lightning: 0.75 },
-      earth: { lightning: 1.5, air: 0.75 },
-      air: { earth: 1.5, fire: 0.75 },
-      lightning: { water: 1.5, earth: 0.75 },
+      fire: { air: SUPER_EFFECTIVE_MULTIPLIER, water: NOT_VERY_EFFECTIVE_MULTIPLIER },
+      water: { fire: SUPER_EFFECTIVE_MULTIPLIER, lightning: NOT_VERY_EFFECTIVE_MULTIPLIER },
+      earth: { lightning: SUPER_EFFECTIVE_MULTIPLIER, air: NOT_VERY_EFFECTIVE_MULTIPLIER },
+      air: { earth: SUPER_EFFECTIVE_MULTIPLIER, fire: NOT_VERY_EFFECTIVE_MULTIPLIER },
+      lightning: { water: SUPER_EFFECTIVE_MULTIPLIER, earth: NOT_VERY_EFFECTIVE_MULTIPLIER },
     };
     
-    const effectiveness = effectivenessChart[attackerElement]?.[defenderElement] || 1.0;
+    const effectiveness = effectivenessChart[attackerElement]?.[defenderElement] || NEUTRAL_EFFECTIVE_MULTIPLIER;
     Logger.info(`Element effectiveness result: ${effectiveness}x`);
     
     return effectiveness;
@@ -28,7 +49,7 @@ export class BattleSystem {
 
   getAdaptiveResistance(targetId: string): number {
     const hitCount = this.hitCounts.get(targetId) || 0;
-    return Math.min(50, hitCount * 12.5);
+    return Math.min(MAX_ADAPTIVE_RESISTANCE, hitCount * ADAPTIVE_RESISTANCE_PER_HIT);
   }
 
   applyHit(targetId: string): void {
@@ -53,8 +74,8 @@ export class BattleSystem {
 
     const elementModifier = this.getElementEffectiveness(skill.element, defender.element);
     let effectiveness = "neutral";
-    if (elementModifier > 1.0) effectiveness = "super effective";
-    if (elementModifier < 1.0) effectiveness = "not very effective";
+    if (elementModifier > NEUTRAL_EFFECTIVE_MULTIPLIER) effectiveness = "super effective";
+    if (elementModifier < NEUTRAL_EFFECTIVE_MULTIPLIER) effectiveness = "not very effective";
     Logger.info(`Element modifier: ${elementModifier}x (${effectiveness})`);
 
     let skillMultiplier = (skill.damage || 100) / 100;
@@ -66,7 +87,7 @@ export class BattleSystem {
     
     Logger.info(`Skill multiplier: ${skillMultiplier}x`);
 
-    const randomFactor = Math.random() * (1.15 - 0.85) + 0.85;
+    const randomFactor = Math.random() * (MAX_RANDOM_FACTOR - MIN_RANDOM_FACTOR) + MIN_RANDOM_FACTOR;
     Logger.info(`Random factor: ${randomFactor.toFixed(3)}`);
 
     let baseDamage = effectiveAtk * skillMultiplier * elementModifier * randomFactor;
@@ -84,21 +105,20 @@ export class BattleSystem {
     
     let isCrit = false;
     if (!hasCritImmunity) {
-      const baseCritRate = 5;
       const skillCritRate = skill.statusEffect?.find(s => s.properties?.critRateBonus);
-      const critRate = baseCritRate + (skillCritRate?.properties?.critRateBonus || 0);
+      const critRate = BASE_CRIT_RATE + (skillCritRate?.properties?.critRateBonus || 0);
       isCrit = Math.random() * 100 < critRate;
       Logger.info(`Critical hit check: ${critRate}% chance, result: ${isCrit ? 'CRITICAL HIT!' : 'normal hit'}`);
       if (isCrit) {
         const oldDamage = baseDamage;
-        baseDamage *= 1.5;
+        baseDamage *= CRIT_DAMAGE_MULTIPLIER;
         Logger.info(`Critical damage applied: ${oldDamage.toFixed(2)} → ${baseDamage.toFixed(2)}`);
       }
     } else {
       Logger.info(`Critical hit prevented by immunity`);
     }
 
-    const defenseReduction = effectiveDef / (effectiveDef + 400);
+    const defenseReduction = effectiveDef / (effectiveDef + DEFENSE_SCALING_FACTOR);
     const defenseModifier = 1 - defenseReduction;
     let finalDamage = baseDamage * defenseModifier;
     Logger.info(`Defense scaling: ${effectiveDef} DEF → ${defenseReduction.toFixed(3)} reduction, damage: ${finalDamage.toFixed(2)}`);
@@ -107,7 +127,7 @@ export class BattleSystem {
     if (ignoreDefense && ignoreDefense.valueType === 'percentage') {
         const ignoredDefense = effectiveDef * (ignoreDefense.value / 100);
         const effectiveDefAfterIgnore = Math.max(0, effectiveDef - ignoredDefense);
-        const defenseReductionAfterIgnore = effectiveDefAfterIgnore / (effectiveDefAfterIgnore + 400);
+        const defenseReductionAfterIgnore = effectiveDefAfterIgnore / (effectiveDefAfterIgnore + DEFENSE_SCALING_FACTOR);
         const defenseModifierAfterIgnore = 1 - defenseReductionAfterIgnore;
         const damageWithIgnoredDef = baseDamage * defenseModifierAfterIgnore;
         const oldFinalDamage = finalDamage;
@@ -169,7 +189,7 @@ export class BattleSystem {
     }
     
     const uncappedMultiplier = buffMultiplier;
-    buffMultiplier = Math.max(0.01, Math.min(3, buffMultiplier));
+    buffMultiplier = Math.max(MIN_STAT_MULTIPLIER, Math.min(MAX_STAT_MULTIPLIER, buffMultiplier));
     if (uncappedMultiplier !== buffMultiplier) {
         Logger.warn(`Buff multiplier capped: ${uncappedMultiplier.toFixed(3)} → ${buffMultiplier.toFixed(3)}`);
     }
@@ -181,20 +201,18 @@ export class BattleSystem {
   }
 
   calculateDodgeRate(pet: Pet): number {
-    const baseDodge = 5;
-    const speedBonus = Math.max(0, (pet.speed - 100) * 0.1);
-    const totalDodge = baseDodge + speedBonus;
-    return Math.min(80, totalDodge);
+    const speedBonus = Math.max(0, (pet.speed - 100) * SPEED_DODGE_BONUS_FACTOR);
+    const totalDodge = BASE_DODGE_RATE + speedBonus;
+    return Math.min(MAX_DODGE_RATE, totalDodge);
   }
 
   calculateAccuracy(attacker: Pet, skill: Skill): number {
-    const baseAccuracy = 95;
     const blindEffect = attacker.statusEffects.find(status => status.statusEffect.type === EffectTypes.BLIND);
-    const blindModifier = blindEffect ? 0.3 : 1;
+    const blindModifier = blindEffect ? BLIND_ACCURACY_MODIFIER : 1;
     const skillBonus = skill.statusEffect?.find(s => s.affects === AffectTypes.ALWAYS_HITS) ? 100 : 0;
     
-    const modifiedAccuracy = baseAccuracy * blindModifier + skillBonus;
-    return Math.min(95, Math.max(5, modifiedAccuracy));
+    const modifiedAccuracy = BASE_ACCURACY * blindModifier + skillBonus;
+    return Math.min(BASE_ACCURACY, Math.max(BASE_CRIT_RATE, modifiedAccuracy));
   }
 
   getTurnOrder(petA: Pet, petB: Pet): [Pet, Pet] {
@@ -224,7 +242,7 @@ export class BattleSystem {
   calculateDotDamage(pet: Pet, statusEffect: StatusEffect): number {
     switch (statusEffect.type) {
       case EffectTypes.BURN:
-        const burnDamage = Math.floor((statusEffect.sourceAtk || 100) * 0.15) + (statusEffect.value || 20);
+        const burnDamage = Math.floor((statusEffect.sourceAtk || 100) * BURN_DAMAGE_PERCENTAGE) + (statusEffect.value || BASE_BURN_DAMAGE);
         return burnDamage;
       case EffectTypes.POISON:
         // For poison, we need to determine the turn index, but we don't have turnsRemaining here
