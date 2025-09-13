@@ -3,7 +3,7 @@
     "1840686084447539200": {
       "pets": [
         {
-          "id": "304d09f9-ea89-4c46-bd03-a3736a4f95f9",
+          "id": "270a1b40-c42d-410c-9d65-748d4da70903",
           "name": "dragod",
           "species": "dragon",
           "element": "fire",
@@ -17,11 +17,11 @@
           "attack": 347,
           "defense": 268,
           "speed": 249,
-          "energy": 12,
-          "maxEnergy": 12,
-          "createdAt": "2025-09-13T16:41:15.432Z",
-          "lastUpdate": "2025-09-13T16:44:22.916Z",
-          "lastBattle": "2025-09-13T16:44:22.916Z",
+          "energy": 18,
+          "maxEnergy": 18,
+          "createdAt": "2025-09-13T17:19:21.444Z",
+          "lastUpdate": "2025-09-13T17:21:58.711Z",
+          "lastBattle": "2025-09-13T17:21:58.711Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -208,71 +208,18 @@
           "statusEffects": [],
           "buffs": [],
           "passives": []
-        },
-        {
-          "id": "4241282e-b5ef-4b65-8f0c-f5160df07276",
-          "name": "windcut",
-          "species": "bird",
-          "element": "air",
-          "secondaryElements": [],
-          "level": 1,
-          "exp": 0,
-          "hp": 880,
-          "maxHp": 880,
-          "attack": 115,
-          "defense": 75,
-          "speed": 160,
-          "energy": 7,
-          "maxEnergy": 7,
-          "createdAt": "2025-09-13T16:45:17.950Z",
-          "lastUpdate": "2025-09-13T16:45:17.950Z",
-          "lastBattle": "2025-09-13T16:45:17.950Z",
-          "skills": [
-            {
-              "name": "Basic Attack",
-              "type": "skill",
-              "damage": 220,
-              "element": "physical",
-              "energyCost": 0,
-              "description": "A basic physical attack.",
-              "levelReq": 0
-            },
-            {
-              "name": "Wind Razor",
-              "type": "skill",
-              "damage": 275,
-              "element": "air",
-              "energyCost": 1,
-              "statusEffect": [
-                {
-                  "type": "blind",
-                  "target": "enemy",
-                  "chance": 25,
-                  "turns": 2,
-                  "value": 40,
-                  "valueType": "percentage",
-                  "affects": "accuracyReduction"
-                }
-              ],
-              "description": "Slashes with wind, may blind the target.",
-              "levelReq": 1
-            }
-          ],
-          "statusEffects": [],
-          "buffs": [],
-          "passives": []
         }
       ]
     },
     "1952273582008569856": {
       "pets": [
         {
-          "id": "f5111aff-4b1c-4ac1-bfe0-00708ae4d5f0",
+          "id": "029311f6-b9c4-44ff-93d6-853f9b9071aa",
           "name": "rocki",
           "species": "golem",
           "element": "earth",
           "secondaryElements": [
-            "fire"
+            "air"
           ],
           "level": 100,
           "exp": 0,
@@ -283,9 +230,9 @@
           "speed": 139,
           "energy": 20,
           "maxEnergy": 20,
-          "createdAt": "2025-09-13T16:41:30.772Z",
-          "lastUpdate": "2025-09-13T16:44:22.918Z",
-          "lastBattle": "2025-09-13T16:44:22.918Z",
+          "createdAt": "2025-09-13T17:19:34.017Z",
+          "lastUpdate": "2025-09-13T17:21:58.736Z",
+          "lastBattle": "2025-09-13T17:21:58.736Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -367,55 +314,38 @@
               "levelReq": 40
             },
             {
-              "name": "Molten Fist",
+              "name": "Dust Crusher",
               "type": "skill",
               "damage": 406,
-              "element": "fire",
+              "element": "air",
               "energyCost": 4,
               "statusEffect": [
                 {
-                  "type": "burn",
-                  "target": "enemy",
-                  "chance": 50,
-                  "turns": 3,
-                  "value": 25,
-                  "valueType": "damage"
-                },
-                {
-                  "type": "debuff",
+                  "type": "blind",
                   "target": "enemy",
                   "chance": 100,
-                  "turns": 1,
-                  "value": 40,
-                  "valueType": "percentage",
-                  "stat": "def",
-                  "affects": "ignoreDefense"
+                  "turns": 4,
+                  "value": 1,
+                  "valueType": "flag",
+                  "affects": "accuracyReduction"
                 }
               ],
-              "description": "A fiery fist that burns and ignores 40% defense.",
+              "description": "406 damage, enemy bị Blind cho 4 turns",
               "levelReq": 60
             },
             {
-              "name": "Lava Armor",
+              "name": "Rock Slide",
               "type": "skill",
-              "element": "fire",
+              "damage": 406,
+              "element": "air",
               "energyCost": 3,
               "statusEffect": [
                 {
                   "type": "buff",
                   "target": "self",
                   "chance": 100,
-                  "turns": 4,
-                  "value": 60,
-                  "valueType": "percentage",
-                  "stat": "def"
-                },
-                {
-                  "type": "buff",
-                  "target": "self",
-                  "chance": 100,
-                  "turns": 4,
-                  "value": 30,
+                  "turns": 1,
+                  "value": 250,
                   "valueType": "percentage",
                   "stat": "atk"
                 },
@@ -423,14 +353,15 @@
                   "type": "buff",
                   "target": "self",
                   "chance": 100,
-                  "turns": 4,
-                  "value": 40,
-                  "valueType": "percentage",
-                  "stat": "hp",
-                  "affects": "healOnDamage"
+                  "turns": 1,
+                  "value": 1,
+                  "valueType": "flag",
+                  "properties": {
+                    "critRateBonus": 100
+                  }
                 }
               ],
-              "description": "+60% DEF, reflect 40% damage as Fire, +30% ATK cho 4 turns",
+              "description": "Next attack deals 250% damage và always crits",
               "levelReq": 60
             },
             {
