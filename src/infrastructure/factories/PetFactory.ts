@@ -49,7 +49,7 @@ export class PetFactory {
       skills: allSkills.filter(s => s.levelReq <= 1),
       statusEffects: [],
       buffs: [],
-      passives: [] // allSkills.filter(s => s.level === 40),
+      passives: [],
     };
   }
 
@@ -63,67 +63,49 @@ export class PetFactory {
     const newSpeed = PetStats.calculateStatAtLevel(newLevel, speciesStats.lv1.spd, speciesStats.lv100.spd);
     const newMaxEnergy = PetStats.calculateStatAtLevel(newLevel, speciesStats.lv1.energy, speciesStats.lv100.energy);
 
-    const updatedPet: Pet = {
+    return {
       ...pet,
       level: newLevel,
       maxHp: newMaxHp,
-      hp: newMaxHp, // Full heal on level up
+      hp: newMaxHp,
       attack: newAttack,
       defense: newDefense,
       speed: newSpeed,
       maxEnergy: newMaxEnergy,
-      energy: newMaxEnergy, // Full energy on level up
-      exp: 0, // Reset EXP
+      energy: newMaxEnergy,
+      exp: 0,
       lastUpdate: new Date(),
     };
-
-    return updatedPet;
   }
 
   static evolve(pet: Pet): Pet {
-    console.log(`Pet Level ${pet.level}`)
-    let element = pet.element;
-
-    // At level 20, 60, 100, pets can learn secondary elements
     if ([20, 60, 100].includes(pet.level)) {
       const allPossibleElements = [ElementType.FIRE, ElementType.WATER, ElementType.EARTH, ElementType.AIR, ElementType.LIGHTNING];
 
-      // Select a random available element
+      let element = pet.element;
       if ([20, 100].includes(pet.level)) {
         const availableElements = allPossibleElements.filter(e => e === pet.element);
-        console.log(`${pet.name} has ${availableElements}!`);
-
-        if (availableElements.length === 0) return pet; // No new elements to learn
+        if (availableElements.length === 0) return pet;
         element = availableElements[Math.floor(Math.random() * availableElements.length)];
         pet.secondaryElements.push(element);
-        console.log(`Same Element ${element}`);
       } else {
         const availableElements = allPossibleElements.filter(e => e !== pet.element && !pet.secondaryElements.includes(e));
-        console.log(`${pet.name} has ${availableElements}!`);
-
-        if (availableElements.length === 0) return pet; // No new elements to learn
+        if (availableElements.length === 0) return pet;
         element = availableElements[Math.floor(Math.random() * availableElements.length)];
         pet.secondaryElements.push(element);
-        console.log(`New Element ${element}`);
       }
 
-      console.log(`${pet.name} has evolved and learned the element ${element}!`);
+      const evolutionSkills = pet.level === 60 
+        ? PET_SKILLS_MAP[pet.species as PetSpecies].filter(
+          s => s.levelReq === pet.level && pet.secondaryElements.includes(s.element as ElementType)
+        ) 
+        : PET_SKILLS_MAP[pet.species as PetSpecies].filter(
+          s => s.levelReq === pet.level && pet.element.includes(s.element as ElementType)
+        );
+
+      pet.skills.push(...evolutionSkills);
+      pet.lastUpdate = new Date();
     }
-
-    // Add evolution skills - This is a simplified approach
-    // A more robust solution would be to have a separate evolution skill map
-    const evolutionSkills = pet.level === 60 
-    ? PET_SKILLS_MAP[pet.species as PetSpecies].filter(
-      s => s.levelReq === pet.level && pet.secondaryElements.includes(s.element as ElementType)
-    ) 
-    : PET_SKILLS_MAP[pet.species as PetSpecies].filter(
-      s => s.levelReq === pet.level && pet.element.includes(s.element as ElementType)
-    );
-    console.log(evolutionSkills)
-
-    // Add all evolution skills for this level and element
-    pet.skills.push(...evolutionSkills);
-    pet.lastUpdate = new Date();
 
     return pet;
   }

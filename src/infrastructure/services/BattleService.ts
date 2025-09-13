@@ -2,6 +2,7 @@ import { IBattleService } from "@/domain/interfaces/services/IBattleService";
 import { Pet } from "@domain/entities/Pet";
 import { BattleSystem } from "@/infrastructure/utils/BattleSystem";
 import { Skill } from "@domain/entities/Skill";
+import { StatusEffect } from "@domain/entities/Skill";
 
 export class BattleService implements IBattleService {
   private battleSystem: BattleSystem;
@@ -32,10 +33,10 @@ export class BattleService implements IBattleService {
   }
 
   getTurnOrder(petA: Pet, petB: Pet): [Pet, Pet] {
-      return this.battleSystem.getTurnOrder(petA, petB);
+    return this.battleSystem.getTurnOrder(petA, petB);
   }
 
-  calculateDotDamage(pet: Pet, statusEffect: any): number {
+  calculateDotDamage(pet: Pet, statusEffect: StatusEffect): number {
     return this.battleSystem.calculateDotDamage(pet, statusEffect);
   }
 

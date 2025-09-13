@@ -22,6 +22,12 @@ export interface Pet {
   lastUpdate: Date;
   skills: Skill[];
   statusEffects: BattleStatus[];
-  buffs: any[]; // General purpose buffs/debuffs
-  passives: any[]; // Passive abilities
+  buffs: Buff[];
+  passives: Skill[];
+}
+
+export interface Buff {
+  type: string;
+  stat: 'attack' | 'defense' | 'speed' | 'hp' | 'all';
+  value: number;
 }

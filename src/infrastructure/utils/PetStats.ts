@@ -6,10 +6,6 @@ export class PetStats {
     const lastUpdate = pet.lastUpdate;
     const minutesPassed = (now.getTime() - lastUpdate.getTime()) / (1000 * 60);
     
-    // NO passive energy regeneration in the new system.
-    // Energy is only recovered through skills/abilities.
-
-    // Regenerate stamina at 1% every 7 minutes
     const staminaRegen = Math.floor(minutesPassed / 7);
     if (staminaRegen > 0) {
       pet.stamina = Math.min(100, pet.stamina + staminaRegen);
@@ -20,7 +16,6 @@ export class PetStats {
       const hungerDecrease = Math.min(hungerDecreaseIntervals * 10, pet.hunger);
       pet.hunger = Math.max(0, pet.hunger - hungerDecrease);
 
-      // If hunger is 0, decrease HP by 5 per hour (2.5 per 30 mins)
       if (pet.hunger === 0) {
         const hpDecrease = Math.min(hungerDecreaseIntervals * 2.5, pet.hp);
         pet.hp = Math.max(0, pet.hp - hpDecrease);
@@ -43,12 +38,10 @@ export class PetStats {
   }
 
   static playPet(pet: Pet): Pet {
-    // Check if pet has enough energy to play
-    if (pet.energy <= 1) { // Assuming energy cost is 1
+    if (pet.energy <= 1) {
       throw new Error("Your pet is too tired to play!");
     }
 
-    // Increase a random stat and EXP
     const stats = ['attack', 'defense', 'speed'];
     const randomStat = stats[Math.floor(Math.random() * stats.length)];
 
@@ -65,8 +58,8 @@ export class PetStats {
     }
 
     pet.exp += 15;
-    pet.hunger = Math.max(0, pet.hunger - 10); // Decrease hunger
-    pet.energy = Math.max(0, pet.energy - 1); // Decrease energy
+    pet.hunger = Math.max(0, pet.hunger - 10);
+    pet.energy = Math.max(0, pet.energy - 1);
 
     if (pet.hunger === 0) {
       pet.hp = Math.max(0, pet.hp - 30);
@@ -78,18 +71,16 @@ export class PetStats {
   }
 
   static trainPet(pet: Pet): Pet {
-    // Check if pet has enough stamina to train
-    if (pet.stamina <= 85) { // Assuming stamina cost is 85
+    if (pet.stamina <= 85) {
       throw new Error("Your pet is too tired to train!");
     }
 
-    // Increase all stats slightly but consume energy
     pet.attack += 1;
     pet.defense += 1;
     pet.speed += 1;
     pet.exp += 20;
     pet.stamina -= 20;
-    pet.hunger = Math.max(0, pet.hunger - 75); // Decrease hunger
+    pet.hunger = Math.max(0, pet.hunger - 75);
 
     if (pet.hunger === 0) {
       pet.hp = Math.max(0, pet.hp - 30);

@@ -5,15 +5,12 @@ import { BattleStatus } from "@domain/entities/BattleStatus";
 import { Skill } from "@domain/entities/Skill";
 import { EffectTypes } from "@/domain/enums/EffectTypes";
 import { AffectTypes } from "@/domain/enums/AffectTypes";
-import { ChannelMessageContent, IEmbedProps, MarkdownOnMessage } from "mezon-sdk";
+import { ChannelMessageContent } from "mezon-sdk";
 import { ELEMENT_EMOJIS } from "../constants/ElementEmojis";
 import { SPECIES_EMOJIS } from "../constants/SpeciesEmojis";
 import TurnResult from "@/domain/entities/TurnResult";
 import { createBattleDrawEmbed, createBattleEndEmbed, createBattleStartEmbed, createTurnEndStatusEmbed, createTurnStatusEmbed, createSkillUsageEmbed } from "@/infrastructure/utils/Embed";
 
-interface MarkdownMessage { t: string; mk: MarkdownOnMessage[] }
-
-// Status effect emojis
 const STATUS_EMOJIS: { [key: string]: string } = {
   [EffectTypes.BURN]: "🔥",
   [EffectTypes.FREEZE]: "🧊",
@@ -26,7 +23,6 @@ const STATUS_EMOJIS: { [key: string]: string } = {
   [EffectTypes.DEBUFF]: "⬇️"
 };
 
-// Utility function for delaying execution
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export class BattleUseCase {
@@ -61,21 +57,18 @@ export class BattleUseCase {
     attacker.buffs = [];
     defender.buffs = [];
 
-    // Reset battle system state
     this.battleService.resetBattle();
 
-    // Battle start message with visual elements
     await sendMessage({
       t: "**TRẬN ĐẤU BẮT ĐẦU**",
       embed: [createBattleStartEmbed(attacker, defender)]
     });
 
-    // 3-2-1 countdown before battle begins
     for (let i = 3; i > 0; i--) {
       await sendMessage({
         t: `**${i}**`
       });
-      await delay(1000); // 1 second delay between numbers
+      await delay(1000);
     }
     await sendMessage({
       t: "**CHIẾN NÀO!** 🎉"
@@ -100,9 +93,8 @@ export class BattleUseCase {
         }
       }
 
-      // Add a 2-second delay before the second pet's turn
       if (secondPet.hp > 0 && firstPet.hp > 0) {
-        await delay(2000); // 2 second delay
+        await delay(2000);
       }
 
       if (secondPet.hp > 0) {
@@ -130,18 +122,16 @@ export class BattleUseCase {
         break;
       }
 
-      // Show HP and Energy status at the end of each turn
       await sendMessage({
         t: "",
         embed: [createTurnEndStatusEmbed(attacker, defender)]
       });
 
-      // Add a 5-second delay between turns for better viewing experience
       if (attacker.hp > 0 && defender.hp > 0 && turn < 5) {
         await sendMessage({
           t: "⏳ Đang chuẩn bị lượt tiếp theo..."
         });
-        await delay(5000); // 5 second delay
+        await delay(5000);
       }
 
       turn++;
@@ -153,7 +143,6 @@ export class BattleUseCase {
       }
     }
 
-    // Battle end messages
     await sendMessage({
       t: ""
     });
@@ -187,7 +176,6 @@ export class BattleUseCase {
 
       switch (statusEffect.type) {
         case EffectTypes.BURN:
-          // Use the battle service to calculate DoT damage
           const dotDamage = this.battleService.calculateDotDamage(pet, statusEffect);
           pet.hp = Math.max(0, pet.hp - dotDamage);
           await sendMessage({
@@ -195,7 +183,6 @@ export class BattleUseCase {
           });
           break;
         case EffectTypes.POISON:
-          // Use the battle service to calculate DoT damage
           const poisonDamage = this.battleService.calculateDotDamage(pet, statusEffect);
           pet.hp = Math.max(0, pet.hp - poisonDamage);
           await sendMessage({
@@ -203,28 +190,21 @@ export class BattleUseCase {
           });
           break;
         case EffectTypes.SLOW:
-          // Slow effect is applied when calculating stats, not here
           break;
         case EffectTypes.BUFF:
-          // Buffs are applied when calculating stats
           break;
         case EffectTypes.DEBUFF:
-          // Debuffs are applied when calculating stats
           break;
         case EffectTypes.FREEZE:
-          // Skip turn completely
           await sendMessage({
             t: `🧊 **${pet.name}** bị đóng băng và không thể di chuyển!`
           });
           break;
         case EffectTypes.BLIND:
-          // Blind effect affects accuracy
           break;
         case EffectTypes.PARALYZE:
-          // Paralyze effect affects speed (70% reduction)
           break;
         case EffectTypes.STUN:
-          // Skip turn completely
           await sendMessage({
             t: `💫 **${pet.name}** bị choáng và không thể di chuyển!`
           });
@@ -242,7 +222,6 @@ export class BattleUseCase {
 
   private selectSkill(pet: Pet): Skill {
     const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
-    // TODO: Check lai, du thua logic
     if (availableSkills.length === 0) {
       return { name: "Basic Attack", type: 'skill', damage: 50, element: 'physical', energyCost: 0, description: "A desperate move.", levelReq: 0 };
     }
@@ -254,7 +233,6 @@ export class BattleUseCase {
     defendingPet: Pet,
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<TurnResult> {
-    // Check if pet is frozen or stunned
     const isFrozen = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.FREEZE);
     const isStunned = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.STUN);
     
@@ -265,7 +243,6 @@ export class BattleUseCase {
       return { isDefeated: false, expGain: 0 };
     }
 
-    // Check if pet is paralyzed (30% chance to move)
     const isParalyzed = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.PARALYZE);
     if (isParalyzed && Math.random() > 0.3) {
       await sendMessage({
@@ -277,21 +254,18 @@ export class BattleUseCase {
     const skill = this.selectSkill(attackingPet);
     const damageResult = this.battleService.calculateSkillDamage(attackingPet, defendingPet, skill);
 
-    // Show skill usage with element emoji
     const elementEmoji = ELEMENT_EMOJIS[skill.element] || "";
     await sendMessage({
-      t: ''/*`${SPECIES_EMOJIS[attackingPet.species] || "🐾"} **${attackingPet.name}** used **${skill.name}** ${elementEmoji}!`*/,
+      t: '',
       embed: [createSkillUsageEmbed(attackingPet, skill, damageResult)]
     });
 
-    // Show critical hit if applicable
     if (damageResult.isCrit) {
       await sendMessage({
         t: "💥 **Chí mạng!**"
       });
     }
 
-    // Show effectiveness message
     let effectivenessMessage = "";
     switch (damageResult.effectiveness) {
       case "super effective":
@@ -307,16 +281,13 @@ export class BattleUseCase {
       t: `${effectivenessMessage} Gây **${damageResult.damage}** sát thương!`
     });
 
-    // Update HP
     defendingPet.hp = Math.max(0, defendingPet.hp - damageResult.damage);
     attackingPet.energy -= skill.energyCost!;
 
-    // Show HP update
     await sendMessage({
       t: `${SPECIES_EMOJIS[defendingPet.species] || "🐾"} **${defendingPet.name}** | HP: ${defendingPet.hp}/${defendingPet.maxHp}`
     });
 
-    // Apply status effects if any
     if (damageResult.statusApplied && skill.statusEffect && skill.statusEffect.length > 0) {
       for (let i = 0; i < skill.statusEffect.length; i++) {
         const statusEffect = skill.statusEffect[i];
@@ -324,9 +295,9 @@ export class BattleUseCase {
         
         if (applied) {
           const newStatus: BattleStatus = {
-            statusEffect: { ...statusEffect, sourceAtk: attackingPet.attack }, // Store attacker's ATK for DoT calculations
+            statusEffect: { ...statusEffect, sourceAtk: attackingPet.attack },
             turnsRemaining: statusEffect.turns,
-            turnsTotal: statusEffect.turns, // Store total turns for poison escalation
+            turnsTotal: statusEffect.turns,
           };
 
           switch (statusEffect.type) {
@@ -442,7 +413,6 @@ export class BattleUseCase {
       }
     }
 
-    // Handle energy steal effects
     const energyStealEffect = skill.statusEffect?.find(s => s.affects === AffectTypes.HEAL_ON_DAMAGE);
     if (energyStealEffect && energyStealEffect.valueType === 'percentage') {
       const energyStolen = 2;

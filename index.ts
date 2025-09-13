@@ -14,22 +14,18 @@ import { GetAvailablePetsUseCase } from "./src/application/use-cases/GetAvailabl
 dotenv.config()
 
 async function main() {
-    // Initialize dependencies
     const petRepository = new PetRepository();
     const battleService = new BattleService();
 
-    // Initialize use cases
     const createPetUseCase = new CreatePetUseCase(petRepository);
     const getPetsUseCase = new GetPetsUseCase(petRepository);
     const battleUseCase = new BattleUseCase(petRepository, battleService);
     const cheatUseCase = new CheatUseCase(petRepository);
     const getAvailablePetsUseCase = new GetAvailablePetsUseCase();
 
-    // Initialize background task manager
     const backgroundTask = new BackgroundTask(petRepository);
     backgroundTask.startBackgroundTasks();
 
-    // Initialize command router
     const commandRouter = new CommandRouter(
         createPetUseCase,
         getPetsUseCase,
@@ -38,32 +34,16 @@ async function main() {
         getAvailablePetsUseCase
     );
 
-    // Initialize Mezon client
     const client = new MezonClient(process.env.MEZON_BOT_TOKEN);
     await client.login();
 
-    // Handle connection errors
     client.on("error", (error) => {
         console.error("Mezon Client Error:", error);
     });
 
     client.on("disconnect", (reason) => {
         console.log("Disconnected from Mezon:", reason);
-        // Implement custom reconnection logic or UI updates if needed
     });
-
-    // client.on("ready", async () => {
-    //     console.log(`Connected to ${client.clans.size} clans.`);
-
-    //     // Client is ready, you can now perform actions
-    //     // Example: Fetch message in channel
-    //     try {
-    //         const channel = await client.channels.fetch("channel_id");
-    //         console.log(`Fetched ${channel.messages.size} channel messages.`);
-    //     } catch (error) {
-    //         console.error("Error fetching channel messages:", error);
-    //     }
-    // });
 
     client.onChannelMessage(async (event) => {
         const text = event?.content?.t?.toLowerCase();
@@ -78,7 +58,6 @@ async function main() {
         commandRouter.routeCommand(channel, message)
     });
 }
-
 
 main()
     .then(() => console.log("Launched!"))

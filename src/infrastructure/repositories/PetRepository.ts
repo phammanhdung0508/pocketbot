@@ -2,6 +2,14 @@ import { IPetRepository } from "@/domain/interfaces/repositories/IPetRepository"
 import { Pet } from "@domain/entities/Pet";
 import * as fs from "fs";
 
+interface PetData {
+  pets: any[];
+}
+
+interface Database {
+  users: Record<string, PetData>;
+}
+
 export class PetRepository implements IPetRepository {
   private dbPath: string;
 
@@ -16,17 +24,17 @@ export class PetRepository implements IPetRepository {
     }
   }
 
-  private async readDb(): Promise<{ users: { [mezonId: string]: { pets: any[] } } }> {
+  private readDb(): Database {
     const data = fs.readFileSync(this.dbPath, "utf8");
     return JSON.parse(data);
   }
 
-  private async writeDb(data: { users: { [mezonId: string]: { pets: any[] } } }): Promise<void> {
+  private writeDb(data: Database): void {
     fs.writeFileSync(this.dbPath, JSON.stringify(data, null, 2));
   }
 
   async createPet(mezonId: string, pet: Pet): Promise<void> {
-    const db = await this.readDb();
+    const db = this.readDb();
     
     if (!db.users[mezonId]) {
       db.users[mezonId] = { pets: [] };
@@ -41,11 +49,11 @@ export class PetRepository implements IPetRepository {
     };
     
     db.users[mezonId].pets.push(petToSave);
-    await this.writeDb(db);
+    this.writeDb(db);
   }
 
   async getPetsByUserId(mezonId: string): Promise<Pet[]> {
-    const db = await this.readDb();
+    const db = this.readDb();
     
     if (!db.users[mezonId]) {
       return [];
@@ -67,7 +75,7 @@ export class PetRepository implements IPetRepository {
   }
 
   async updatePet(mezonId: string, pet: Pet): Promise<void> {
-    const db = await this.readDb();
+    const db = this.readDb();
     
     if (!db.users[mezonId]) {
       db.users[mezonId] = { pets: [] };
@@ -89,24 +97,24 @@ export class PetRepository implements IPetRepository {
       db.users[mezonId].pets[petIndex] = petToSave;
     }
     
-    await this.writeDb(db);
+    this.writeDb(db);
   }
 
   async deletePet(mezonId: string, petId: string): Promise<void> {
-    const db = await this.readDb();
+    const db = this.readDb();
     
     if (!db.users[mezonId]) {
       return;
     }
     
     db.users[mezonId].pets = db.users[mezonId].pets.filter(pet => pet.id !== petId);
-    await this.writeDb(db);
+    this.writeDb(db);
   }
 
-  async getAllUsersWithPets(): Promise<{ [mezonId: string]: { pets: Pet[] } }> {
-    const db = await this.readDb();
+  async getAllUsersWithPets(): Promise<Record<string, { pets: Pet[] }>> {
+    const db = this.readDb();
     
-    const usersWithPets: { [mezonId: string]: { pets: Pet[] } } = {};
+    const usersWithPets: Record<string, { pets: Pet[] }> = {};
     
     for (const mezonId in db.users) {
       usersWithPets[mezonId] = {
@@ -123,8 +131,8 @@ export class PetRepository implements IPetRepository {
     return usersWithPets;
   }
 
-  async saveAllUsers(users: { [mezonId: string]: { pets: Pet[] } }): Promise<void> {
-    const db = { users: {} as { [mezonId: string]: { pets: any[] } } };
+  async saveAllUsers(users: Record<string, { pets: Pet[] }>): Promise<void> {
+    const db: Database = { users: {} };
     
     for (const mezonId in users) {
       db.users[mezonId] = {
@@ -138,6 +146,6 @@ export class PetRepository implements IPetRepository {
       };
     }
     
-    await this.writeDb(db);
+    this.writeDb(db);
   }
 }

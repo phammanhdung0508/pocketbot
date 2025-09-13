@@ -23,12 +23,12 @@ export class BattleCommandHandler implements CommandHandler {
       }
       
       const sendMessage = async (payload: ChannelMessageContent) => {
-        if(payload.embed){
+        if (payload.embed) {
           await channel.send({
             t: payload.t,
             embed: payload.embed
           });
-        } else if (payload.t){
+        } else if (payload.t) {
           await channel.send(parseMarkdown(payload.t));
         }
       };

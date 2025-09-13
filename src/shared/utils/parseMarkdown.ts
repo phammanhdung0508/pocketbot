@@ -13,7 +13,6 @@ export function parseMarkdown(input: string): { t: string; mk: MarkdownOnMessage
     let pos = 0;
 
     while (pos < input.length) {
-        // Handle newlines
         if (input[pos] === '\n') {
             result.t += '\n';
             pos++;

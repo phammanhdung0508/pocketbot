@@ -8,7 +8,6 @@ import { IBattleService } from "@/domain/interfaces/services/IBattleService";
 import { IEmbedProps } from "mezon-sdk";
 import { Skill } from "@domain/entities/Skill";
 
-// Status effect emojis
 const STATUS_EMOJIS: { [key: string]: string } = {
     [EffectTypes.BURN]: "🔥",
     [EffectTypes.FREEZE]: "🧊",
@@ -21,7 +20,6 @@ const STATUS_EMOJIS: { [key: string]: string } = {
     [EffectTypes.DEBUFF]: "⬇️"
 };
 
-// Create battle start embed
 export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProps {
     return {
         color: "#3498db",
@@ -111,7 +109,6 @@ export function createBattleStartEmbed(attacker: Pet, defender: Pet): IEmbedProp
     };
 }
 
-// Create turn status embed
 export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number, battleService: IBattleService): IEmbedProps {
     return {
         color: "#f39c12",
@@ -134,17 +131,17 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
@@ -215,7 +212,6 @@ export function createTurnStatusEmbed(attacker: Pet, defender: Pet, turn: number
     };
 }
 
-// Create turn end status embed
 export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedProps {
     return {
         color: "#2ecc71",
@@ -237,17 +233,17 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
@@ -303,7 +299,6 @@ export function createTurnEndStatusEmbed(attacker: Pet, defender: Pet): IEmbedPr
     };
 }
 
-// Create battle end embed
 export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string): IEmbedProps {
     return {
         color: "#27ae60",
@@ -326,17 +321,17 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
@@ -392,7 +387,6 @@ export function createBattleEndEmbed(winner: Pet, loser: Pet, winnerId: string):
     };
 }
 
-// Create battle draw embed
 export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps {
     return {
         color: "#9b59b6",
@@ -415,17 +409,17 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
             {
-                name: "\u200B",  // Empty field for spacing
+                name: "\u200B",
                 value: "\u200B",
                 inline: true
             },
@@ -466,7 +460,6 @@ export function createBattleDrawEmbed(attacker: Pet, defender: Pet): IEmbedProps
     };
 }
 
-// Create skill usage embed
 export function createSkillUsageEmbed(attackingPet: Pet, skill: Skill, damageResult: any): IEmbedProps {
     const elementColor = ELEMENT_COLORS[skill.element] || "#95a5a6";
     const elementEmoji = ELEMENT_EMOJIS[skill.element] || "";
@@ -493,7 +486,6 @@ export function createSkillUsageEmbed(attackingPet: Pet, skill: Skill, damageRes
     };
 }
 
-// Get status effects string for display
 function getStatusEffectsString(statusEffects: BattleStatus[]): string {
     if (statusEffects.length === 0) {
         return "Không có";

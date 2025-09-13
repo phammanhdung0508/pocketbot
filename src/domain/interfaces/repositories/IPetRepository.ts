@@ -6,6 +6,6 @@ export interface IPetRepository {
   getPetById(mezonId: string, petId: string): Promise<Pet | null>;
   updatePet(mezonId: string, pet: Pet): Promise<void>;
   deletePet(mezonId: string, petId: string): Promise<void>;
-  getAllUsersWithPets(): Promise<{ [mezonId: string]: { pets: Pet[] } }>;
-  saveAllUsers(users: { [mezonId: string]: { pets: Pet[] } }): Promise<void>;
+  getAllUsersWithPets(): Promise<Record<string, { pets: Pet[] }>>;
+  saveAllUsers(users: Record<string, { pets: Pet[] }>): Promise<void>;
 }

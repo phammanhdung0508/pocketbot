@@ -4,14 +4,12 @@ import { ElementType } from "../enums/ElementType";
 
 export interface Skill {
   name: string;
-  type: 'skill' | 'passive'
-  damage?: number; // Can be a multiplier for some skills
+  type: 'skill' | 'passive';
+  damage?: number;
   element: string;
   energyCost?: number;
   description: string;
-  levelReq: number; // Level required to learn
-
-  // Status effect applied to target
+  levelReq: number;
   statusEffect?: StatusEffect[];
 }
 
@@ -20,21 +18,19 @@ export interface StatusEffect {
   target: 'self' | 'enemy';
   chance: number;
   turns: number;
-  value: number; // Can be damage, percentage, or flag
+  value: number;
   valueType: 'damage' | 'percentage' | 'flag';
   immunities?: ElementType | 'all';
   stat?: 'atk' | 'def' | 'spd' | 'hp';
-  affects?: AffectTypes
-  // Special properties
+  affects?: AffectTypes;
   properties?: {
-    dmgReflect?: number; // Percentage of damage to reflect
+    dmgReflect?: number;
     critRateBonus?: number;
-    costModifier?: { // For passive skills
+    costModifier?: {
       element: string;
       amount: number;
     }
   };
-  // Additional properties for battle calculations
-  sourceAtk?: number; // Attacker's ATK for DoT calculations
-  turnsTotal?: number; // Total turns for poison escalation
+  sourceAtk?: number;
+  turnsTotal?: number;
 }

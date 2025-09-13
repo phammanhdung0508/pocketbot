@@ -17,18 +17,11 @@ export class CheatCommandHandler implements CommandHandler {
         const peta = petatt[0]
         const petd = petdef[0]
 
-        // const args = message.content.t?.slice(1).trim().split(/ +/);
-
-        // if (!args) return
-
-        // args.shift(); // command
-        // args.shift(); // subcommand
-
         const lev = [19, 39, 59, 99]
 
         for (let index = 0; index < lev.length; index++) {
-            await this.cheatPetUseCase.excute(message.sender_id, peta.id, 100000000000, lev[index])
-            await this.cheatPetUseCase.excute(opponentId!, petd.id, 100000000000, lev[index])
+            await this.cheatPetUseCase.execute(message.sender_id, peta.id, 100000000000, lev[index])
+            await this.cheatPetUseCase.execute(opponentId!, petd.id, 100000000000, lev[index])
         }
     }
 }

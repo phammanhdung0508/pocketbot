@@ -4,7 +4,6 @@ import PET_STATS_MAP from "@/application/constants/PetStatsMap";
 import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
 import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
 
-// Define a simplified pet interface for available pets
 interface AvailablePet {
   species: string;
   element: string;
@@ -23,13 +22,11 @@ export class GetAvailablePetsUseCase {
   execute(): AvailablePet[] {
     const availablePets: AvailablePet[] = [];
     
-    // Map each species to its available pet data
     for (const species in PetSpecies) {
       const speciesKey = PetSpecies[species as keyof typeof PetSpecies];
       const speciesStats = PET_STATS_MAP[speciesKey];
       
       if (speciesStats) {
-        // Create element mapping for this species
         const element = this.createElementForSpecies(speciesKey);
         
         availablePets.push({

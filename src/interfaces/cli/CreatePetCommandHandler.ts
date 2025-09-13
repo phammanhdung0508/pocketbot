@@ -1,5 +1,5 @@
 import { CommandHandler } from "./CommandHandler";
-import { MezonClient, ChannelMessage } from "mezon-sdk";
+import { ChannelMessage } from "mezon-sdk";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "../../shared/utils/parseMarkdown";
@@ -11,10 +11,10 @@ export class CreatePetCommandHandler implements CommandHandler {
   async handle(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
     const args = message.content.t?.slice(1).trim().split(/ +/);
 
-    if(!args) return
+    if (!args) return;
 
-    args.shift(); // command
-    args.shift(); // subcommand
+    args.shift();
+    args.shift();
     
     if (args.length < 2) {
       await message.reply(parseMarkdown("Usage: *pet create <name> <species>\nUse `*pet list` to see available species."));
