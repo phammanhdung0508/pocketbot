@@ -81,11 +81,11 @@ export class PetFactory {
   }
 
   static evolve(pet: Pet): Pet {
-    if ([20, 60, 100].includes(pet.level)) {
+    if ([20, 40, 60, 100].includes(pet.level)) {
       const allPossibleElements = [ElementType.FIRE, ElementType.WATER, ElementType.EARTH, ElementType.AIR, ElementType.LIGHTNING];
 
       let element = pet.element;
-      if ([20, 100].includes(pet.level)) {
+      if ([20, 40, 100].includes(pet.level)) {
         const availableElements = allPossibleElements.filter(e => e === pet.element);
         if (availableElements.length === 0) return pet;
         element = availableElements[Math.floor(Math.random() * availableElements.length)];

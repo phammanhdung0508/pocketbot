@@ -15,6 +15,7 @@ import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
 import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
 import { EffectTypes } from "@/domain/enums/EffectTypes";
 import { AffectTypes } from "@/domain/enums/AffectTypes";
+import { Logger } from "@/shared/utils/Logger";
 
 /**
  * Service responsible for handling battle presentation and UI messaging
@@ -33,6 +34,7 @@ export class BattlePresentationService {
     defender: Pet,
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
+    Logger.info(`Bắt đầu trận đấu giữa ${attacker.name} và ${defender.name}`);
     await sendMessage({
       t: "**TRẬN ĐẤU BẮT ĐẦU**",
       embed: [createBattleStartEmbed(attacker, defender)]
@@ -48,6 +50,7 @@ export class BattlePresentationService {
     seconds: number,
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
+    Logger.info(`Bắt đầu đếm ngược ${seconds} giây cho trận đấu`);
     for (let i = seconds; i > 0; i--) {
       await sendMessage({
         t: `**${i}**`
@@ -72,6 +75,7 @@ export class BattlePresentationService {
     turn: number,
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
+    Logger.info(`Bắt đầu lượt ${turn} của trận đấu`);
     await sendMessage({
       t: "",
       embed: [createTurnStatusEmbed(attacker, defender, turn, this.battleService)]
@@ -89,6 +93,7 @@ export class BattlePresentationService {
     defender: Pet,
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
+    Logger.info(`Kết thúc lượt của trận đấu`);
     await sendMessage({
       t: "",
       embed: [createTurnEndStatusEmbed(attacker, defender)]
@@ -119,11 +124,13 @@ export class BattlePresentationService {
         // We could send a message about the energy recovery, but let's keep it simple for now
       }
       
+      Logger.info(`Kết thúc trận đấu. ${winnerPet.name} thắng`);
       await sendMessage({
         t: `🏆 **${winnerPet.name} thắng trận đấu!**`,
         embed: [createBattleEndEmbed(winnerPet, loserPet, winnerId)]
       });
     } else {
+      Logger.info(`Kết thúc trận đấu. Hòa nhau`);
       await sendMessage({
         t: "🤝 **Hòa nhau!**",
         embed: [createBattleDrawEmbed(attacker, defender)]
@@ -138,6 +145,7 @@ export class BattlePresentationService {
   async sendWaitingMessage(
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
+    Logger.info(`Đang chuẩn bị lượt tiếp theo`);
     await sendMessage({
       t: "⏳ Đang chuẩn bị lượt tiếp theo..."
     });
@@ -151,6 +159,7 @@ export class BattlePresentationService {
   async sendTimeoutMessage(
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
+    Logger.info(`Hết giờ trận đấu`);
     await sendMessage({
       t: "**⏰ HẾT GIỜ**\n*Trận đấu kéo dài quá lâu. Hòa nhau!*"
     });

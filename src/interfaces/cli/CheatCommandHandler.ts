@@ -4,11 +4,13 @@ import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChan
 import { CommandHandler } from "./CommandHandler";
 import { GetPetsUseCase } from "@/application/use-cases/GetPetsUseCase";
 import { CheatUseCase } from "@/application/use-cases/CheatUseCase";
+import { Logger } from "@/shared/utils/Logger";
 
 export class CheatCommandHandler implements CommandHandler {
     constructor(private cheatPetUseCase: CheatUseCase,
         private getPetsUseCase: GetPetsUseCase) { }
     async handle(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
+        Logger.info(`Người dùng ${message.sender_id} đang thực hiện lệnh cheat`);
         const opponentId = message.mentions?.[0]?.user_id;
 
         const petatt = await this.getPetsUseCase.execute(message.sender_id);
@@ -23,5 +25,7 @@ export class CheatCommandHandler implements CommandHandler {
             await this.cheatPetUseCase.execute(message.sender_id, peta.id, 100000000000, lev[index])
             await this.cheatPetUseCase.execute(opponentId!, petd.id, 100000000000, lev[index])
         }
+        
+        Logger.info(`Người dùng ${message.sender_id} đã thực hiện lệnh cheat thành công`);
     }
 }

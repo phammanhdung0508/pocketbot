@@ -4,11 +4,13 @@ import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChan
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "@/shared/utils/parseMarkdown";
 import { BattleUseCase } from "@/application/use-cases/BattleUseCase";
+import { Logger } from "@/shared/utils/Logger";
 
 export class BattleCommandHandler implements CommandHandler {
   constructor(private battleUseCase: BattleUseCase) {}
 
   async handle(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
+    Logger.info(`Người dùng ${message.sender_id} đang thực hiện lệnh battle`);
     try {
       const opponentId = message.mentions?.[0]?.user_id;
       
@@ -50,8 +52,10 @@ ${result.attacker.name} (Level ${result.attacker.level}) vs ${result.defender.na
 **It's a draw!**`;
       }
       
+      Logger.info(`Trận đấu giữa ${message.sender_id} và ${opponentId} đã kết thúc. Người thắng: ${result.winner}`);
       await message.reply(parseMarkdown(battleResult));
     } catch (error: any) {
+      Logger.error(`Lỗi khi người dùng ${message.sender_id} thực hiện battle: ${error.message}`);
       await message.reply(parseMarkdown(`Error during battle: ${error.message}`));
     }
   }

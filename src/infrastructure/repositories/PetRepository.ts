@@ -1,6 +1,7 @@
 import { IPetRepository } from "@/domain/interfaces/repositories/IPetRepository";
 import { Pet } from "@domain/entities/Pet";
 import * as fs from "fs";
+import { Logger } from "@/shared/utils/Logger";
 
 interface PetData {
   pets: any[];
@@ -115,16 +116,19 @@ export class PetRepository implements IPetRepository {
    * @throws Error if user has reached maximum pets limit
    */
   async createPet(mezonId: string, pet: Pet): Promise<void> {
+    Logger.info(`Tạo thú cưng ${pet.name} cho người dùng ${mezonId}`);
     const db = this.readDb();
     this.ensureUserExists(db, mezonId);
     
     // Check pet limit
     if (this.isPetLimitReached(db, mezonId)) {
+      Logger.warn(`Người dùng ${mezonId} đã đạt giới hạn tối đa ${this.MAX_PETS_PER_USER} thú cưng`);
       throw new Error(`You have reached the maximum limit of ${this.MAX_PETS_PER_USER} pets. Please delete a pet before creating a new one.`);
     }
     
     db.users[mezonId].pets.push(this.petToJSON(pet));
     this.writeDb(db);
+    Logger.info(`Đã tạo thành công thú cưng ${pet.name} cho người dùng ${mezonId}`);
   }
 
   /**
@@ -133,13 +137,17 @@ export class PetRepository implements IPetRepository {
    * @returns Array of pets for the user
    */
   async getPetsByUserId(mezonId: string): Promise<Pet[]> {
+    Logger.info(`Lấy danh sách thú cưng cho người dùng ${mezonId}`);
     const db = this.readDb();
     
     if (!db.users[mezonId]) {
+      Logger.info(`Người dùng ${mezonId} không có thú cưng nào`);
       return [];
     }
     
-    return db.users[mezonId].pets.map(pet => this.jsonToPet(pet));
+    const pets = db.users[mezonId].pets.map(pet => this.jsonToPet(pet));
+    Logger.info(`Đã lấy được ${pets.length} thú cưng cho người dùng ${mezonId}`);
+    return pets;
   }
 
   /**
@@ -149,8 +157,15 @@ export class PetRepository implements IPetRepository {
    * @returns The pet if found, null otherwise
    */
   async getPetById(mezonId: string, petId: string): Promise<Pet | null> {
+    Logger.info(`Lấy thông tin thú cưng ${petId} của người dùng ${mezonId}`);
     const pets = await this.getPetsByUserId(mezonId);
-    return pets.find(p => p.id === petId) || null;
+    const pet = pets.find(p => p.id === petId) || null;
+    if (pet) {
+      Logger.info(`Đã tìm thấy thú cưng ${petId} của người dùng ${mezonId}`);
+    } else {
+      Logger.warn(`Không tìm thấy thú cưng ${petId} của người dùng ${mezonId}`);
+    }
+    return pet;
   }
 
   /**
@@ -159,18 +174,22 @@ export class PetRepository implements IPetRepository {
    * @param pet The pet to update
    */
   async updatePet(mezonId: string, pet: Pet): Promise<void> {
+    Logger.info(`Cập nhật thông tin thú cưng ${pet.name} của người dùng ${mezonId}`);
     const db = this.readDb();
     this.ensureUserExists(db, mezonId);
     
     const petIndex = db.users[mezonId].pets.findIndex(p => p.id === pet.id);
     
     if (petIndex === -1) {
+      Logger.info(`Thêm mới thú cưng ${pet.name} cho người dùng ${mezonId}`);
       db.users[mezonId].pets.push(this.petToJSON(pet));
     } else {
+      Logger.info(`Cập nhật thú cưng ${pet.name} của người dùng ${mezonId}`);
       db.users[mezonId].pets[petIndex] = this.petToJSON(pet);
     }
     
     this.writeDb(db);
+    Logger.info(`Đã cập nhật thành công thú cưng ${pet.name} của người dùng ${mezonId}`);
   }
 
   /**
@@ -179,13 +198,23 @@ export class PetRepository implements IPetRepository {
    * @param petId The pet's ID to delete
    */
   async deletePet(mezonId: string, petId: string): Promise<void> {
+    Logger.info(`Xóa thú cưng ${petId} của người dùng ${mezonId}`);
     const db = this.readDb();
     
     if (!db.users[mezonId]) {
+      Logger.info(`Người dùng ${mezonId} không tồn tại trong cơ sở dữ liệu`);
       return;
     }
     
+    const initialLength = db.users[mezonId].pets.length;
     db.users[mezonId].pets = db.users[mezonId].pets.filter(pet => pet.id !== petId);
+    
+    if (db.users[mezonId].pets.length < initialLength) {
+      Logger.info(`Đã xóa thành công thú cưng ${petId} của người dùng ${mezonId}`);
+    } else {
+      Logger.warn(`Không tìm thấy thú cưng ${petId} để xóa cho người dùng ${mezonId}`);
+    }
+    
     this.writeDb(db);
   }
 
@@ -194,6 +223,7 @@ export class PetRepository implements IPetRepository {
    * @returns Record of users with their pets
    */
   async getAllUsersWithPets(): Promise<Record<string, { pets: Pet[] }>> {
+    Logger.info(`Lấy tất cả người dùng và thú cưng của họ`);
     const db = this.readDb();
     
     const usersWithPets: Record<string, { pets: Pet[] }> = {};
@@ -204,6 +234,7 @@ export class PetRepository implements IPetRepository {
       };
     }
     
+    Logger.info(`Đã lấy được thông tin của ${Object.keys(usersWithPets).length} người dùng`);
     return usersWithPets;
   }
 
@@ -212,6 +243,7 @@ export class PetRepository implements IPetRepository {
    * @param users Record of users with their pets
    */
   async saveAllUsers(users: Record<string, { pets: Pet[] }>): Promise<void> {
+    Logger.info(`Lưu thông tin của tất cả người dùng và thú cưng`);
     const db: Database = { users: {} };
     
     for (const mezonId in users) {
@@ -221,6 +253,7 @@ export class PetRepository implements IPetRepository {
     }
     
     this.writeDb(db);
+    Logger.info(`Đã lưu thành công thông tin của ${Object.keys(users).length} người dùng`);
   }
 
   /**
@@ -229,18 +262,21 @@ export class PetRepository implements IPetRepository {
    * @param petId The pet's ID to select for battle
    */
   async selectPetForBattle(mezonId: string, petId: string): Promise<void> {
+    Logger.info(`Chọn thú cưng ${petId} cho trận chiến của người dùng ${mezonId}`);
     const db = this.readDb();
     this.ensureUserExists(db, mezonId);
     
     // Verify pet exists
     const petExists = db.users[mezonId].pets.some(pet => pet.id === petId);
     if (!petExists) {
+      Logger.warn(`Không tìm thấy thú cưng ${petId} cho người dùng ${mezonId}`);
       throw new Error(`Pet with ID ${petId} not found`);
     }
     
     // Set the selected pet ID
     db.users[mezonId].selectedPetId = petId;
     this.writeDb(db);
+    Logger.info(`Đã chọn thành công thú cưng ${petId} cho trận chiến của người dùng ${mezonId}`);
   }
 
   /**
@@ -249,16 +285,24 @@ export class PetRepository implements IPetRepository {
    * @returns The selected pet, or null if none selected
    */
   async getSelectedPetForBattle(mezonId: string): Promise<Pet | null> {
+    Logger.info(`Lấy thú cưng được chọn cho trận chiến của người dùng ${mezonId}`);
     const db = this.readDb();
     
     if (!db.users[mezonId] || !db.users[mezonId].selectedPetId) {
+      Logger.info(`Người dùng ${mezonId} chưa chọn thú cưng cho trận chiến`);
       return null;
     }
     
     const selectedPetId = db.users[mezonId].selectedPetId;
     const pet = db.users[mezonId].pets.find(pet => pet.id === selectedPetId);
     
-    return pet ? this.jsonToPet(pet) : null;
+    if (pet) {
+      Logger.info(`Đã tìm thấy thú cưng ${selectedPetId} được chọn cho trận chiến của người dùng ${mezonId}`);
+      return this.jsonToPet(pet);
+    } else {
+      Logger.warn(`Không tìm thấy thú cưng ${selectedPetId} được chọn cho trận chiến của người dùng ${mezonId}`);
+      return null;
+    }
   }
 
   /**

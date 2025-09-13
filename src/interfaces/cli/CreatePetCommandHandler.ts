@@ -5,6 +5,7 @@ import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "../../shared/utils/parseMarkdown";
 import { CreatePetUseCase } from "@/application/use-cases/CreatePetUseCase";
 import { GetPetsUseCase } from "@/application/use-cases/GetPetsUseCase";
+import { Logger } from "@/shared/utils/Logger";
 
 export class CreatePetCommandHandler implements CommandHandler {
   constructor(

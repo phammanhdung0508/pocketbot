@@ -4,6 +4,7 @@ import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "../../shared/utils/parseMarkdown";
 import { SelectPetForBattleUseCase } from "@application/use-cases/SelectPetForBattleUseCase";
 import { GetPetsUseCase } from "@application/use-cases/GetPetsUseCase";
+import { Logger } from "@/shared/utils/Logger";
 
 export class SelectPetCommandHandler implements CommandHandler {
   constructor(
@@ -25,27 +26,27 @@ export class SelectPetCommandHandler implements CommandHandler {
       const pets = await this.getPetsUseCase.execute(message.sender_id);
       
       if (pets.length === 0) {
-        await message.reply(parseMarkdown("You don't have any pets. Create one with `*pet create <name> <species>`"));
+        await message.reply(parseMarkdown("Bạn đang chưa có thú. Sử dụng `*pet create <tên> <loài>` để tạo thú."));
         return;
       }
 
       // Show pet count and limit
       const maxPets = 3;
-      const petCountInfo = "**Bộ sưu tập thú cưng:** " + pets.length + "/" + maxPets + " thú cưng";
+      const petCountInfo = "**Bộ sưu tập thú:** " + pets.length + "/" + maxPets + " thú";
       
       let petList = petCountInfo + "\n\n";
       pets.forEach((pet, index) => {
-        const status = pet.hp <= 0 ? " (Bị ngất)" : 
+        const status = pet.hp <= 0 ? " (Kiệt sức)" : 
                       (pet.hp < pet.maxHp || pet.energy < pet.maxEnergy) ? " (Cần nghỉ ngơi)" : 
                       " (Sẵn sàng chiến đấu)";
         petList += (index + 1) + ". **" + pet.name + "** (" + pet.species + ", Lvl " + pet.level + ")" + status + "\n";
       });
       
-      petList += "\nSử dụng `*pet select <tên_thú_cưng_hoặc_id>` để chọn một thú cưng cho trận chiến.";
+      petList += "\nSử dụng `*pet select <tên_thú_hoặc_id>` để chọn một thú cho trận chiến.";
       
       if (pets.length < maxPets) {
         const remainingSlots = maxPets - pets.length;
-        petList += "\n\nBạn có thể tạo thêm " + remainingSlots + " thú cưng nữa. Sử dụng `*pet create` để thêm thú cưng!";
+        petList += "\n\nBạn có thể tạo thêm " + remainingSlots + " thú nữa. Sử dụng `*pet create` để thêm thú!";
       }
       
       await message.reply(parseMarkdown(petList));

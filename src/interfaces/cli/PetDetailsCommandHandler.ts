@@ -11,6 +11,7 @@ import { EffectTypes } from "@/domain/enums/EffectTypes";
 import PET_SKILLS_MAP from "@/application/constants/PetSkillsMap";
 import { PetSpecies } from "@/domain/enums/PetSpecies";
 import { Skill } from "@/domain/entities/Skill";
+import { Logger } from "@/shared/utils/Logger";
 
 // Status effect emojis
 const STATUS_EMOJIS: { [key: string]: string } = {
@@ -56,7 +57,7 @@ export class PetDetailsCommandHandler implements CommandHandler {
         );
         
         if (!pet) {
-          await message.reply(parseMarkdown("Không tìm thấy thú cưng với tên hoặc ID: " + petIdentifier));
+          await message.reply(parseMarkdown("Không tìm thấy thú với tên hoặc ID: " + petIdentifier));
           return;
         }
       } else {
@@ -107,7 +108,7 @@ export class PetDetailsCommandHandler implements CommandHandler {
           if (isLearned) {
             status = " ✅ (Đã học)";
           } else if (pet.level >= skill.levelReq) {
-            status = " 🔓";
+            status = " 🔓 (Lock kĩ năng không thuộc nguyên tố phụ)";
           } else {
             status = " (Yêu cầu cấp " + skill.levelReq + ")";
           }
@@ -118,7 +119,7 @@ export class PetDetailsCommandHandler implements CommandHandler {
       }
       
       // Build the details message
-      let detailsMessage = "📊 **THÔNG TIN CHI TIẾT THÚ CƯNG** 📊\n\n";
+      let detailsMessage = "📊 **THÔNG TIN CHI TIẾT THÚ** 📊\n\n";
       detailsMessage += speciesEmoji + " **" + pet.name + "** (ID: " + pet.id + ")\n";
       detailsMessage += elementEmoji + " Hệ: " + pet.element + "\n";
       detailsMessage += " Loài: " + pet.species + "\n";
@@ -137,7 +138,7 @@ export class PetDetailsCommandHandler implements CommandHandler {
 
       await message.reply(parseMarkdown(detailsMessage));
     } catch (error: any) {
-      await message.reply(parseMarkdown("Lỗi khi lấy thông tin chi tiết thú cưng: " + error.message));
+      await message.reply(parseMarkdown("Lỗi khi lấy thông tin chi tiết thú: " + error.message));
     }
   }
 }

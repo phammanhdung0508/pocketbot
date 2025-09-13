@@ -9,6 +9,7 @@ import {
   PetNotReadyException 
 } from "@/domain/exceptions/BattleExceptions";
 import { MAX_BATTLE_TURNS } from "../constants/BattleConstants";
+import { Logger } from "@/shared/utils/Logger";
 
 export class BattleUseCase {
   private battleTurnService: BattleTurnService;
@@ -27,6 +28,7 @@ export class BattleUseCase {
     defender: Pet,
     winner: string
   }> {
+    Logger.info(`Bắt đầu trận đấu giữa người dùng ${attackerMezonId} và ${defenderMezonId}`);
     const attackerPets = await this.petRepository.getPetsByUserId(attackerMezonId);
     const defenderPets = await this.petRepository.getPetsByUserId(defenderMezonId);
 
@@ -68,6 +70,7 @@ export class BattleUseCase {
         const turnResult1 = await this.battleTurnService.executePetTurn(firstPet, secondPet, sendMessage);
         if (turnResult1.isDefeated) {
           winner = firstPet.id === attacker.id ? attackerMezonId : defenderMezonId;
+          Logger.info(`Thú cưng ${firstPet.name} đã bị đánh bại`);
           break;
         }
       }
@@ -82,6 +85,7 @@ export class BattleUseCase {
         const turnResult2 = await this.battleTurnService.executePetTurn(secondPet, firstPet, sendMessage);
         if (turnResult2.isDefeated) {
           winner = secondPet.id === attacker.id ? attackerMezonId : defenderMezonId;
+          Logger.info(`Thú cưng ${secondPet.name} đã bị đánh bại`);
           break;
         }
       }
@@ -93,6 +97,7 @@ export class BattleUseCase {
         await sendMessage({
           t: `💥 **${attacker.name} fainted!**`
         });
+        Logger.info(`Thú cưng ${attacker.name} đã ngất xỉu`);
         break;
       }
       
@@ -102,6 +107,7 @@ export class BattleUseCase {
         await sendMessage({
           t: `💥 **${defender.name} fainted!**`
         });
+        Logger.info(`Thú cưng ${defender.name} đã ngất xỉu`);
         break;
       }
 
@@ -116,6 +122,7 @@ export class BattleUseCase {
       turn++;
       if (turn > MAX_BATTLE_TURNS) {
         await this.battlePresentationService.sendTimeoutMessage(sendMessage);
+        Logger.info(`Trận đấu hết giờ`);
         break;
       }
     }
@@ -135,6 +142,8 @@ export class BattleUseCase {
     // Save updated pet data
     await this.petRepository.updatePet(attackerMezonId, attacker);
     await this.petRepository.updatePet(defenderMezonId, defender);
+    
+    Logger.info(`Kết thúc trận đấu. Người thắng: ${winner}`);
 
     return { attacker, defender, winner };
   }

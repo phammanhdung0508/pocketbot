@@ -3,6 +3,7 @@ import { ElementType } from "@domain/enums/ElementType";
 import PET_STATS_MAP from "@/application/constants/PetStatsMap";
 import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
 import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
+import { Logger } from "@/shared/utils/Logger";
 
 interface AvailablePet {
   species: string;
@@ -20,6 +21,7 @@ interface AvailablePet {
 
 export class GetAvailablePetsUseCase {
   execute(): AvailablePet[] {
+    Logger.info(`Lấy danh sách các loài thú cưng khả dụng`);
     const availablePets: AvailablePet[] = [];
     
     for (const species in PetSpecies) {
@@ -45,6 +47,7 @@ export class GetAvailablePetsUseCase {
       }
     }
     
+    Logger.info(`Đã lấy được ${availablePets.length} loài thú cưng khả dụng`);
     return availablePets;
   }
   

@@ -14,7 +14,7 @@ export class BattleException extends Error {
 export class NoPetsException extends BattleException {
   constructor(playerType: "attacker" | "defender") {
     const playerTypeName = playerType === "attacker" ? "Người tấn công" : "Người phòng thủ";
-    super(`${playerTypeName} không có thú cưng`);
+    super(`${playerTypeName} không có thú`);
     this.name = "NoPetsException";
   }
 }
@@ -25,7 +25,7 @@ export class NoPetsException extends BattleException {
 export class PetNotReadyException extends BattleException {
   constructor(petName: string, playerType: "attacker" | "defender") {
     const playerTypeName = playerType === "attacker" ? "người tấn công" : "người phòng thủ";
-    super(`Thú cưng ${petName} của ${playerTypeName} chưa đầy HP và Năng lượng.`);
+    super(`thú ${petName} của ${playerTypeName} chưa đầy HP và Năng lượng.`);
     this.name = "PetNotReadyException";
   }
 }

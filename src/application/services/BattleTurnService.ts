@@ -11,6 +11,7 @@ import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
 import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
 import { createSkillUsageEmbed, createTurnStatusEmbed, createTurnEndStatusEmbed } from "@/infrastructure/utils/Embed";
 import { BattleStatus } from "@/domain/entities/BattleStatus";
+import { Logger } from "@/shared/utils/Logger";
 
 /**
  * Service responsible for executing battle turns and handling turn-based logic
@@ -31,6 +32,7 @@ export class BattleTurnService {
     pet: Pet, 
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
+    Logger.info(`Xử lý hiệu ứng cuối lượt cho thú cưng ${pet.name}`);
     for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
       const status = pet.statusEffects[i];
       const statusEffect = status.statusEffect;
@@ -88,6 +90,7 @@ export class BattleTurnService {
    * @returns The selected skill
    */
   selectSkill(pet: Pet): Skill {
+    Logger.info(`Chọn kỹ năng cho thú cưng ${pet.name}`);
     const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
     if (availableSkills.length === 0) {
       return { 
@@ -115,6 +118,7 @@ export class BattleTurnService {
     defendingPet: Pet,
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<TurnResult> {
+    Logger.info(`Thực hiện lượt của ${attackingPet.name} chống lại ${defendingPet.name}`);
     const isFrozen = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.FREEZE);
     const isStunned = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.STUN);
     
