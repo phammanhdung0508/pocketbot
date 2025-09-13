@@ -7,19 +7,21 @@
           "name": "dragod",
           "species": "dragon",
           "element": "fire",
-          "secondaryElements": [],
-          "level": 1,
+          "secondaryElements": [
+            "air"
+          ],
+          "level": 100,
           "exp": 0,
-          "hp": 850,
-          "maxHp": 850,
-          "attack": 140,
-          "defense": 90,
-          "speed": 100,
-          "energy": 6,
-          "maxEnergy": 6,
+          "hp": 1952,
+          "maxHp": 1952,
+          "attack": 347,
+          "defense": 268,
+          "speed": 249,
+          "energy": 12,
+          "maxEnergy": 12,
           "createdAt": "2025-09-13T16:41:15.432Z",
-          "lastUpdate": "2025-09-13T16:41:15.432Z",
-          "lastBattle": "2025-09-13T16:41:15.432Z",
+          "lastUpdate": "2025-09-13T16:44:22.916Z",
+          "lastBattle": "2025-09-13T16:44:22.916Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -48,6 +50,212 @@
               ],
               "description": "Breathes fire with a chance to burn.",
               "levelReq": 1
+            },
+            {
+              "name": "Dragon Rage",
+              "type": "skill",
+              "element": "fire",
+              "energyCost": 3,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "stat": "atk",
+                  "value": 45,
+                  "valueType": "percentage",
+                  "turns": 4
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "stat": "spd",
+                  "value": 25,
+                  "valueType": "percentage",
+                  "turns": 4
+                }
+              ],
+              "description": "+45% ATK, +25% SPD for 4 turns.",
+              "levelReq": 20
+            },
+            {
+              "name": "Flame Guard",
+              "type": "skill",
+              "element": "fire",
+              "energyCost": 3,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "stat": "def",
+                  "value": 70,
+                  "valueType": "percentage",
+                  "turns": 5,
+                  "properties": {
+                    "dmgReflect": 30
+                  }
+                }
+              ],
+              "description": "+70% DEF, reflect 30% damage for 5 turns.",
+              "levelReq": 20
+            },
+            {
+              "name": "Fire Soul",
+              "type": "passive",
+              "element": "fire",
+              "description": "Passive: When HP < 50%, Fire skills cost -1 Energy & +60% damage. On kill, recover 2 Energy.",
+              "levelReq": 40
+            },
+            {
+              "name": "Inferno Dash",
+              "type": "skill",
+              "damage": 473,
+              "element": "air",
+              "energyCost": 4,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "stat": "spd",
+                  "value": 100,
+                  "valueType": "percentage",
+                  "turns": 1,
+                  "affects": "alwaysHits"
+                }
+              ],
+              "description": "Cause 473 damage, +100% SPD this turn, always hits, cost 4",
+              "levelReq": 60
+            },
+            {
+              "name": "Fire Tornado",
+              "type": "skill",
+              "element": "air",
+              "energyCost": 3,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 3,
+                  "value": 80,
+                  "valueType": "percentage",
+                  "stat": "atk"
+                },
+                {
+                  "type": "burn",
+                  "target": "enemy",
+                  "chance": 50,
+                  "turns": 3,
+                  "value": 25,
+                  "valueType": "damage"
+                }
+              ],
+              "description": "Next 3 attacks deal +80% damage và có 50% Burn chance, cost 3",
+              "levelReq": 60
+            },
+            {
+              "name": "Dragon Sovereignty",
+              "type": "skill",
+              "damage": 721,
+              "element": "fire",
+              "energyCost": 6,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 2,
+                  "value": 60,
+                  "valueType": "percentage",
+                  "stat": "hp",
+                  "affects": "healOnDamage"
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 2,
+                  "value": 100,
+                  "valueType": "percentage",
+                  "stat": "atk"
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 2,
+                  "value": 100,
+                  "valueType": "percentage",
+                  "stat": "def"
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 2,
+                  "value": 100,
+                  "valueType": "percentage",
+                  "stat": "spd"
+                }
+              ],
+              "description": "Deals massive damage, heals for 60% of it, and buffs all stats.",
+              "levelReq": 100
+            }
+          ],
+          "statusEffects": [],
+          "buffs": [],
+          "passives": []
+        },
+        {
+          "id": "4241282e-b5ef-4b65-8f0c-f5160df07276",
+          "name": "windcut",
+          "species": "bird",
+          "element": "air",
+          "secondaryElements": [],
+          "level": 1,
+          "exp": 0,
+          "hp": 880,
+          "maxHp": 880,
+          "attack": 115,
+          "defense": 75,
+          "speed": 160,
+          "energy": 7,
+          "maxEnergy": 7,
+          "createdAt": "2025-09-13T16:45:17.950Z",
+          "lastUpdate": "2025-09-13T16:45:17.950Z",
+          "lastBattle": "2025-09-13T16:45:17.950Z",
+          "skills": [
+            {
+              "name": "Basic Attack",
+              "type": "skill",
+              "damage": 220,
+              "element": "physical",
+              "energyCost": 0,
+              "description": "A basic physical attack.",
+              "levelReq": 0
+            },
+            {
+              "name": "Wind Razor",
+              "type": "skill",
+              "damage": 275,
+              "element": "air",
+              "energyCost": 1,
+              "statusEffect": [
+                {
+                  "type": "blind",
+                  "target": "enemy",
+                  "chance": 25,
+                  "turns": 2,
+                  "value": 40,
+                  "valueType": "percentage",
+                  "affects": "accuracyReduction"
+                }
+              ],
+              "description": "Slashes with wind, may blind the target.",
+              "levelReq": 1
             }
           ],
           "statusEffects": [],
@@ -63,19 +271,21 @@
           "name": "rocki",
           "species": "golem",
           "element": "earth",
-          "secondaryElements": [],
-          "level": 1,
+          "secondaryElements": [
+            "fire"
+          ],
+          "level": 100,
           "exp": 0,
-          "hp": 950,
-          "maxHp": 950,
-          "attack": 120,
-          "defense": 150,
-          "speed": 60,
-          "energy": 10,
-          "maxEnergy": 10,
+          "hp": 2013,
+          "maxHp": 2013,
+          "attack": 298,
+          "defense": 398,
+          "speed": 139,
+          "energy": 20,
+          "maxEnergy": 20,
           "createdAt": "2025-09-13T16:41:30.772Z",
-          "lastUpdate": "2025-09-13T16:41:30.772Z",
-          "lastBattle": "2025-09-13T16:41:30.772Z",
+          "lastUpdate": "2025-09-13T16:44:22.918Z",
+          "lastBattle": "2025-09-13T16:44:22.918Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -105,6 +315,152 @@
               ],
               "description": "Crushes with a boulder, may slow the target.",
               "levelReq": 1
+            },
+            {
+              "name": "Stone Fortress",
+              "type": "skill",
+              "element": "earth",
+              "energyCost": 3,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "stat": "def",
+                  "value": 90,
+                  "valueType": "percentage",
+                  "turns": 5,
+                  "chance": 100,
+                  "properties": {
+                    "critRateBonus": -100
+                  }
+                }
+              ],
+              "description": "+90% DEF and immunity to critical hits for 5 turns.",
+              "levelReq": 20
+            },
+            {
+              "name": "Seismic Punch",
+              "type": "skill",
+              "damage": 290,
+              "element": "earth",
+              "energyCost": 2,
+              "statusEffect": [
+                {
+                  "type": "slow",
+                  "target": "enemy",
+                  "chance": 40,
+                  "turns": 2,
+                  "value": 30,
+                  "valueType": "percentage",
+                  "stat": "spd",
+                  "affects": "alwaysHits"
+                }
+              ],
+              "description": "A powerful punch that always hits and may slow.",
+              "levelReq": 20
+            },
+            {
+              "name": "Earth Resilience",
+              "type": "passive",
+              "element": "earth",
+              "description": "Passive: If damage taken >5% of current5% of current HP, reduce it by 60%. +5% DEF each turn (max 50%). Immunity vs Poison.",
+              "levelReq": 40
+            },
+            {
+              "name": "Molten Fist",
+              "type": "skill",
+              "damage": 406,
+              "element": "fire",
+              "energyCost": 4,
+              "statusEffect": [
+                {
+                  "type": "burn",
+                  "target": "enemy",
+                  "chance": 50,
+                  "turns": 3,
+                  "value": 25,
+                  "valueType": "damage"
+                },
+                {
+                  "type": "debuff",
+                  "target": "enemy",
+                  "chance": 100,
+                  "turns": 1,
+                  "value": 40,
+                  "valueType": "percentage",
+                  "stat": "def",
+                  "affects": "ignoreDefense"
+                }
+              ],
+              "description": "A fiery fist that burns and ignores 40% defense.",
+              "levelReq": 60
+            },
+            {
+              "name": "Lava Armor",
+              "type": "skill",
+              "element": "fire",
+              "energyCost": 3,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 4,
+                  "value": 60,
+                  "valueType": "percentage",
+                  "stat": "def"
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 4,
+                  "value": 30,
+                  "valueType": "percentage",
+                  "stat": "atk"
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 4,
+                  "value": 40,
+                  "valueType": "percentage",
+                  "stat": "hp",
+                  "affects": "healOnDamage"
+                }
+              ],
+              "description": "+60% DEF, reflect 40% damage as Fire, +30% ATK cho 4 turns",
+              "levelReq": 60
+            },
+            {
+              "name": "Continental Force",
+              "type": "skill",
+              "damage": 619,
+              "element": "earth",
+              "energyCost": 7,
+              "statusEffect": [
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "stat": "def",
+                  "value": 100,
+                  "valueType": "percentage",
+                  "turns": 3,
+                  "chance": 100
+                },
+                {
+                  "type": "buff",
+                  "target": "self",
+                  "chance": 100,
+                  "turns": 3,
+                  "value": 1,
+                  "valueType": "flag",
+                  "immunities": "all"
+                }
+              ],
+              "description": "Massive damage and +100% DEF for 3 turns, immunity vs all status effects.",
+              "levelReq": 100
             }
           ],
           "statusEffects": [],
