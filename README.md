@@ -50,7 +50,7 @@ Dự án này sử dụng biến môi trường để quản lý cấu hình.
     cp .env.example .env
     ```
 
-2.  Mở file `.env` và điền các giá trị cần thiết cho môi trường của bạn (ví dụ: token, thông tin kết nối database,...).
+2.  Mở file `.env` và điền các giá trị cần thiết cho môi trường với Bot Token.
 
 ## Sử dụng
 
