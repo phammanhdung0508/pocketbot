@@ -1,6 +1,6 @@
 export class PetErrors {
-  static readonly NOT_FOUND = "Pet not found";
+  static readonly NOT_FOUND = "Không tìm thấy thú cưng";
   static readonly LOW_ENERGY = (currentEnergy: number) => 
-    `Your pet is too tired to do this! Energy must be above 50%. Current energy: ${currentEnergy}%`;
-  static readonly NO_PETS = "You don't have any pets yet. Create one with `*pet create <name> <species> <element>`";
+    `Thú cưng của bạn quá mệt để làm điều này! Năng lượng phải trên 50%. Năng lượng hiện tại: ${currentEnergy}%`;
+  static readonly NO_PETS = "Bạn chưa có thú cưng nào. Hãy tạo một con với `*pet create <tên> <loài> <hệ>`";
 }

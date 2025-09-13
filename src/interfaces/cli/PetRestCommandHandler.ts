@@ -32,7 +32,7 @@ export class PetRestCommandHandler implements CommandHandler {
         // Rest all pets
         const restedPets = await this.petRestUseCase.restAllPets(message.sender_id);
         
-        let response = "**RESTED ALL PETS**\n\n";
+        let response = "**ĐÃ NGHỈ NGƠI TẤT CẢ THÚ CƯNG**\n\n";
         for (const pet of restedPets) {
           const speciesEmoji = SPECIES_EMOJIS[pet.species as keyof typeof SPECIES_EMOJIS] || "🐾";
           const status = PetRestService.getRestStatus(pet);
@@ -46,7 +46,7 @@ export class PetRestCommandHandler implements CommandHandler {
         const pets = await this.getPetsUseCase.execute(message.sender_id);
         
         if (pets.length === 0) {
-          await message.reply(parseMarkdown("You don't have any pets. Create one with `*pet create <name> <species>`"));
+          await message.reply(parseMarkdown("Bạn không có thú cưng nào. Hãy tạo một con với `*pet create <tên> <loài>`"));
           return;
         }
         
@@ -56,7 +56,7 @@ export class PetRestCommandHandler implements CommandHandler {
         );
         
         if (!pet) {
-          await message.reply(parseMarkdown(`Pet with name or ID "${petIdentifier}" not found.`));
+          await message.reply(parseMarkdown(`Không tìm thấy thú cưng với tên hoặc ID "${petIdentifier}".`));
           return;
         }
         
@@ -65,7 +65,7 @@ export class PetRestCommandHandler implements CommandHandler {
         const status = PetRestService.getRestStatus(restedPet);
         
         await message.reply(parseMarkdown(
-          `💤 **RESTED PET**\n\n` +
+          `💤 **THÚ CƯNG ĐÃ NGHỈ NGƠI**\n\n` +
           `${speciesEmoji} **${restedPet.name}**\n` +
           `${status}`
         ));
@@ -74,24 +74,24 @@ export class PetRestCommandHandler implements CommandHandler {
         const pets = await this.getPetsUseCase.execute(message.sender_id);
         
         if (pets.length === 0) {
-          await message.reply(parseMarkdown("You don't have any pets. Create one with `*pet create <name> <species>`"));
+          await message.reply(parseMarkdown("Bạn không có thú cưng nào. Hãy tạo một con với `*pet create <tên> <loài>`"));
           return;
         }
         
-        let response = "**PET REST STATUS**\n\n";
+        let response = "**TRẠNG THÁI NGHỈ NGƠI CỦA THÚ CƯNG**\n\n";
         for (const pet of pets) {
           const speciesEmoji = SPECIES_EMOJIS[pet.species as keyof typeof SPECIES_EMOJIS] || "🐾";
           const status = PetRestService.getRestStatus(pet);
           response += `${speciesEmoji} **${pet.name}** - ${status}\n`;
         }
         
-        response += "\nUse `*pet rest <pet_name>` to rest a specific pet.\n";
-        response += "Use `*pet rest all` to rest all pets.";
+        response += "\nSử dụng `*pet rest <tên_thú_cưng>` để cho một thú cưng nghỉ ngơi.\n";
+        response += "Sử dụng `*pet rest all` để cho tất cả thú cưng nghỉ ngơi.";
         
         await message.reply(parseMarkdown(response));
       }
     } catch (error: any) {
-      await message.reply(parseMarkdown(`❌ Error: ${error.message}`));
+      await message.reply(parseMarkdown(`❌ Lỗi: ${error.message}`));
     }
   }
 }

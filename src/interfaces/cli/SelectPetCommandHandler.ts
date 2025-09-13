@@ -31,21 +31,21 @@ export class SelectPetCommandHandler implements CommandHandler {
 
       // Show pet count and limit
       const maxPets = 3;
-      const petCountInfo = "**Pet Collection:** " + pets.length + "/" + maxPets + " pets";
+      const petCountInfo = "**Bộ sưu tập thú cưng:** " + pets.length + "/" + maxPets + " thú cưng";
       
       let petList = petCountInfo + "\n\n";
       pets.forEach((pet, index) => {
-        const status = pet.hp <= 0 ? " (Fainted)" : 
-                      (pet.hp < pet.maxHp || pet.energy < pet.maxEnergy) ? " (Needs rest)" : 
-                      " (Ready for battle)";
+        const status = pet.hp <= 0 ? " (Bị ngất)" : 
+                      (pet.hp < pet.maxHp || pet.energy < pet.maxEnergy) ? " (Cần nghỉ ngơi)" : 
+                      " (Sẵn sàng chiến đấu)";
         petList += (index + 1) + ". **" + pet.name + "** (" + pet.species + ", Lvl " + pet.level + ")" + status + "\n";
       });
       
-      petList += "\nUse `*pet select <pet_name_or_id>` to choose a pet for battle.";
+      petList += "\nSử dụng `*pet select <tên_thú_cưng_hoặc_id>` để chọn một thú cưng cho trận chiến.";
       
       if (pets.length < maxPets) {
         const remainingSlots = maxPets - pets.length;
-        petList += "\n\nYou can create " + remainingSlots + " more pet(s). Use `*pet create` to add more pets!";
+        petList += "\n\nBạn có thể tạo thêm " + remainingSlots + " thú cưng nữa. Sử dụng `*pet create` để thêm thú cưng!";
       }
       
       await message.reply(parseMarkdown(petList));
@@ -57,9 +57,9 @@ export class SelectPetCommandHandler implements CommandHandler {
 
     try {
       const selectedPet = await this.selectPetForBattleUseCase.execute(message.sender_id, petIdentifier);
-      await message.reply(parseMarkdown("✅ **" + selectedPet.name + "** has been selected for battle!"));
+      await message.reply(parseMarkdown("✅ **" + selectedPet.name + "** đã được chọn cho trận chiến!"));
     } catch (error: any) {
-      await message.reply(parseMarkdown("❌ Error: " + error.message));
+      await message.reply(parseMarkdown("❌ Lỗi: " + error.message));
     }
   }
 }

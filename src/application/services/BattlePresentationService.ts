@@ -1,13 +1,20 @@
 import { Pet } from "@domain/entities/Pet";
+import { Skill } from "@domain/entities/Skill";
 import { ChannelMessageContent } from "mezon-sdk";
 import { IBattleService } from "@/domain/interfaces/services/IBattleService";
 import { 
   createBattleDrawEmbed, 
   createBattleEndEmbed, 
   createBattleStartEmbed, 
+  createTurnEndStatusEmbed, 
   createTurnStatusEmbed, 
-  createTurnEndStatusEmbed 
+  createSkillUsageEmbed 
 } from "@/infrastructure/utils/Embed";
+import { PassiveAbilityService } from "@/infrastructure/services/PassiveAbilityService";
+import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
+import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
+import { EffectTypes } from "@/domain/enums/EffectTypes";
+import { AffectTypes } from "@/domain/enums/AffectTypes";
 
 /**
  * Service responsible for handling battle presentation and UI messaging
@@ -29,6 +36,26 @@ export class BattlePresentationService {
     await sendMessage({
       t: "**TRẬN ĐẤU BẮT ĐẦU**",
       embed: [createBattleStartEmbed(attacker, defender)]
+    });
+  }
+
+  /**
+   * Send the countdown message
+   * @param seconds The number of seconds to count down
+   * @param sendMessage Function to send messages to the channel
+   */
+  async sendCountdownMessage(
+    seconds: number,
+    sendMessage: (payload: ChannelMessageContent) => Promise<void>
+  ): Promise<void> {
+    for (let i = seconds; i > 0; i--) {
+      await sendMessage({
+        t: `**${i}**`
+      });
+      await this.delay(1000);
+    }
+    await sendMessage({
+      t: "**CHIẾN NÀO!** 🎉"
     });
   }
 
@@ -105,26 +132,6 @@ export class BattlePresentationService {
   }
 
   /**
-   * Send a countdown message
-   * @param seconds The number of seconds to count down
-   * @param sendMessage Function to send messages to the channel
-   */
-  async sendCountdownMessage(
-    seconds: number,
-    sendMessage: (payload: ChannelMessageContent) => Promise<void>
-  ): Promise<void> {
-    for (let i = seconds; i > 0; i--) {
-      await sendMessage({
-        t: `**${i}**`
-      });
-      await this.delay(1000);
-    }
-    await sendMessage({
-      t: "**CHIẾN NÀO!** 🎉"
-    });
-  }
-
-  /**
    * Send a waiting message between turns
    * @param sendMessage Function to send messages to the channel
    */
@@ -132,7 +139,7 @@ export class BattlePresentationService {
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
     await sendMessage({
-      t: "⏳ Đang chuẩn bàn lượt tiếp theo..."
+      t: "⏳ Đang chuẩn bị lượt tiếp theo..."
     });
     await this.delay(5000);
   }

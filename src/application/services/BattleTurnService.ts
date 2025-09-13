@@ -7,14 +7,10 @@ import { IPetRepository } from "@/domain/interfaces/repositories/IPetRepository"
 import { EffectTypes } from "@/domain/enums/EffectTypes";
 import { AffectTypes } from "@/domain/enums/AffectTypes";
 import { PassiveAbilityService } from "@/infrastructure/services/PassiveAbilityService";
-import { ELEMENT_EMOJIS } from "../constants/ElementEmojis";
-import { SPECIES_EMOJIS } from "../constants/SpeciesEmojis";
-import { 
-  createSkillUsageEmbed, 
-  createTurnStatusEmbed, 
-  createTurnEndStatusEmbed 
-} from "@/infrastructure/utils/Embed";
-import { StatusEffectService } from "./StatusEffectService";
+import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
+import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
+import { createSkillUsageEmbed, createTurnStatusEmbed, createTurnEndStatusEmbed } from "@/infrastructure/utils/Embed";
+import { BattleStatus } from "@/domain/entities/BattleStatus";
 
 /**
  * Service responsible for executing battle turns and handling turn-based logic
@@ -35,7 +31,55 @@ export class BattleTurnService {
     pet: Pet, 
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
-    await StatusEffectService.processEndOfTurnStatusEffects(pet, sendMessage);
+    for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
+      const status = pet.statusEffects[i];
+      const statusEffect = status.statusEffect;
+      status.turnsRemaining--;
+
+      switch (statusEffect.type) {
+        case EffectTypes.BURN:
+          const dotDamage = this.battleService.calculateDotDamage(pet, statusEffect);
+          pet.hp = Math.max(0, pet.hp - dotDamage);
+          await sendMessage({
+            t: `🔥 **${pet.name}** bị bỏng! Nhận **${dotDamage}** sát thương!`
+          });
+          break;
+        case EffectTypes.POISON:
+          const poisonDamage = this.battleService.calculateDotDamage(pet, statusEffect);
+          pet.hp = Math.max(0, pet.hp - poisonDamage);
+          await sendMessage({
+            t: `☠️ **${pet.name}** bị ngộ độc! Nhận **${poisonDamage}** sát thương!`
+          });
+          break;
+        case EffectTypes.SLOW:
+          break;
+        case EffectTypes.BUFF:
+          break;
+        case EffectTypes.DEBUFF:
+          break;
+        case EffectTypes.FREEZE:
+          await sendMessage({
+            t: `🧊 **${pet.name}** bị đóng băng và không thể di chuyển!`
+          });
+          break;
+        case EffectTypes.BLIND:
+          break;
+        case EffectTypes.PARALYZE:
+          break;
+        case EffectTypes.STUN:
+          await sendMessage({
+            t: `💫 **${pet.name}** bị choáng và không thể di chuyển!`
+          });
+          break;
+      }
+
+      if (status.turnsRemaining <= 0) {
+        await sendMessage({
+          t: `✨ Hiệu ứng ${statusEffect.type} của **${pet.name}** đã hết.`
+        });
+        pet.statusEffects.splice(i, 1);
+      }
+    }
   }
 
   /**
@@ -44,10 +88,7 @@ export class BattleTurnService {
    * @returns The selected skill
    */
   selectSkill(pet: Pet): Skill {
-    const availableSkills = pet.skills.filter(
-      skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level
-    );
-    
+    const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
     if (availableSkills.length === 0) {
       return { 
         name: "Basic Attack", 
@@ -59,7 +100,6 @@ export class BattleTurnService {
         levelReq: 0 
       };
     }
-    
     return availableSkills[Math.floor(Math.random() * availableSkills.length)];
   }
 
@@ -75,16 +115,18 @@ export class BattleTurnService {
     defendingPet: Pet,
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<TurnResult> {
-    // Check if pet is immobilized
-    if (StatusEffectService.isImmobilized(attackingPet)) {
+    const isFrozen = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.FREEZE);
+    const isStunned = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.STUN);
+    
+    if (isFrozen || isStunned) {
       await sendMessage({
         t: `❌ **${attackingPet.name}** không thể di chuyển!`
       });
       return { isDefeated: false, expGain: 0 };
     }
 
-    // Check if pet is paralyzed and prevented from moving
-    if (StatusEffectService.isParalyzedAndPreventedFromMoving(attackingPet)) {
+    const isParalyzed = attackingPet.statusEffects.some(status => status.statusEffect.type === EffectTypes.PARALYZE);
+    if (isParalyzed && Math.random() > 0.3) {
       await sendMessage({
         t: `⚡ **${attackingPet.name}** bị tê liệt và không thể di chuyển!`
       });
@@ -122,17 +164,19 @@ export class BattleTurnService {
       
       // Apply paralyze effect if triggered
       if (electricFieldEffect.paralyze) {
-        StatusEffectService.applyStatusEffect(
-          attackingPet,
-          {
+        const paralyzeStatus: BattleStatus = {
+          statusEffect: {
             type: EffectTypes.PARALYZE,
             target: "enemy",
             chance: 100,
             turns: 1,
             value: 1,
             valueType: "flag",
-          }
-        );
+          },
+          turnsRemaining: 1,
+          turnsTotal: 1,
+        };
+        attackingPet.statusEffects.push(paralyzeStatus);
         await sendMessage({
           t: `⚡ **${attackingPet.name}** bị tê liệt!`
         });
@@ -194,13 +238,120 @@ export class BattleTurnService {
         const applied = damageResult.statusApplied[i];
         
         if (applied) {
-          // Apply status effect based on target
-          if (statusEffect.target === 'enemy') {
-            StatusEffectService.applyStatusEffect(defendingPet, statusEffect, attackingPet.attack);
-            await this.sendStatusEffectMessage(defendingPet.name, statusEffect.type, sendMessage);
-          } else if (statusEffect.target === 'self') {
-            StatusEffectService.applyStatusEffect(attackingPet, statusEffect, attackingPet.attack);
-            await this.sendStatusEffectMessage(attackingPet.name, statusEffect.type, sendMessage);
+          const newStatus: BattleStatus = {
+            statusEffect: { ...statusEffect, sourceAtk: attackingPet.attack },
+            turnsRemaining: statusEffect.turns,
+            turnsTotal: statusEffect.turns,
+          };
+
+          switch (statusEffect.type) {
+            case EffectTypes.BURN:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `🔥 **${defendingPet.name}** bị bỏng!`
+                });
+              } else if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `🔥 **${attackingPet.name}** bị bỏng!`
+                });
+              }
+              break;
+            case EffectTypes.FREEZE:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `🧊 **${defendingPet.name}** bị đóng băng!`
+                });
+              } else if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `🧊 **${attackingPet.name}** bị đóng băng!`
+                });
+              }
+              break;
+            case EffectTypes.PARALYZE:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `⚡ **${defendingPet.name}** bị tê liệt!`
+                });
+              } else if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `⚡ **${attackingPet.name}** bị tê liệt!`
+                });
+              }
+              break;
+            case EffectTypes.POISON:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `☠️ **${defendingPet.name}** bị ngộ độc!`
+                });
+              } else if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `☠️ **${attackingPet.name}** bị ngộ độc!`
+                });
+              }
+              break;
+            case EffectTypes.BLIND:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `👁️ **${defendingPet.name}** bị mù!`
+                });
+              } else if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `👁️ **${attackingPet.name}** bị mù!`
+                });
+              }
+              break;
+            case EffectTypes.SLOW:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `🦥 **${defendingPet.name}** bị chậm!`
+                });
+              } else if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `🦥 **${attackingPet.name}** bị chậm!`
+                });
+              }
+              break;
+            case EffectTypes.STUN:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `💫 **${defendingPet.name}** bị choáng!`
+                });
+              } else if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `💫 **${attackingPet.name}** bị choáng!`
+                });
+              }
+              break;
+            case EffectTypes.BUFF:
+              if (statusEffect.target === 'self') {
+                attackingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `⬆️ ${statusEffect.stat} của **${attackingPet.name}** tăng lên!`
+                });
+              }
+              break;
+            case EffectTypes.DEBUFF:
+              if (statusEffect.target === 'enemy') {
+                defendingPet.statusEffects.push(newStatus);
+                await sendMessage({
+                  t: `⬇️ ${statusEffect.stat} của **${defendingPet.name}** giảm xuống!`
+                });
+              }
+              break;
           }
         }
       }
@@ -226,34 +377,5 @@ export class BattleTurnService {
     }
 
     return { isDefeated: false, expGain: 0 };
-  }
-
-  /**
-   * Send a message for a status effect being applied
-   * @param petName The name of the pet the effect is applied to
-   * @param effectType The type of effect
-   * @param sendMessage Function to send messages to the channel
-   */
-  private async sendStatusEffectMessage(
-    petName: string,
-    effectType: EffectTypes,
-    sendMessage: (payload: ChannelMessageContent) => Promise<void>
-  ): Promise<void> {
-    const statusMessages: { [key: string]: string } = {
-      [EffectTypes.BURN]: `🔥 **${petName}** bị bỏng!`,
-      [EffectTypes.FREEZE]: `🧊 **${petName}** bị đóng băng!`,
-      [EffectTypes.PARALYZE]: `⚡ **${petName}** bị tê liệt!`,
-      [EffectTypes.POISON]: `☠️ **${petName}** bị ngộ độc!`,
-      [EffectTypes.BLIND]: `👁️ **${petName}** bị mù!`,
-      [EffectTypes.SLOW]: `🦥 **${petName}** bị chậm!`,
-      [EffectTypes.STUN]: `💫 **${petName}** bị choáng!`,
-      [EffectTypes.BUFF]: `⬆️ ${effectType} của **${petName}** tăng lên!`,
-      [EffectTypes.DEBUFF]: `⬇️ ${effectType} của **${petName}** giảm xuống!`,
-    };
-
-    const message = statusMessages[effectType];
-    if (message) {
-      await sendMessage({ t: message });
-    }
   }
 }

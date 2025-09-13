@@ -3,21 +3,7 @@ import { PetStats } from "../utils/PetStats";
 import { PetFactory } from "../factories/PetFactory";
 
 export class PetCareService {
-  static careForPet(pet: Pet, action?: 'feed' | 'play' | 'train'): Pet {
-    switch (action) {
-      case 'feed':
-        pet = PetStats.feedPet(pet);
-        break;
-      case 'play':
-        pet = PetStats.playWithPet(pet);
-        break;
-      case 'train':
-        pet = PetStats.trainPet(pet);
-        break;
-      default:
-        break;
-    }
-
+  static careForPet(pet: Pet): Pet {
     if (pet.exp >= pet.level * 100) {
       pet = PetFactory.levelUp(pet);
       
