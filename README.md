@@ -10,6 +10,19 @@
 - **Kiến trúc rõ ràng:** Dự án được cấu trúc theo các lớp Domain, Application, và Infrastructure để dễ dàng bảo trì và mở rộng.
 - **Giao diện dòng lệnh (CLI):** Tương tác với bot thông qua các lệnh được định nghĩa sẵn.
 
+## Cấu trúc thư mục
+
+Dự án tuân theo một kiến trúc phân lớp để tách biệt các mối quan tâm:
+
+```
+src/
+├── application/  # Chứa các use case và logic của ứng dụng
+├── domain/       # Lõi nghiệp vụ (entities, enums, interfaces)
+├── infrastructure/ # Triển khai các interface (repositories, services bên ngoài)
+├── interfaces/   # Điểm vào của ứng dụng (command handlers)
+└── shared/       # Các tiện ích dùng chung
+```
+
 ## Yêu cầu
 
 - [Node.js](https://nodejs.org/) (khuyến nghị phiên bản 18.x trở lên)
@@ -60,20 +73,3 @@ Dưới đây là các lệnh (scripts) có sẵn trong `package.json`:
     ```bash
     npm start
     ```
-
-## Cấu trúc thư mục
-
-Dự án tuân theo một kiến trúc phân lớp để tách biệt các mối quan tâm:
-
-```
-src/
-├── application/  # Chứa các use case và logic của ứng dụng
-├── domain/       # Lõi nghiệp vụ (entities, enums, interfaces)
-├── infrastructure/ # Triển khai các interface (repositories, services bên ngoài)
-├── interfaces/   # Điểm vào của ứng dụng (command handlers)
-└── shared/       # Các tiện ích dùng chung
-```
-
-## Giấy phép
-
-Dự án này được cấp phép theo giấy phép ISC.
