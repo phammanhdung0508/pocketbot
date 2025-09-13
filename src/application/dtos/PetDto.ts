@@ -15,7 +15,6 @@ export interface PetInfoResponse {
   attack: number;
   defense: number;
   speed: number;
-  hunger: number;
   energy: number;
   createdAt: Date;
   lastUpdate: Date;

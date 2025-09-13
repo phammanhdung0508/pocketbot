@@ -1,7 +1,6 @@
 import { ChannelMessage } from "mezon-sdk";
 import { CommandHandler } from "./CommandHandler";
 import { CreatePetCommandHandler } from "./CreatePetCommandHandler";
-import { PetInfoCommandHandler } from "./PetInfoCommandHandler";
 import { BattleCommandHandler } from "./BattleCommandHandler";
 import { PetListCommandHandler } from "./PetListCommandHandler";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
@@ -15,6 +14,10 @@ import { CheatUseCase } from "@/application/use-cases/CheatUseCase";
 import { PetDetailsCommandHandler } from "./PetDetailsCommandHandler";
 import { WelcomeCommandHandler } from "./WelcomeCommandHandler";
 import { GetAvailablePetsUseCase } from "@/application/use-cases/GetAvailablePetsUseCase";
+import { SelectPetCommandHandler } from "./SelectPetCommandHandler";
+import { SelectPetForBattleUseCase } from "@/application/use-cases/SelectPetForBattleUseCase";
+import { PetRestCommandHandler } from "./PetRestCommandHandler";
+import { PetRestUseCase } from "@/application/use-cases/PetRestUseCase";
 
 export class CommandRouter {
   private handlers: Map<string, CommandHandler> = new Map();
@@ -24,15 +27,18 @@ export class CommandRouter {
     getPetsUseCase: GetPetsUseCase,
     battleUseCase: BattleUseCase,
     cheatUseCase: CheatUseCase,
-    getAvailablePetsUseCase: GetAvailablePetsUseCase
+    getAvailablePetsUseCase: GetAvailablePetsUseCase,
+    selectPetForBattleUseCase: SelectPetForBattleUseCase,
+    petRestUseCase: PetRestUseCase
   ) {
-    this.registerHandler("pet create", new CreatePetCommandHandler(createPetUseCase));
-    this.registerHandler("pet info", new PetInfoCommandHandler(getPetsUseCase));
+    this.registerHandler("pet create", new CreatePetCommandHandler(createPetUseCase, getPetsUseCase));
     this.registerHandler("pet details", new PetDetailsCommandHandler(getPetsUseCase));
     this.registerHandler("pet battle", new BattleCommandHandler(battleUseCase));
     this.registerHandler("pet list", new PetListCommandHandler(getAvailablePetsUseCase));
     this.registerHandler("pet cheat", new CheatCommandHandler(cheatUseCase, getPetsUseCase));
     this.registerHandler("pet welcome", new WelcomeCommandHandler());
+    this.registerHandler("pet select", new SelectPetCommandHandler(selectPetForBattleUseCase, getPetsUseCase));
+    this.registerHandler("pet rest", new PetRestCommandHandler(petRestUseCase, getPetsUseCase));
   }
 
   registerHandler(command: string, handler: CommandHandler): void {

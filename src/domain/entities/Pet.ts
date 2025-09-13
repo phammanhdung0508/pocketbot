@@ -16,10 +16,9 @@ export interface Pet {
   speed: number;
   energy: number;
   maxEnergy: number;
-  stamina: number;
-  hunger: number;
   createdAt: Date;
   lastUpdate: Date;
+  lastBattle: Date;
   skills: Skill[];
   statusEffects: BattleStatus[];
   buffs: Buff[];

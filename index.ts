@@ -8,8 +8,9 @@ import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase"
 import { GetPetsUseCase } from "./src/application/use-cases/GetPetsUseCase"
 import { BattleUseCase } from "./src/application/use-cases/BattleUseCase"
 import { CheatUseCase } from "./src/application/use-cases/CheatUseCase"
-import { BackgroundTask } from "./src/infrastructure/utils/BackgroundTask"
 import { GetAvailablePetsUseCase } from "./src/application/use-cases/GetAvailablePetsUseCase"
+import { SelectPetForBattleUseCase } from "./src/application/use-cases/SelectPetForBattleUseCase"
+import { PetRestUseCase } from "./src/application/use-cases/PetRestUseCase"
 
 dotenv.config()
 
@@ -22,16 +23,17 @@ async function main() {
     const battleUseCase = new BattleUseCase(petRepository, battleService);
     const cheatUseCase = new CheatUseCase(petRepository);
     const getAvailablePetsUseCase = new GetAvailablePetsUseCase();
-
-    const backgroundTask = new BackgroundTask(petRepository);
-    backgroundTask.startBackgroundTasks();
+    const selectPetForBattleUseCase = new SelectPetForBattleUseCase(petRepository);
+    const petRestUseCase = new PetRestUseCase(petRepository);
 
     const commandRouter = new CommandRouter(
         createPetUseCase,
         getPetsUseCase,
         battleUseCase,
         cheatUseCase,
-        getAvailablePetsUseCase
+        getAvailablePetsUseCase,
+        selectPetForBattleUseCase,
+        petRestUseCase
     );
 
     const client = new MezonClient(process.env.MEZON_BOT_TOKEN);

@@ -7,6 +7,6 @@ export class GetPetsUseCase {
 
   async execute(mezonId: string): Promise<Pet[]> {
     const pets = await this.petRepository.getPetsByUserId(mezonId);
-    return pets.map(pet => PetStats.updatePetStatsOverTime(pet));
+    return pets;
   }
 }

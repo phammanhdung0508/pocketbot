@@ -124,6 +124,11 @@ export class BattleUseCase {
       t: ""
     });
     
+    // Update lastBattle timestamp for both pets
+    const now = new Date();
+    attacker.lastBattle = now;
+    defender.lastBattle = now;
+    
     // Send battle end message
     await this.battlePresentationService.sendBattleEndMessage(winner, attacker, defender, sendMessage);
 

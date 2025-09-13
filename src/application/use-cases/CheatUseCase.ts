@@ -8,7 +8,15 @@ export class CheatUseCase {
     
     async execute(mezonId: string, petId: string, exp: number, level: number): Promise<Pet> {
         const pet = await this.petRepository.getPetById(mezonId, petId);
-        PetValidator.validateCanPerformAction(pet);
+        
+        if (!pet) {
+            throw new Error("Pet not found");
+        }
+        
+        // Validate pet is ready for action
+        if (!PetValidator.isPetReadyForAction(pet)) {
+            throw new Error("Pet is not ready for action");
+        }
         
         pet.exp = exp;
         pet.level = level;

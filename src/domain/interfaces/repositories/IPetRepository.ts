@@ -8,4 +8,7 @@ export interface IPetRepository {
   deletePet(mezonId: string, petId: string): Promise<void>;
   getAllUsersWithPets(): Promise<Record<string, { pets: Pet[] }>>;
   saveAllUsers(users: Record<string, { pets: Pet[] }>): Promise<void>;
+  selectPetForBattle(mezonId: string, petId: string): Promise<void>;
+  getSelectedPetForBattle(mezonId: string): Promise<Pet | null>;
+  getMaxPetsPerUser(): number;
 }

@@ -29,7 +29,7 @@ Hãy cùng khám phá thế giới của những chú thú cưng chiến đấu 
 ⚔️ **CHIẾN ĐẤU:**
 • *battle <@người_chơi> - Thách đấu người chơi khác
 • Trận đấu có 10 vòng, Thú cưng sẽ tấn công nhau theo lượt
-• Kỹ năng có thể gây hiệu ứng đặc biệt (đốt, đóng băng, tê liệt...)
+• Kỹ năng có thể gây hiệu ứng đặc biệt
 
 📈 **CƠ CHẾ PHÁT TRIỂN:**
 • Thú cưng lên cấp khi đạt đủ EXP (cấp × 100 EXP)

@@ -9,7 +9,7 @@ export class PetCareService {
         pet = PetStats.feedPet(pet);
         break;
       case 'play':
-        pet = PetStats.playPet(pet);
+        pet = PetStats.playWithPet(pet);
         break;
       case 'train':
         pet = PetStats.trainPet(pet);

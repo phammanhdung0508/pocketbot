@@ -30,11 +30,14 @@ export class PetDetailsCommandHandler implements CommandHandler {
 
   async handle(channel: TextChannel, message: Message, channelMsg?: ChannelMessage): Promise<void> {
     try {
-      // Parse arguments correctly - skip the first two elements (* and pet)
-      // The message content is "*pet details" or "*pet details <petname>"
-      const parts = message.content.t?.slice(1).trim().split(/ +/) || [];
-      // parts[0] is "pet", parts[1] is "details", parts[2+] are the actual arguments
-      const args = parts.slice(2) || [];
+      // Parse arguments - get everything after "*pet details"
+      // message.content.t is "*pet details <petname>" or "*pet details"
+      const fullCommand = message.content.t?.slice(1).trim() || ""; // Remove * and trim
+      const parts = fullCommand.split(/ +/);
+      
+      // parts[0] should be "pet", parts[1] should be "details"
+      // parts[2+] are the pet name or ID
+      const args = parts.length > 2 ? parts.slice(2) : [];
       
       const pets = await this.getPetsUseCase.execute(message.sender_id);
       
@@ -125,9 +128,7 @@ export class PetDetailsCommandHandler implements CommandHandler {
       detailsMessage += "⚔️ Tấn công: " + pet.attack + "\n";
       detailsMessage += "🛡️ Phòng thủ: " + pet.defense + "\n";
       detailsMessage += "⚡ Tốc độ: " + pet.speed + "\n";
-      detailsMessage += "⚡ Năng lượng: " + pet.energy + "/" + pet.maxEnergy + "\n";
-      detailsMessage += "🍖 Đói bụng: " + pet.hunger + "%\n";
-      detailsMessage += "💪 Thể lực: " + pet.stamina + "\n\n";
+      detailsMessage += "⚡ Năng lượng: " + pet.energy + "/" + pet.maxEnergy + "\n\n";
       detailsMessage += "🌟 **Nguyên tố phụ:** " + secondaryElementsInfo + "\n\n";
       detailsMessage += "📅 Tạo lúc: " + pet.createdAt.toLocaleString('vi-VN') + "\n";
       detailsMessage += "🔄 Cập nhật lần cuối: " + pet.lastUpdate.toLocaleString('vi-VN') + "\n\n";

@@ -4,8 +4,6 @@ import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChan
 import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "../../shared/utils/parseMarkdown";
 import { GetAvailablePetsUseCase } from "@/application/use-cases/GetAvailablePetsUseCase";
-import { SPECIES_EMOJIS } from "@/application/constants/SpeciesEmojis";
-import { ELEMENT_EMOJIS } from "@/application/constants/ElementEmojis";
 
 export class PetListCommandHandler implements CommandHandler {
   constructor(private getAvailablePetsUseCase: GetAvailablePetsUseCase) {}
@@ -31,7 +29,7 @@ export class PetListCommandHandler implements CommandHandler {
       listMessage += petList.join("\n");
       
       listMessage += "\n\nĐể chọn một thú cưng, sử dụng lệnh: `*pet create <tên> <loài>`";
-      listMessage += "\nVí dụ: `*pet create Mèo dragon`";
+      listMessage += "\nVí dụ: `*pet create draqueen dragon`";
       
       await message.reply(parseMarkdown(listMessage.trim()));
     } catch (error: any) {
