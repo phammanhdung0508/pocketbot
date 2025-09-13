@@ -39,14 +39,8 @@ export class PetInfoCommandHandler implements CommandHandler {
       // Format skills information
       const skillsInfo = pet.skills.map(skill => {
         const elementEmoji = ELEMENT_EMOJIS[skill.element] || "";
-        return `  • ${skill.name} ${elementEmoji} (Cấp ${skill.levelReq}) - ${skill.description}`;
+        return `  • ${skill.name} ${elementEmoji} - ${skill.description}`;
       }).join('\n') || "Không có kỹ năng";
-      
-      // Format status effects information
-      const statusEffectsInfo = pet.statusEffects.map(status => {
-        const emoji = STATUS_EMOJIS[status.statusEffect.type] || "❓";
-        return `  • ${emoji} ${status.statusEffect.type} (${status.turnsRemaining} lượt)`;
-      }).join('\n') || "Không có hiệu ứng";
       
       // Format secondary elements
       const secondaryElementsInfo = pet.secondaryElements.map(element => {
@@ -94,16 +88,13 @@ ${skillsInfo}
 ✨ **Kỹ năng bị động:**
 ${passivesInfo}
 
-💊 **Hiệu ứng đang có:**
-${statusEffectsInfo}
-
 📅 Tạo lúc: ${pet.createdAt.toLocaleString('vi-VN')}
 🔄 Cập nhật lần cuối: ${pet.lastUpdate.toLocaleString('vi-VN')}
       `.trim();
       
       await message.reply(parseMarkdown(infoMessage));
     } catch (error: any) {
-      await message.reply(parseMarkdown(`Error getting pet info: ${error.message}`));
+      await message.reply(parseMarkdown(`Lỗi khi lấy thông tin thú cưng: ${error.message}`));
     }
   }
 }

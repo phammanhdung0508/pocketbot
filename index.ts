@@ -6,12 +6,10 @@ import { BattleService } from "./src/infrastructure/services/BattleService"
 import { CommandRouter } from "./src/interfaces/cli/CommandRouter"
 import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase"
 import { GetPetsUseCase } from "./src/application/use-cases/GetPetsUseCase"
-import { FeedPetUseCase } from "./src/application/use-cases/FeedPetUseCase"
-import { PlayPetUseCase } from "./src/application/use-cases/PlayPetUseCase"
-import { TrainPetUseCase } from "./src/application/use-cases/TrainPetUseCase"
 import { BattleUseCase } from "./src/application/use-cases/BattleUseCase"
 import { CheatUseCase } from "./src/application/use-cases/CheatUseCase"
 import { BackgroundTask } from "./src/infrastructure/utils/BackgroundTask"
+import { GetAvailablePetsUseCase } from "./src/application/use-cases/GetAvailablePetsUseCase"
 
 dotenv.config()
 
@@ -23,11 +21,9 @@ async function main() {
     // Initialize use cases
     const createPetUseCase = new CreatePetUseCase(petRepository);
     const getPetsUseCase = new GetPetsUseCase(petRepository);
-    const feedPetUseCase = new FeedPetUseCase(petRepository);
-    const playPetUseCase = new PlayPetUseCase(petRepository);
-    const trainPetUseCase = new TrainPetUseCase(petRepository);
     const battleUseCase = new BattleUseCase(petRepository, battleService);
     const cheatUseCase = new CheatUseCase(petRepository);
+    const getAvailablePetsUseCase = new GetAvailablePetsUseCase();
 
     // Initialize background task manager
     const backgroundTask = new BackgroundTask(petRepository);
@@ -37,11 +33,9 @@ async function main() {
     const commandRouter = new CommandRouter(
         createPetUseCase,
         getPetsUseCase,
-        feedPetUseCase,
-        playPetUseCase,
-        trainPetUseCase,
         battleUseCase,
-        cheatUseCase
+        cheatUseCase,
+        getAvailablePetsUseCase
     );
 
     // Initialize Mezon client

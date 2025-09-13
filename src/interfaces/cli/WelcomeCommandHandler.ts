@@ -16,7 +16,7 @@ Hãy cùng khám phá thế giới của những chú thú cưng chiến đấu 
 🎮 **HƯỚNG DẪN NHANH:**
 
 펫 **TẠO THÚ CƯNG:**
-• Dùng lệnh: *pet create <tên> <loài> <hệ>
+• Dùng lệnh: *pet create <tên> <loài>
 • Các loài thú cưng: dragon, fish, golem, bird, eel
 • Các hệ nguyên tố: fire, water, earth, air, lightning
 • Ví dụ: *pet create Rex dragon fire
@@ -24,33 +24,22 @@ Hãy cùng khám phá thế giới của những chú thú cưng chiến đấu 
 📊 **THÔNG TIN THÚ CƯNG:**
 • *pet info - Xem thông tin cơ bản của thú cưng
 • *pet details - Xem thông tin chi tiết và tất cả kỹ năng
-• *pet skills - Xem danh sách kỹ năng của thú cưng
-
-⚡ **CHĂM SÓC THÚ CƯNG:**
-• *pet feed - Cho thú cưng ăn để giảm đói
-• *pet play - Chơi với thú cưng để tăng EXP
-• *pet train - Huấn luyện để tăng chỉ số
+• *pet list - Xem danh sách tất cả thú cưng của bạn
 
 ⚔️ **CHIẾN ĐẤU:**
 • *battle <@người_chơi> - Thách đấu người chơi khác
-• Trận đấu có 3 vòng, mỗi vòng thú cưng sẽ tấn công
+• Trận đấu có 10 vòng, Thú cưng sẽ tấn công nhau theo lượt
 • Kỹ năng có thể gây hiệu ứng đặc biệt (đốt, đóng băng, tê liệt...)
 
 📈 **CƠ CHẾ PHÁT TRIỂN:**
 • Thú cưng lên cấp khi đạt đủ EXP (cấp × 100 EXP)
 • Khi lên cấp, chỉ số HP, ATK, DEF, SPD sẽ tăng
 • Mở khóa kỹ năng mới khi đạt cấp độ yêu cầu
-• Tiến hóa ở cấp 10, 25 và 50
-
-💡 **MẸO HỮU ÍCH:**
-• Quản lý năng lượng và độ đói của thú cưng
-• Học kỹ năng phù hợp với hệ nguyên tố của thú cưng
-• Kết hợp các hệ nguyên tố để tạo hiệu ứng tốt nhất
-• Mỗi loài thú cưng có bộ kỹ năng đặc trưng riêng
+• Tiến hóa ở cấp 10, 20, 60, 100
 
 🌟 **BẮT ĐẦU NGAY:**
 1. Tạo thú cưng đầu tiên của bạn
-2. Chăm sóc và huấn luyện để tăng chỉ số
+2. Xem thông tin thú cưng với *pet info hoặc *pet details
 3. Thách đấu người chơi khác để kiểm tra sức mạnh
 4. Thu thập nhiều thú cưng với các hệ nguyên tố khác nhau
 

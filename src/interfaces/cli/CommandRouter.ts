@@ -2,9 +2,6 @@ import { ChannelMessage } from "mezon-sdk";
 import { CommandHandler } from "./CommandHandler";
 import { CreatePetCommandHandler } from "./CreatePetCommandHandler";
 import { PetInfoCommandHandler } from "./PetInfoCommandHandler";
-import { FeedPetCommandHandler } from "./FeedPetCommandHandler";
-import { PlayPetCommandHandler } from "./PlayPetCommandHandler";
-import { TrainPetCommandHandler } from "./TrainPetCommandHandler";
 import { BattleCommandHandler } from "./BattleCommandHandler";
 import { PetListCommandHandler } from "./PetListCommandHandler";
 import { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel";
@@ -12,15 +9,12 @@ import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message";
 import { parseMarkdown } from "@/shared/utils/parseMarkdown";
 import { GetPetsUseCase } from "@/application/use-cases/GetPetsUseCase";
 import { CreatePetUseCase } from "@/application/use-cases/CreatePetUseCase";
-import { FeedPetUseCase } from "@/application/use-cases/FeedPetUseCase";
-import { PlayPetUseCase } from "@/application/use-cases/PlayPetUseCase";
-import { TrainPetUseCase } from "@/application/use-cases/TrainPetUseCase";
 import { BattleUseCase } from "@/application/use-cases/BattleUseCase";
 import { CheatCommandHandler } from "./CheatCommandHandler";
 import { CheatUseCase } from "@/application/use-cases/CheatUseCase";
 import { PetDetailsCommandHandler } from "./PetDetailsCommandHandler";
-import { PetSkillsCommandHandler } from "./PetSkillsCommandHandler";
 import { WelcomeCommandHandler } from "./WelcomeCommandHandler";
+import { GetAvailablePetsUseCase } from "@/application/use-cases/GetAvailablePetsUseCase";
 
 export class CommandRouter {
   private handlers: Map<string, CommandHandler> = new Map();
@@ -28,21 +22,15 @@ export class CommandRouter {
   constructor(
     createPetUseCase: CreatePetUseCase,
     getPetsUseCase: GetPetsUseCase,
-    feedPetUseCase: FeedPetUseCase,
-    playPetUseCase: PlayPetUseCase,
-    trainPetUseCase: TrainPetUseCase,
     battleUseCase: BattleUseCase,
-    cheatUseCase: CheatUseCase
+    cheatUseCase: CheatUseCase,
+    getAvailablePetsUseCase: GetAvailablePetsUseCase
   ) {
     this.registerHandler("pet create", new CreatePetCommandHandler(createPetUseCase));
     this.registerHandler("pet info", new PetInfoCommandHandler(getPetsUseCase));
     this.registerHandler("pet details", new PetDetailsCommandHandler(getPetsUseCase));
-    this.registerHandler("pet skills", new PetSkillsCommandHandler(getPetsUseCase));
-    this.registerHandler("pet feed", new FeedPetCommandHandler( feedPetUseCase, getPetsUseCase));
-    this.registerHandler("pet play", new PlayPetCommandHandler(playPetUseCase, getPetsUseCase));
-    this.registerHandler("pet train", new TrainPetCommandHandler(trainPetUseCase, getPetsUseCase));
     this.registerHandler("battle", new BattleCommandHandler(battleUseCase));
-    this.registerHandler("pet list", new PetListCommandHandler());
+    this.registerHandler("pet list", new PetListCommandHandler(getAvailablePetsUseCase));
     this.registerHandler("pet cheat", new CheatCommandHandler(cheatUseCase, getPetsUseCase));
     this.registerHandler("welcome", new WelcomeCommandHandler());
   }

@@ -102,11 +102,11 @@ export class PetDetailsCommandHandler implements CommandHandler {
           
           let status = "";
           if (isLearned) {
-            status = " ✅";
+            status = " ✅ (Đã học)";
           } else if (pet.level >= skill.levelReq) {
             status = " 🔓";
           } else {
-            status = " (Cấp " + skill.levelReq + ")";
+            status = " (Yêu cầu cấp " + skill.levelReq + ")";
           }
           
           skillsLines.push("  • " + skill.name + " " + elementEmoji + status + " - " + skill.description);
@@ -133,10 +133,6 @@ export class PetDetailsCommandHandler implements CommandHandler {
       detailsMessage += "🔄 Cập nhật lần cuối: " + pet.lastUpdate.toLocaleString('vi-VN') + "\n\n";
       detailsMessage += "⚔️ **Tất cả kỹ năng của " + pet.species + ":**\n";
       detailsMessage += skillsInfo + "\n\n";
-      detailsMessage += "💡 **Chú thích:**\n";
-      detailsMessage += "• ✅ Kỹ năng đã học\n";
-      detailsMessage += "• 🔓 Kỹ năng có thể học (đủ cấp độ)\n";
-      detailsMessage += "• (Cấp X) Kỹ năng sẽ mở khóa ở cấp độ X\n";
 
       await message.reply(parseMarkdown(detailsMessage));
     } catch (error: any) {
