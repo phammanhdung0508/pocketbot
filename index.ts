@@ -1,5 +1,6 @@
 import dotenv from "dotenv"
 import { MezonClient } from "mezon-sdk"
+import { Logger } from "./src/shared/utils/Logger"
 
 import { PetRepository } from "./src/infrastructure/repositories/PetRepository"
 import { BattleService } from "./src/infrastructure/services/BattleService"
@@ -15,6 +16,7 @@ import { PetRestUseCase } from "./src/application/use-cases/PetRestUseCase"
 dotenv.config()
 
 async function main() {
+    Logger.info("Khởi động ứng dụng");
     const petRepository = new PetRepository();
     const battleService = new BattleService();
 
@@ -40,11 +42,11 @@ async function main() {
     await client.login();
 
     client.on("error", (error) => {
-        console.error("Mezon Client Error:", error);
+        Logger.error(`Mezon Client Error: ${error}`);
     });
 
     client.on("disconnect", (reason) => {
-        console.log("Disconnected from Mezon:", reason);
+        Logger.info(`Disconnected from Mezon: ${reason}`);
     });
 
     client.onChannelMessage(async (event) => {
@@ -53,16 +55,16 @@ async function main() {
 
         const channel = await client.channels.fetch(event.channel_id);
         const message = await channel.messages.fetch(String(event.message_id));
-        console.log(
-            `New message in channel ${message.channel.name}: ${message.content.t}`,
-        );
+        Logger.info(`New message in channel ${message.channel.name}: ${message.content.t}`);
 
         commandRouter.routeCommand(channel, message)
     });
+    
+    Logger.info("Ứng dụng đã khởi động thành công");
 }
 
 main()
-    .then(() => console.log("Launched!"))
+    .then(() => Logger.info("Launched!"))
     .catch(async (e) => {
-        console.log({ error: e })
+        Logger.error(`Error: ${e}`);
     });
