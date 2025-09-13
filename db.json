@@ -3,7 +3,7 @@
     "1840686084447539200": {
       "pets": [
         {
-          "id": "a87b7f85-aaf0-4cc4-af4b-1f27d34ff312",
+          "id": "304d09f9-ea89-4c46-bd03-a3736a4f95f9",
           "name": "dragod",
           "species": "dragon",
           "element": "fire",
@@ -17,9 +17,9 @@
           "speed": 100,
           "energy": 6,
           "maxEnergy": 6,
-          "createdAt": "2025-09-13T16:12:37.441Z",
-          "lastUpdate": "2025-09-13T16:12:37.441Z",
-          "lastBattle": "2025-09-13T16:12:37.441Z",
+          "createdAt": "2025-09-13T16:41:15.432Z",
+          "lastUpdate": "2025-09-13T16:41:15.432Z",
+          "lastBattle": "2025-09-13T16:41:15.432Z",
           "skills": [
             {
               "name": "Basic Attack",
@@ -59,8 +59,8 @@
     "1952273582008569856": {
       "pets": [
         {
-          "id": "71d59ea4-d126-4305-8517-602f1b711bd0",
-          "name": "rock",
+          "id": "f5111aff-4b1c-4ac1-bfe0-00708ae4d5f0",
+          "name": "rocki",
           "species": "golem",
           "element": "earth",
           "secondaryElements": [],
@@ -73,9 +73,9 @@
           "speed": 60,
           "energy": 10,
           "maxEnergy": 10,
-          "createdAt": "2025-09-13T16:12:48.513Z",
-          "lastUpdate": "2025-09-13T16:12:48.513Z",
-          "lastBattle": "2025-09-13T16:12:48.513Z",
+          "createdAt": "2025-09-13T16:41:30.772Z",
+          "lastUpdate": "2025-09-13T16:41:30.772Z",
+          "lastBattle": "2025-09-13T16:41:30.772Z",
           "skills": [
             {
               "name": "Basic Attack",
