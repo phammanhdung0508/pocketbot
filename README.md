@@ -89,8 +89,17 @@ Hiểu rõ logic hoạt động sẽ giúp bạn xây dựng chiến thuật t�
 
 Mỗi pet có các thuộc tính cơ bản quyết định sức mạnh của chúng trong trận đấu:
 
+| Loài thú | Nguyên tố chính |
+| :-- | :-- |
+| **Dragon** | Lửa 🔥 |
+| **Fish** | Nước 💧 |
+| **Golem** | Đất 🪨 |
+| **Bird** | Khí 💨 |
+| **Eel** | Điện ⚡ |
+
 - **Loài (Species):** Quyết định hình dáng và các chỉ số cơ bản của pet.
 - **Nguyên tố (Element):** Như Lửa, Nước, Cỏ... Các nguyên tố có tính tương khắc, ảnh hưởng lớn đến sát thương gây ra và nhận vào. (Ví dụ: Lửa gây thêm sát thương cho Cỏ).
+- **Tiến hóa (Evolve):** Thú sẽ tiến hóa theo mức levels 20, 40, 60, 100. Mỗi mức level sẽ cho phép mở khóa kĩ năng mới. Level 60 tiến hóa thêm một nguyên tố phụ và mở khóa hai kĩ năng đi kèm.
 - **Các chỉ số chính:**
   - **HP (Health Points):** Sinh mệnh của pet. Khi HP về 0, pet sẽ thua.
   - **Attack (Tấn công):** Sức mạnh tấn công vật lý.
@@ -107,6 +116,15 @@ Mỗi pet có các thuộc tính cơ bản quyết định sức mạnh của ch
 
 Sau mỗi trận chiến, pet sẽ bị mất HP. Bạn cần cho pet nghỉ ngơi để hồi phục lại các chỉ số trước khi tham gia vào trận chiến tiếp theo.
 - Cứ sau 60 phút pet sẽ hồi 100% Máu.
+
+# 2.4 Khắc chế theo hệ.
+| Nguyên tố | Mạnh chống | Yếu chống | Neutral |
+| :-- | :-- | :-- | :-- |
+| 🔥 **Lửa** | Khí (1.5x) | Nước (0.75x) | Đất, Điện |
+| 💧 **Nước** | Lửa (1.5x) | Điện (0.75x) | Đất, Khí |
+| 🪨 **Đất** | Điện (1.5x) | Khí (0.75x) | Lửa, Nước |
+| 💨 **Khí** | Đất (1.5x) | Lửa (0.75x) | Nước, Điện |
+| ⚡ **Điện** | Nước (1.5x) | Đất (0.75x) | Lửa, Khí |
 
 ## 3. Hướng Dẫn Sử Dụng Lệnh
 
