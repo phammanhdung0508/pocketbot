@@ -29,10 +29,10 @@ export class CommandRouter {
     this.registerHandler("pet create", new CreatePetCommandHandler(createPetUseCase));
     this.registerHandler("pet info", new PetInfoCommandHandler(getPetsUseCase));
     this.registerHandler("pet details", new PetDetailsCommandHandler(getPetsUseCase));
-    this.registerHandler("battle", new BattleCommandHandler(battleUseCase));
+    this.registerHandler("pet battle", new BattleCommandHandler(battleUseCase));
     this.registerHandler("pet list", new PetListCommandHandler(getAvailablePetsUseCase));
     this.registerHandler("pet cheat", new CheatCommandHandler(cheatUseCase, getPetsUseCase));
-    this.registerHandler("welcome", new WelcomeCommandHandler());
+    this.registerHandler("pet welcome", new WelcomeCommandHandler());
   }
 
   registerHandler(command: string, handler: CommandHandler): void {

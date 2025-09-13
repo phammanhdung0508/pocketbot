@@ -87,7 +87,6 @@ export class PetFactory {
         const availableElements = allPossibleElements.filter(e => e === pet.element);
         if (availableElements.length === 0) return pet;
         element = availableElements[Math.floor(Math.random() * availableElements.length)];
-        pet.secondaryElements.push(element);
       } else {
         const availableElements = allPossibleElements.filter(e => e !== pet.element && !pet.secondaryElements.includes(e));
         if (availableElements.length === 0) return pet;

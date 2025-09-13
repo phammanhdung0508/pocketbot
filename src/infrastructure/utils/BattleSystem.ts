@@ -132,10 +132,15 @@ export class BattleSystem {
     }
 
     const finalDamageRounded = Math.round(Math.max(1, finalDamage));
-    Logger.info(`Final damage result: ${finalDamageRounded} (${effectiveness}, ${isCrit ? 'crit' : 'normal'})`);
+    
+    // Handle Earth Resilience passive ability
+    const earthResilienceEffect = PassiveAbilityService.handleEarthResilience(defender, finalDamageRounded);
+    const damageAfterEarthResilience = Math.max(1, finalDamageRounded - earthResilienceEffect.damageReduced);
+    
+    Logger.info(`Final damage result: ${damageAfterEarthResilience} (${effectiveness}, ${isCrit ? 'crit' : 'normal'})`);
 
     return {
-      damage: finalDamageRounded,
+      damage: damageAfterEarthResilience,
       effectiveness,
       statusApplied,
       isCrit,

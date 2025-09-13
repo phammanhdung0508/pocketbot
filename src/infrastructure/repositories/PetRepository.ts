@@ -45,7 +45,9 @@ export class PetRepository implements IPetRepository {
       createdAt: pet.createdAt.toISOString(),
       lastUpdate: pet.lastUpdate.toISOString(),
       skills: pet.skills,
-      statusEffects: pet.statusEffects
+      statusEffects: pet.statusEffects,
+      buffs: pet.buffs,
+      passives: pet.passives
     };
     
     db.users[mezonId].pets.push(petToSave);
@@ -86,7 +88,9 @@ export class PetRepository implements IPetRepository {
       createdAt: pet.createdAt.toISOString(),
       lastUpdate: pet.lastUpdate.toISOString(),
       skills: pet.skills,
-      statusEffects: pet.statusEffects
+      statusEffects: pet.statusEffects,
+      buffs: pet.buffs,
+      passives: pet.passives
     };
     
     const petIndex = db.users[mezonId].pets.findIndex(p => p.id === pet.id);
@@ -141,7 +145,9 @@ export class PetRepository implements IPetRepository {
           createdAt: pet.createdAt.toISOString(),
           lastUpdate: pet.lastUpdate.toISOString(),
           skills: pet.skills,
-          statusEffects: pet.statusEffects
+          statusEffects: pet.statusEffects,
+          buffs: pet.buffs,
+          passives: pet.passives
         }))
       };
     }

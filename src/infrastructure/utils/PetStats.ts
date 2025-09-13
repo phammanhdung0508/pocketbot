@@ -1,4 +1,5 @@
 import { Pet } from "@domain/entities/Pet";
+import { PassiveAbilityService } from "./../services/PassiveAbilityService";
 
 export class PetStats {
   static updatePetStatsOverTime(pet: Pet): Pet {
@@ -21,6 +22,9 @@ export class PetStats {
         pet.hp = Math.max(0, pet.hp - hpDecrease);
       }
     }
+
+    // Handle passive abilities that trigger over time
+    PassiveAbilityService.handleAquaticMastery(pet);
 
     pet.lastUpdate = now;
 

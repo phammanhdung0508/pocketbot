@@ -10,6 +10,7 @@ import { ELEMENT_EMOJIS } from "../constants/ElementEmojis";
 import { SPECIES_EMOJIS } from "../constants/SpeciesEmojis";
 import TurnResult from "@/domain/entities/TurnResult";
 import { createBattleDrawEmbed, createBattleEndEmbed, createBattleStartEmbed, createTurnEndStatusEmbed, createTurnStatusEmbed, createSkillUsageEmbed } from "@/infrastructure/utils/Embed";
+import { PassiveAbilityService } from "@/infrastructure/services/PassiveAbilityService";
 
 const STATUS_EMOJIS: { [key: string]: string } = {
   [EffectTypes.BURN]: "🔥",
@@ -151,6 +152,13 @@ export class BattleUseCase {
       const winnerPet = winner === attackerMezonId ? attacker : defender;
       const loserPet = winner === attackerMezonId ? defender : attacker;
       
+      // Check for Fire Soul passive ability "on kill" effect
+      const fireSoul = winnerPet.skills.find(s => s.name === "Fire Soul" && s.type === "passive");
+      if (fireSoul) {
+        winnerPet.energy = Math.min(winnerPet.maxEnergy, winnerPet.energy + 2);
+        // We could send a message about the energy recovery, but let's keep it simple for now
+      }
+      
       await sendMessage({
         t: `🏆 **${winnerPet.name} thắng trận đấu!**`,
         embed: [createBattleEndEmbed(winnerPet, loserPet, winner)]
@@ -252,6 +260,60 @@ export class BattleUseCase {
     }
 
     const skill = this.selectSkill(attackingPet);
+    
+    // Check for Wind Mastery passive ability dodge
+    const windMasteryEffect = PassiveAbilityService.handleWindMastery(defendingPet, 0);
+    if (windMasteryEffect.dodge) {
+      await sendMessage({
+        t: `💨 **${defendingPet.name}** đã né đòn tấn công!`
+      });
+      if (windMasteryEffect.energyRecovered > 0) {
+        await sendMessage({
+          t: `⚡ **${defendingPet.name}** đã phục hồi ${windMasteryEffect.energyRecovered} năng lượng!`
+        });
+      }
+      return { isDefeated: false, expGain: 0 };
+    }
+    
+    // Check for Electric Field passive ability counter attack
+    const electricFieldEffect = PassiveAbilityService.handleElectricField(defendingPet, attackingPet, 0);
+    if (electricFieldEffect.counter) {
+      await sendMessage({
+        t: `⚡ **${defendingPet.name}** đã phản đòn tấn công!`
+      });
+      
+      // Apply counter damage to attacker
+      attackingPet.hp = Math.max(0, attackingPet.hp - electricFieldEffect.counterDamage);
+      await sendMessage({
+        t: `⚡ **${attackingPet.name}** nhận **${electricFieldEffect.counterDamage}** sát thương phản đòn!`
+      });
+      
+      // Apply paralyze effect if triggered
+      if (electricFieldEffect.paralyze) {
+        const paralyzeStatus: BattleStatus = {
+          statusEffect: {
+            type: EffectTypes.PARALYZE,
+            target: "enemy",
+            chance: 100,
+            turns: 1,
+            value: 1,
+            valueType: "flag",
+          },
+          turnsRemaining: 1,
+          turnsTotal: 1,
+        };
+        attackingPet.statusEffects.push(paralyzeStatus);
+        await sendMessage({
+          t: `⚡ **${attackingPet.name}** bị tê liệt!`
+        });
+      }
+      
+      // If attacker is defeated by counter attack, return immediately
+      if (attackingPet.hp <= 0) {
+        return { isDefeated: true, winner: defendingPet.id, expGain: 0 };
+      }
+    }
+    
     const damageResult = this.battleService.calculateSkillDamage(attackingPet, defendingPet, skill);
 
     const elementEmoji = ELEMENT_EMOJIS[skill.element] || "";
@@ -283,6 +345,14 @@ export class BattleUseCase {
 
     defendingPet.hp = Math.max(0, defendingPet.hp - damageResult.damage);
     attackingPet.energy -= skill.energyCost!;
+
+    // Handle Electric Field passive ability energy recovery
+    const energyRecovered = PassiveAbilityService.handleElectricSkillEnergyRecovery(attackingPet, skill);
+    if (energyRecovered > 0) {
+      await sendMessage({
+        t: `⚡ **${attackingPet.name}** đã phục hồi ${energyRecovered} năng lượng từ kỹ năng điện!`
+      });
+    }
 
     await sendMessage({
       t: `${SPECIES_EMOJIS[defendingPet.species] || "🐾"} **${defendingPet.name}** | HP: ${defendingPet.hp}/${defendingPet.maxHp}`
