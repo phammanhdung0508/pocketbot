@@ -1,17 +1,17 @@
 import dotenv from "dotenv"
 import { MezonClient } from "mezon-sdk"
-import { Logger } from "./src/shared/utils/Logger"
+import { Logger } from "./shared/utils/Logger"
 
-import { PetRepository } from "./src/infrastructure/repositories/PetRepository"
-import { BattleService } from "./src/infrastructure/services/BattleService"
-import { CommandRouter } from "./src/interfaces/cli/CommandRouter"
-import { CreatePetUseCase } from "./src/application/use-cases/CreatePetUseCase"
-import { GetPetsUseCase } from "./src/application/use-cases/GetPetsUseCase"
-import { BattleUseCase } from "./src/application/use-cases/BattleUseCase"
-import { CheatUseCase } from "./src/application/use-cases/CheatUseCase"
-import { GetAvailablePetsUseCase } from "./src/application/use-cases/GetAvailablePetsUseCase"
-import { SelectPetForBattleUseCase } from "./src/application/use-cases/SelectPetForBattleUseCase"
-import { PetRestUseCase } from "./src/application/use-cases/PetRestUseCase"
+import { PetRepository } from "./infrastructure/repositories/PetRepository"
+import { BattleService } from "./infrastructure/services/BattleService"
+import { CommandRouter } from "./interfaces/cli/CommandRouter"
+import { CreatePetUseCase } from "./application/use-cases/CreatePetUseCase"
+import { GetPetsUseCase } from "./application/use-cases/GetPetsUseCase"
+import { BattleUseCase } from "./application/use-cases/BattleUseCase"
+import { CheatUseCase } from "./application/use-cases/CheatUseCase"
+import { GetAvailablePetsUseCase } from "./application/use-cases/GetAvailablePetsUseCase"
+import { SelectPetForBattleUseCase } from "./application/use-cases/SelectPetForBattleUseCase"
+import { PetRestUseCase } from "./application/use-cases/PetRestUseCase"
 
 dotenv.config()
 
