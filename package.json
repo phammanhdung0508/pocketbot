@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "dev": "ts-node -r tsconfig-paths/register ./src/index.ts"
   },
@@ -12,13 +12,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/node": "^24.3.0",
     "dotenv": "^17.2.1",
+    "mezon-sdk": "^2.8.11",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2",
-    "@types/node": "^24.3.0",
-    "mezon-sdk": "^2.8.11",
     "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.8.16"
   }
 }
