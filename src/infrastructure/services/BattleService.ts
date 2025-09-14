@@ -71,4 +71,15 @@ export class BattleService implements IBattleService {
     Logger.info(`Chỉ số hiệu quả ${stat}: ${effectiveStat}`);
     return effectiveStat;
   }
+
+  checkForUltimateSkill(pet: Pet): Skill | undefined {
+    Logger.info(`Kiểm tra kỹ năng ultimate cho thú ${pet.name}`);
+    const ultimateSkill = this.battleSystem.checkForUltimateSkill(pet);
+    if (ultimateSkill) {
+      Logger.info(`Thú ${pet.name} sẽ sử dụng kỹ năng ultimate: ${ultimateSkill.name}`);
+    } else {
+      Logger.info(`Thú ${pet.name} không sử dụng kỹ năng ultimate`);
+    }
+    return ultimateSkill;
+  }
 }

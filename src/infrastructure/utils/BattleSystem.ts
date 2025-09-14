@@ -2,9 +2,11 @@ import { Pet } from "@domain/entities/Pet";
 import { Skill } from "@domain/entities/Skill";
 import { AffectTypes } from "@/domain/enums/AffectTypes";
 import { EffectTypes } from "@/domain/enums/EffectTypes";
+import { PetSpecies } from "@/domain/enums/PetSpecies";
 import { Logger } from "@/shared/utils/Logger";
 import { PassiveAbilityService } from "@/infrastructure/services/PassiveAbilityService";
 import { StatusEffect } from "@domain/entities/Skill";
+import PET_SKILLS_MAP from "@/application/constants/PetSkillsMap";
 import { 
   DEFENSE_SCALING_FACTOR,
   SUPER_EFFECTIVE_MULTIPLIER,
@@ -29,6 +31,7 @@ import {
 
 export class BattleSystem {
   private hitCounts: Map<string, number> = new Map();
+  private ultimateUsed: Set<string> = new Set(); // Track which pets have used their ultimate
 
   getElementEffectiveness(attackerElement: string, defenderElement: string): number {
     Logger.info(`Calculating element effectiveness: ${attackerElement} vs ${defenderElement}`);
@@ -260,5 +263,67 @@ export class BattleSystem {
 
   resetBattle(): void {
     this.hitCounts.clear();
+    this.ultimateUsed.clear(); // Reset ultimate usage tracking
+  }
+
+  /**
+   * Checks if a pet's HP is below 30% of its maximum HP
+   * @param pet The pet to check
+   * @returns true if pet's HP is below 30%, false otherwise
+   */
+  isBelowCriticalHealth(pet: Pet): boolean {
+    return (pet.hp / pet.maxHp) < 0.3;
+  }
+
+  /**
+   * Gets the strongest level 100 skill for a pet based on damage
+   * @param pet The pet to get the skill for
+   * @returns The strongest level 100 skill, or undefined if none exists
+   */
+  getUltimateSkill(pet: Pet): Skill | undefined {
+    // Get all level 100 skills for this pet
+    const level100Skills = PET_SKILLS_MAP[pet.species as PetSpecies].filter(
+      skill => skill.levelReq === 100 && skill.type === 'skill'
+    );
+
+    if (level100Skills.length === 0) {
+      return undefined;
+    }
+
+    // Find the skill with the highest damage
+    return level100Skills.reduce((strongest, current) => {
+      const currentDamage = current.damage || 0;
+      const strongestDamage = strongest.damage || 0;
+      return currentDamage > strongestDamage ? current : strongest;
+    });
+  }
+
+  /**
+   * Checks if a pet should use its ultimate skill and returns it if so
+   * @param pet The pet that might use its ultimate skill
+   * @returns The ultimate skill if triggered, undefined otherwise
+   */
+  checkForUltimateSkill(pet: Pet): Skill | undefined {
+    // Check if pet has already used their ultimate
+    if (this.ultimateUsed.has(pet.id)) {
+      return undefined;
+    }
+    
+    // Check if pet is below 30% HP
+    if (!this.isBelowCriticalHealth(pet)) {
+      return undefined;
+    }
+
+    // Get the pet's ultimate skill
+    const ultimateSkill = this.getUltimateSkill(pet);
+    
+    // If ultimate skill exists, mark it as used and return it
+    if (ultimateSkill) {
+      this.ultimateUsed.add(pet.id);
+      return ultimateSkill;
+    }
+    
+    // Return undefined if no ultimate skill exists
+    return undefined;
   }
 }

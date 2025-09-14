@@ -16,4 +16,5 @@ export interface IBattleService {
   calculateDotDamage(pet: Pet, statusEffect: StatusEffect): number;
   resetBattle(): void;
   getEffectiveStat(pet: Pet, stat: 'attack' | 'defense' | 'speed'): number;
+  checkForUltimateSkill(pet: Pet): Skill | undefined;
 }

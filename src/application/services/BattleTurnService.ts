@@ -91,18 +91,20 @@ export class BattleTurnService {
    */
   selectSkill(pet: Pet): Skill {
     Logger.info(`Chọn kỹ năng cho thú ${pet.name}`);
-    const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
-    if (availableSkills.length === 0) {
-      return { 
-        name: "Basic Attack", 
-        type: 'skill', 
-        damage: 50, 
-        element: 'physical', 
-        energyCost: 0, 
-        description: "A desperate move.", 
-        levelReq: 0 
-      };
+    
+    // Check if pet should use ultimate skill (below 30% HP)
+    const ultimateSkill = this.battleService.checkForUltimateSkill(pet);
+    if (ultimateSkill) {
+      Logger.info(`${pet.name} sẽ sử dụng kỹ năng ultimate: ${ultimateSkill.name}`);
+      return ultimateSkill;
     }
+    
+    const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
+    Logger.info(`Avaliable skill ${pet.skills[0]}`)
+    if (availableSkills.length === 0) {
+      return pet.skills[0]
+    }
+    // random
     return availableSkills[Math.floor(Math.random() * availableSkills.length)];
   }
 
