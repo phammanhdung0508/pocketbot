@@ -27,6 +27,10 @@ src/
 
 - [Node.js](https://nodejs.org/) (khuyến nghị phiên bản 18.x trở lên)
 - [npm](https://www.npmjs.com/) (thường đi kèm với Node.js)
+- Bot đã được Deploy lên [Render](https://render.com/). Chỉ cần invite bot vào clan và sử dụng.
+```
+https://mezon.ai/developers/bot/install/1952273582008569856
+```
 
 ## Cài đặt
 
