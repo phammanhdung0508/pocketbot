@@ -70,7 +70,7 @@ export class BattleUseCase {
         const turnResult1 = await this.battleTurnService.executePetTurn(firstPet, secondPet, sendMessage);
         if (turnResult1.isDefeated) {
           winner = firstPet.id === attacker.id ? attackerMezonId : defenderMezonId;
-          Logger.info(`Thú cưng ${firstPet.name} đã bị đánh bại`);
+          Logger.info(`thú ${firstPet.name} đã bị đánh bại`);
           break;
         }
       }
@@ -85,7 +85,7 @@ export class BattleUseCase {
         const turnResult2 = await this.battleTurnService.executePetTurn(secondPet, firstPet, sendMessage);
         if (turnResult2.isDefeated) {
           winner = secondPet.id === attacker.id ? attackerMezonId : defenderMezonId;
-          Logger.info(`Thú cưng ${secondPet.name} đã bị đánh bại`);
+          Logger.info(`thú ${secondPet.name} đã bị đánh bại`);
           break;
         }
       }
@@ -97,7 +97,7 @@ export class BattleUseCase {
         await sendMessage({
           t: `💥 **${attacker.name} fainted!**`
         });
-        Logger.info(`Thú cưng ${attacker.name} đã ngất xỉu`);
+        Logger.info(`thú ${attacker.name} đã ngất xỉu`);
         break;
       }
       
@@ -107,7 +107,7 @@ export class BattleUseCase {
         await sendMessage({
           t: `💥 **${defender.name} fainted!**`
         });
-        Logger.info(`Thú cưng ${defender.name} đã ngất xỉu`);
+        Logger.info(`thú ${defender.name} đã ngất xỉu`);
         break;
       }
 

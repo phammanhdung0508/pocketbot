@@ -7,9 +7,9 @@ export class GetPetsUseCase {
   constructor(private petRepository: IPetRepository) {}
 
   async execute(mezonId: string): Promise<Pet[]> {
-    Logger.info(`Lấy danh sách thú cưng cho người dùng ${mezonId}`);
+    Logger.info(`Lấy danh sách thú cho người dùng ${mezonId}`);
     const pets = await this.petRepository.getPetsByUserId(mezonId);
-    Logger.info(`Đã lấy được ${pets.length} thú cưng cho người dùng ${mezonId}`);
+    Logger.info(`Đã lấy được ${pets.length} thú cho người dùng ${mezonId}`);
     return pets;
   }
 }

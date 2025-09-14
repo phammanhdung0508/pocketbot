@@ -17,12 +17,12 @@ export class PetRestUseCase {
    * @throws Error if pet is not found
    */
   async execute(mezonId: string, petId: string): Promise<Pet> {
-    Logger.info(`Cho thú cưng ${petId} của người dùng ${mezonId} nghỉ ngơi`);
+    Logger.info(`Cho thú ${petId} của người dùng ${mezonId} nghỉ ngơi`);
     // Get the pet
     const pet = await this.petRepository.getPetById(mezonId, petId);
     
     if (!pet) {
-      Logger.warn(`Không tìm thấy thú cưng ${petId} cho người dùng ${mezonId}`);
+      Logger.warn(`Không tìm thấy thú ${petId} cho người dùng ${mezonId}`);
       throw new Error(`Pet with ID ${petId} not found`);
     }
 
@@ -32,7 +32,7 @@ export class PetRestUseCase {
     // Save the updated pet
     await this.petRepository.updatePet(mezonId, restedPet);
     
-    Logger.info(`Đã cho thú cưng ${petId} của người dùng ${mezonId} nghỉ ngơi thành công`);
+    Logger.info(`Đã cho thú ${petId} của người dùng ${mezonId} nghỉ ngơi thành công`);
     return restedPet;
   }
 
@@ -42,12 +42,12 @@ export class PetRestUseCase {
    * @returns Array of rested pets
    */
   async restAllPets(mezonId: string): Promise<Pet[]> {
-    Logger.info(`Cho tất cả thú cưng của người dùng ${mezonId} nghỉ ngơi`);
+    Logger.info(`Cho tất cả thú của người dùng ${mezonId} nghỉ ngơi`);
     // Get all pets for the user
     const pets = await this.petRepository.getPetsByUserId(mezonId);
     
     if (pets.length === 0) {
-      Logger.warn(`Không tìm thấy thú cưng nào cho người dùng ${mezonId}`);
+      Logger.warn(`Không tìm thấy thú nào cho người dùng ${mezonId}`);
       throw new Error("No pets found for user");
     }
 
@@ -59,7 +59,7 @@ export class PetRestUseCase {
       await this.petRepository.updatePet(mezonId, pet);
     }
     
-    Logger.info(`Đã cho tất cả ${restedPets.length} thú cưng của người dùng ${mezonId} nghỉ ngơi thành công`);
+    Logger.info(`Đã cho tất cả ${restedPets.length} thú của người dùng ${mezonId} nghỉ ngơi thành công`);
     return restedPets;
   }
 }

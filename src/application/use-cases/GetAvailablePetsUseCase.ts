@@ -21,7 +21,7 @@ interface AvailablePet {
 
 export class GetAvailablePetsUseCase {
   execute(): AvailablePet[] {
-    Logger.info(`Lấy danh sách các loài thú cưng khả dụng`);
+    Logger.info(`Lấy danh sách các loài thú khả dụng`);
     const availablePets: AvailablePet[] = [];
     
     for (const species in PetSpecies) {
@@ -47,7 +47,7 @@ export class GetAvailablePetsUseCase {
       }
     }
     
-    Logger.info(`Đã lấy được ${availablePets.length} loài thú cưng khả dụng`);
+    Logger.info(`Đã lấy được ${availablePets.length} loài thú khả dụng`);
     return availablePets;
   }
   

@@ -30,9 +30,9 @@ export class CreatePetCommandHandler implements CommandHandler {
       await message.reply(parseMarkdown(
         `Sử dụng: *pet create <tên> <loài>
 ` +
-        `Bạn hiện có ${currentPets.length}/${maxPets} thú cưng.
+        `Bạn hiện có ${currentPets.length}/${maxPets} thú.
 ` +
-        `Bạn có thể tạo thêm ${remainingSlots} thú cưng nữa.
+        `Bạn có thể tạo thêm ${remainingSlots} thú nữa.
 ` +
         `Sử dụng \`*pet list\` để xem các loài khả dụng.`
       ));
@@ -48,12 +48,12 @@ export class CreatePetCommandHandler implements CommandHandler {
       const remainingSlots = maxPets - currentPets.length;
       
       await message.reply(parseMarkdown(
-        `Đã tạo thành công thú cưng **${pet.name}** (Loài: ${pet.species}, Hệ: ${pet.element})!
-Bạn hiện có ${currentPets.length}/${maxPets} thú cưng.
-Bạn có thể tạo thêm ${remainingSlots} thú cưng nữa.`
+        `Đã tạo thành công thú **${pet.name}** (Loài: ${pet.species}, Hệ: ${pet.element})!
+Bạn hiện có ${currentPets.length}/${maxPets} thú.
+Bạn có thể tạo thêm ${remainingSlots} thú nữa.`
       ));
     } catch (error: any) {
-      await message.reply(parseMarkdown(`Lỗi khi tạo thú cưng: ${error.message}`));
+      await message.reply(parseMarkdown(`Lỗi khi tạo thú: ${error.message}`));
     }
   }
 }

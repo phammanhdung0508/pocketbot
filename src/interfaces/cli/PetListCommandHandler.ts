@@ -13,7 +13,7 @@ export class PetListCommandHandler implements CommandHandler {
         channel: TextChannel,
         message: Message,
         channelMsg?: ChannelMessage): Promise<void> {
-    Logger.info(`Người dùng ${message.sender_id} đang thực hiện lệnh liệt kê thú cưng`);
+    Logger.info(`Người dùng ${message.sender_id} đang thực hiện lệnh liệt kê thú`);
     try {
       const availablePets = this.getAvailablePetsUseCase.execute();
       
@@ -33,10 +33,10 @@ export class PetListCommandHandler implements CommandHandler {
       listMessage += "\n\nĐể chọn một thú, sử dụng lệnh: `*pet create <tên> <loài>`";
       listMessage += "\nVí dụ: `*pet create draqueen dragon`";
       
-      Logger.info(`Người dùng ${message.sender_id} đã nhận danh sách thú cưng`);
+      Logger.info(`Người dùng ${message.sender_id} đã nhận danh sách thú`);
       await message.reply(parseMarkdown(listMessage.trim()));
     } catch (error: any) {
-      Logger.error(`Lỗi khi người dùng ${message.sender_id} liệt kê thú cưng: ${error.message}`);
+      Logger.error(`Lỗi khi người dùng ${message.sender_id} liệt kê thú: ${error.message}`);
       await message.reply(parseMarkdown(`Lỗi khi liệt kê thú: ${error.message}`));
     }
   }

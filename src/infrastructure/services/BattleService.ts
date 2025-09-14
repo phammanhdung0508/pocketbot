@@ -53,7 +53,7 @@ export class BattleService implements IBattleService {
   }
 
   calculateDotDamage(pet: Pet, statusEffect: StatusEffect): number {
-    Logger.info(`Tính toán sát thương theo thời gian cho thú cưng ${pet.name} với hiệu ứng ${statusEffect.type}`);
+    Logger.info(`Tính toán sát thương theo thời gian cho thú ${pet.name} với hiệu ứng ${statusEffect.type}`);
     const damage = this.battleSystem.calculateDotDamage(pet, statusEffect);
     Logger.info(`Sát thương theo thời gian: ${damage}`);
     return damage;
@@ -66,7 +66,7 @@ export class BattleService implements IBattleService {
   }
 
   getEffectiveStat(pet: Pet, stat: 'attack' | 'defense' | 'speed'): number {
-    Logger.info(`Lấy chỉ số hiệu quả ${stat} của thú cưng ${pet.name}`);
+    Logger.info(`Lấy chỉ số hiệu quả ${stat} của thú ${pet.name}`);
     const effectiveStat = this.battleSystem.getEffectiveStat(pet, stat);
     Logger.info(`Chỉ số hiệu quả ${stat}: ${effectiveStat}`);
     return effectiveStat;

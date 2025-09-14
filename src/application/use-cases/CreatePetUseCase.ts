@@ -8,7 +8,7 @@ export class CreatePetUseCase {
   constructor(private petRepository: IPetRepository) {}
 
   async execute(mezonId: string, name: string, species: string): Promise<Pet> {
-    Logger.info(`Tạo thú cưng cho người dùng ${mezonId} với tên ${name} và loài ${species}`);
+    Logger.info(`Tạo thú cho người dùng ${mezonId} với tên ${name} và loài ${species}`);
     const validSpecies = ['dragon', 'fish', 'golem', 'bird', 'eel'];
     if (!validSpecies.includes(species.toLowerCase())) {
       Logger.warn(`Loài không hợp lệ: ${species} cho người dùng ${mezonId}`);
@@ -20,7 +20,7 @@ export class CreatePetUseCase {
     
     await this.petRepository.createPet(mezonId, newPet);
     
-    Logger.info(`Đã tạo thành công thú cưng ${newPet.name} cho người dùng ${mezonId}`);
+    Logger.info(`Đã tạo thành công thú ${newPet.name} cho người dùng ${mezonId}`);
     return newPet;
   }
 }

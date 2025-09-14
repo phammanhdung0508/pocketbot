@@ -12,7 +12,7 @@ export class PetRestService {
    * @returns The updated pet with recovered stats
    */
   static recoverPetStats(pet: Pet): Pet {
-    Logger.info(`Phục hồi chỉ số cho thú cưng ${pet.name}`);
+    Logger.info(`Phục hồi chỉ số cho thú ${pet.name}`);
     const now = new Date();
     const lastBattle = pet.lastBattle;
     const minutesPassed = (now.getTime() - lastBattle.getTime()) / (1000 * 60);
@@ -37,7 +37,7 @@ export class PetRestService {
     // Update last update time
     pet.lastUpdate = now;
     
-    Logger.info(`Đã hoàn thành phục hồi chỉ số cho thú cưng ${pet.name}`);
+    Logger.info(`Đã hoàn thành phục hồi chỉ số cho thú ${pet.name}`);
     return pet;
   }
 
@@ -47,9 +47,9 @@ export class PetRestService {
    * @returns True if pet needs rest, false otherwise
    */
   static needsRest(pet: Pet): boolean {
-    Logger.info(`Kiểm tra xem thú cưng ${pet.name} có cần nghỉ ngơi không`);
+    Logger.info(`Kiểm tra xem thú ${pet.name} có cần nghỉ ngơi không`);
     const needsRest = pet.hp < pet.maxHp || pet.energy < pet.maxEnergy;
-    Logger.info(`Thú cưng ${pet.name} ${needsRest ? "cần" : "không cần"} nghỉ ngơi`);
+    Logger.info(`thú ${pet.name} ${needsRest ? "cần" : "không cần"} nghỉ ngơi`);
     return needsRest;
   }
 
@@ -59,9 +59,9 @@ export class PetRestService {
    * @returns Status message
    */
   static getRestStatus(pet: Pet): string {
-    Logger.info(`Lấy trạng thái nghỉ ngơi của thú cưng ${pet.name}`);
+    Logger.info(`Lấy trạng thái nghỉ ngơi của thú ${pet.name}`);
     if (pet.hp >= pet.maxHp && pet.energy >= pet.maxEnergy) {
-      Logger.info(`Thú cưng ${pet.name} đã nghỉ ngơi đầy đủ`);
+      Logger.info(`thú ${pet.name} đã nghỉ ngơi đầy đủ`);
       return "Pet is fully rested and ready for action!";
     }
 

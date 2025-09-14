@@ -32,7 +32,7 @@ export class BattleTurnService {
     pet: Pet, 
     sendMessage: (payload: ChannelMessageContent) => Promise<void>
   ): Promise<void> {
-    Logger.info(`Xử lý hiệu ứng cuối lượt cho thú cưng ${pet.name}`);
+    Logger.info(`Xử lý hiệu ứng cuối lượt cho thú ${pet.name}`);
     for (let i = pet.statusEffects.length - 1; i >= 0; i--) {
       const status = pet.statusEffects[i];
       const statusEffect = status.statusEffect;
@@ -90,7 +90,7 @@ export class BattleTurnService {
    * @returns The selected skill
    */
   selectSkill(pet: Pet): Skill {
-    Logger.info(`Chọn kỹ năng cho thú cưng ${pet.name}`);
+    Logger.info(`Chọn kỹ năng cho thú ${pet.name}`);
     const availableSkills = pet.skills.filter(skill => skill.energyCost && skill.energyCost <= pet.energy && skill.levelReq <= pet.level);
     if (availableSkills.length === 0) {
       return { 
